@@ -1,6 +1,6 @@
 # 🚀 Euaconecta Platform
 
-> Plataforma completa para gerenciamento de pacotes, consolidações e operações logísticas
+> **Plataforma completa de consolidação e envio de pacotes dos EUA para o Brasil**
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -10,131 +10,138 @@
 
 ## 📋 Índice
 
-- [Visão Geral](#-visão-geral)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Instalação](#-instalação)
-- [Configuração](#-configuração)
-- [Uso](#-uso)
-- [Documentação](#-documentação)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Contribuição](#-contribuição)
-- [Licença](#-licença)
-
----
+- [🎯 Visão Geral](#-visão-geral)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🛠️ Stack Tecnológica](#️-stack-tecnológica)
+- [🚀 Instalação](#-instalação)
+- [📊 Estrutura do Projeto](#-estrutura-do-projeto)
+- [🔧 Configuração](#-configuração)
+- [📚 Documentação da API](#-documentação-da-api)
+- [🐳 Deploy com Docker](#-deploy-com-docker)
+- [👥 Contribuição](#-contribuição)
+- [📄 Licença](#-licença)
 
 ## 🎯 Visão Geral
 
-A **Euaconecta Platform** é uma solução completa para gerenciamento de pacotes internacionais, consolidação de envios e operações logísticas. A plataforma permite que usuários recebam pacotes de diferentes lojas em um endereço nos EUA, consolidem os itens e os enviem para o Brasil de forma otimizada.
+A **Euaconecta Platform** é uma solução completa para empresas que oferecem serviços de consolidação e envio de pacotes dos Estados Unidos para o Brasil. A plataforma oferece:
 
-### 🎯 Objetivos
-
-- **Simplificar** o processo de compras internacionais
-- **Reduzir custos** de envio através da consolidação
-- **Automatizar** operações logísticas
-- **Fornecer transparência** total no processo
-- **Garantir segurança** e rastreabilidade
-
----
+- **Gestão completa de pacotes** com rastreamento em tempo real
+- **Sistema de consolidação inteligente** para otimizar custos de frete
+- **Integração com múltiplas transportadoras** (UPS, FedEx, USPS, DHL, Amazon)
+- **Processamento de pagamentos** via Stripe, PayPal, PIX e Boleto
+- **Dashboard administrativo** completo com relatórios e analytics
+- **Sistema de personalização** para branding e identidade visual
+- **Suporte ao cliente** integrado com tickets e chat
 
 ## ✨ Funcionalidades
 
-### 👥 Para Usuários (Clientes)
-- 📦 **Gerenciamento de Pacotes** - Receba e organize seus pacotes
-- 📋 **Consolidação Inteligente** - Combine múltiplos pacotes em um único envio
-- 🏠 **Múltiplos Endereços** - Gerencie diferentes endereços de entrega
-- 💳 **Pagamentos Integrados** - Stripe e PayPal integrados
-- 📊 **Acompanhamento** - Rastreie seus envios em tempo real
-- 📱 **Interface Responsiva** - Acesse de qualquer dispositivo
+### 🔐 **Sistema de Autenticação**
+- Login/registro com email e senha
+- Ativação de conta por email
+- Sistema de permissões por role (Admin, Operador, Cliente)
+- Middleware de autenticação para rotas protegidas
 
-### 👨‍💼 Para Administradores
-- 🎛️ **Dashboard Completo** - Visão geral de todas as operações
-- 👥 **Gerenciamento de Usuários** - Controle total sobre contas
-- 📦 **Gestão de Pacotes** - Monitoramento de todos os pacotes
-- 📋 **Controle de Consolidações** - Gerenciamento do processo de consolidação
-- 🚚 **Integração com Transportadoras** - UPS, USPS e outras
-- 📊 **Relatórios Avançados** - Análises detalhadas e exportação
-- ⚙️ **Configurações da Plataforma** - Personalização completa
+### 📦 **Gestão de Pacotes**
+- Recebimento e confirmação de pacotes
+- Upload de fotos e documentação
+- Rastreamento de peso e dimensões
+- Status de rastreamento em tempo real
+- Histórico completo de movimentações
 
-### 🔧 Funcionalidades Técnicas
-- 🔐 **Autenticação Segura** - Sistema de login robusto
-- 📧 **Notificações por Email** - Comunicação automática
-- 💾 **Upload de Arquivos** - Fotos e documentos
-- 🔄 **Webhooks** - Integração com serviços externos
-- 📱 **API RESTful** - Integração com sistemas externos
-- 🛡️ **Segurança Avançada** - Proteção de dados e transações
+### 📋 **Sistema de Consolidação**
+- Criação de caixas de consolidação
+- Adição/remoção de pacotes
+- Cálculo automático de peso e dimensões
+- Proteções extras (bubble wrap, dupla caixa)
+- Fechamento e envio automatizado
 
----
+### 🚚 **Sistema de Envios**
+- Integração com múltiplas transportadoras
+- Cálculo automático de frete
+- Geração de etiquetas de envio
+- Rastreamento de entregas
+- Notificações de status
 
-## 🛠️ Tecnologias
+### 💳 **Sistema de Pagamentos**
+- **Stripe** - Cartões de crédito/débito
+- **PayPal** - Conta PayPal e cartões
+- **PIX** - Pagamento instantâneo (Brasil)
+- **Boleto** - Boleto bancário (Brasil)
+- Webhooks para confirmação automática
 
-### Frontend
+### 🎨 **Sistema de Personalização**
+- Configuração de cores e branding
+- Upload de logos e favicons
+- Templates de email personalizáveis
+- Configurações por seção (landing, dashboard, admin)
+- Preview em tempo real
+
+### 📊 **Relatórios e Analytics**
+- Dashboard com métricas em tempo real
+- Relatórios em PDF e Excel
+- Filtros avançados por período
+- Exportação de dados
+- Analytics de performance
+
+### 🔔 **Sistema de Notificações**
+- Email automático para eventos importantes
+- Notificações in-app
+- Configurações personalizáveis por usuário
+- Templates de notificação editáveis
+
+### 🎫 **Sistema de Suporte**
+- Tickets de suporte categorizados
+- Chat integrado entre cliente e admin
+- Sistema de priorização
+- Histórico completo de atendimentos
+
+## 🛠️ Stack Tecnológica
+
+### **Frontend**
 - **Next.js 14** - Framework React com App Router
 - **TypeScript** - Tipagem estática
 - **TailwindCSS** - Framework CSS utilitário
 - **ShadCN/UI** - Componentes de interface
 - **React Hook Form** - Gerenciamento de formulários
-- **Zod** - Validação de schemas
 
-### Backend
-- **Next.js API Routes** - API RESTful
+### **Backend**
+- **Next.js API Routes** - API serverless
+- **NextAuth.js** - Autenticação
 - **Prisma ORM** - Mapeamento objeto-relacional
 - **PostgreSQL** - Banco de dados principal
-- **NextAuth.js** - Autenticação
-- **Zod** - Validação de dados
 
-### Integrações
+### **Integrações**
 - **Stripe** - Processamento de pagamentos
-- **PayPal** - Gateway de pagamento alternativo
+- **PayPal** - Gateway de pagamento
 - **AWS S3** - Armazenamento de arquivos
-- **Email Service** - Envio de notificações
-- **Carrier APIs** - UPS, USPS, FedEx
+- **Nodemailer** - Envio de emails
+- **ShipStation API** - Integração com transportadoras
 
-### Ferramentas de Desenvolvimento
-- **ESLint** - Linting de código
-- **Prettier** - Formatação de código
-- **Husky** - Git hooks
-- **Jest** - Testes unitários
+### **DevOps**
 - **Docker** - Containerização
-
----
+- **GitHub Actions** - CI/CD
+- **Vercel** - Deploy automático
+- **Railway/Neon** - Hosting de banco de dados
 
 ## 🚀 Instalação
 
-### Pré-requisitos
+### **Pré-requisitos**
+- Node.js 18+ 
+- PostgreSQL 15+
+- npm ou yarn
 
-- **Node.js** 18+ 
-- **npm** ou **yarn**
-- **PostgreSQL** 15+
-- **Git**
-
-### 1. Clone o Repositório
-
+### **1. Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/euaconecta-platform.git
-cd euaconecta-platform
+git clone https://github.com/viniciussvasques/euaconecta-plataforma.git
+cd euaconecta-plataforma
 ```
 
-### 2. Instale as Dependências
-
+### **2. Instale as dependências**
 ```bash
 npm install
-# ou
-yarn install
 ```
 
-### 3. Configure o Banco de Dados
-
-```bash
-# Crie um banco PostgreSQL
-createdb euaconecta
-
-# Execute as migrações
-npx prisma migrate dev
-```
-
-### 4. Configure as Variáveis de Ambiente
-
+### **3. Configure as variáveis de ambiente**
 ```bash
 cp .env.example .env.local
 ```
@@ -142,301 +149,227 @@ cp .env.example .env.local
 Edite o arquivo `.env.local` com suas configurações:
 
 ```env
-# Banco de Dados
-DATABASE_URL="postgresql://user:password@localhost:5432/euaconecta"
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/euaconecta"
 
-# Autenticação
-NEXTAUTH_SECRET="your_secret_key_here"
+# NextAuth
 NEXTAUTH_URL="http://localhost:3000"
-
-# Stripe
-STRIPE_PUBLISHABLE_KEY="pk_test_..."
-STRIPE_SECRET_KEY="sk_test_..."
-
-# PayPal
-PAYPAL_CLIENT_ID="your_paypal_client_id"
-PAYPAL_CLIENT_SECRET="your_paypal_secret"
+NEXTAUTH_SECRET="your-secret-key"
 
 # Email
 SMTP_HOST="smtp.gmail.com"
-SMTP_PORT=587
-SMTP_USER="your_email@gmail.com"
-SMTP_PASS="your_app_password"
+SMTP_PORT="587"
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-app-password"
+SMTP_FROM="noreply@euaconecta.com"
+
+# Stripe
+STRIPE_PUBLIC_KEY="pk_test_..."
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# PayPal
+PAYPAL_CLIENT_ID="your-paypal-client-id"
+PAYPAL_CLIENT_SECRET="your-paypal-secret"
 
 # AWS S3
-AWS_ACCESS_KEY_ID="your_aws_key"
-AWS_SECRET_ACCESS_KEY="your_aws_secret"
-AWS_REGION="us-east-1"
-AWS_S3_BUCKET="your_bucket_name"
+S3_ENDPOINT="https://s3.amazonaws.com"
+S3_REGION="us-east-1"
+S3_ACCESS_KEY="your-access-key"
+S3_SECRET_KEY="your-secret-key"
+S3_BUCKET="euaconecta-files"
+
+# App
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-### 5. Execute o Projeto
+### **4. Configure o banco de dados**
+```bash
+# Execute as migrações
+npx prisma migrate dev
 
+# Gere o cliente Prisma
+npx prisma generate
+
+# Execute o seed para dados iniciais
+npx prisma db seed
+```
+
+### **5. Execute os scripts de configuração**
+```bash
+# Configure transportadoras e dados padrão
+node scripts/setup-default-config.js
+node scripts/setup-abc-pricing-table.js
+node scripts/setup-major-carriers.js
+
+# Configure provedores de pagamento
+node scripts/setup-payment-providers.js
+
+# Crie templates de email
+node scripts/seed-email-templates.js
+
+# Crie usuários padrão
+node scripts/create-users.js
+```
+
+### **6. Inicie o servidor de desenvolvimento**
 ```bash
 npm run dev
-# ou
-yarn dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
+Acesse [http://localhost:3000](http://localhost:3000) para ver a aplicação.
 
----
-
-## ⚙️ Configuração
-
-### Configuração Inicial
-
-1. **Acesse o painel administrativo** em `/admin`
-2. **Configure as transportadoras** com suas credenciais
-3. **Configure os provedores de pagamento** (Stripe/PayPal)
-4. **Defina as políticas de armazenamento**
-5. **Configure os templates de email**
-
-### Configurações Avançadas
-
-- **Rate Limiting** - Configure limites de requisições
-- **CORS** - Configure origens permitidas
-- **Logs** - Configure níveis de log
-- **Cache** - Configure cache Redis (opcional)
-
----
-
-## 📖 Uso
-
-### Para Usuários
-
-1. **Registre-se** na plataforma
-2. **Adicione endereços** de entrega
-3. **Cadastre pacotes** recebidos
-4. **Crie consolidações** para otimizar envios
-5. **Faça pagamentos** e acompanhe o processo
-
-### Para Administradores
-
-1. **Acesse o dashboard** administrativo
-2. **Gerencie usuários** e permissões
-3. **Monitore pacotes** e consolidações
-4. **Processe pagamentos** e envios
-5. **Gere relatórios** e análises
-
----
-
-## 📚 Documentação
-
-### 📁 Estrutura da Documentação
-
-```
-docs/
-├── api/                    # Documentação da API
-│   ├── API_DOCUMENTATION.md    # Documentação completa
-│   ├── API_EXAMPLES.md         # Exemplos práticos
-│   ├── openapi.yaml            # Especificação OpenAPI
-│   └── API_README.md           # Guia da documentação
-├── user/                   # Documentação do usuário
-├── admin/                  # Documentação administrativa
-└── development/            # Documentação de desenvolvimento
-```
-
-### 🔗 Links Úteis
-
-- **[Documentação da API](./docs/api/API_README.md)** - Guia completo da API
-- **[Exemplos Práticos](./docs/api/API_EXAMPLES.md)** - Códigos de exemplo
-- **[Especificação OpenAPI](./docs/api/openapi.yaml)** - Swagger/OpenAPI
-- **[Documentação Completa](./docs/api/API_DOCUMENTATION.md)** - Referência completa
-
-### 🛠️ Ferramentas de Desenvolvimento
-
-- **Swagger UI** - Visualize a API interativamente
-- **Postman** - Teste endpoints facilmente
-- **OpenAPI Generator** - Gere clientes SDK automaticamente
-
----
-
-## 📁 Estrutura do Projeto
+## 📊 Estrutura do Projeto
 
 ```
 euaconecta-platform/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── (admin)/           # Rotas administrativas
-│   │   ├── (client)/          # Rotas do cliente
-│   │   ├── api/               # API Routes
-│   │   └── auth/              # Autenticação
-│   ├── components/            # Componentes React
-│   ├── lib/                   # Utilitários e serviços
-│   └── types/                 # Definições TypeScript
-├── prisma/                    # Schema e migrações
-├── docs/                      # Documentação
-├── public/                    # Arquivos estáticos
-└── tests/                     # Testes automatizados
+├── 📁 src/
+│   ├── 📁 app/                    # Next.js App Router
+│   │   ├── 📁 (admin)/           # Rotas administrativas
+│   │   ├── 📁 (client)/          # Rotas do cliente
+│   │   ├── 📁 admin/             # Painel administrativo
+│   │   ├── 📁 api/               # API Routes
+│   │   └── 📁 auth/              # Autenticação
+│   ├── 📁 components/            # Componentes reutilizáveis
+│   └── 📁 lib/                   # Utilitários e serviços
+├── 📁 prisma/                    # Schema e migrações do banco
+├── 📁 scripts/                   # Scripts de setup e manutenção
+├── 📁 docs/                      # Documentação
+└── 📁 docker/                    # Configurações Docker
 ```
 
-### 🏗️ Arquitetura
+### **Principais Diretórios**
 
-- **Clean Architecture** - Separação clara de responsabilidades
-- **Server Components** - Componentes do servidor por padrão
-- **Client Components** - Apenas quando necessário
-- **API Routes** - Endpoints RESTful
-- **Middleware** - Autenticação e autorização
-- **Services** - Lógica de negócio isolada
+- **`src/app/api/`** - 50+ endpoints da API
+- **`src/app/admin/`** - Painel administrativo completo
+- **`src/app/(client)/`** - Dashboard do cliente
+- **`src/lib/`** - Serviços e utilitários
+- **`prisma/`** - Schema do banco com 25 tabelas
+- **`scripts/`** - Scripts de configuração e manutenção
 
----
+## 🔧 Configuração
 
-## 🧪 Testes
+### **Banco de Dados**
+O sistema utiliza PostgreSQL com Prisma ORM. O schema inclui:
 
-### Executar Testes
+- **25 tabelas** com relacionamentos completos
+- **Sistema de auditoria** para rastreamento de mudanças
+- **Índices otimizados** para performance
+- **Migrações versionadas** para controle de schema
+
+### **Autenticação**
+- **NextAuth.js** com Prisma Adapter
+- **Sistema de roles** (SUPER_ADMIN, ADMIN, OPERATOR, CLIENT)
+- **Permissões granulares** por funcionalidade
+- **Middleware de proteção** para rotas sensíveis
+
+### **Pagamentos**
+- **Stripe** para cartões internacionais
+- **PayPal** para pagamentos globais
+- **PIX** para pagamentos no Brasil
+- **Boleto** para pagamentos tradicionais
+- **Webhooks** para confirmação automática
+
+## 📚 Documentação da API
+
+A API completa está documentada em:
+- **`docs/api/API_DOCUMENTATION.md`** - Documentação completa
+- **`docs/api/openapi.yaml`** - Especificação OpenAPI
+- **`docs/api/API_EXAMPLES.md`** - Exemplos de uso
+
+### **Principais Endpoints**
 
 ```bash
-# Testes unitários
-npm run test
+# Autenticação
+POST /api/auth/login
+POST /api/auth/register
+GET  /api/auth/me
 
-# Testes de integração
-npm run test:integration
+# Pacotes
+GET    /api/packages
+POST   /api/packages
+GET    /api/packages/[id]
+PUT    /api/packages/[id]
 
-# Testes E2E
-npm run test:e2e
+# Consolidação
+GET    /api/consolidation
+POST   /api/consolidation
+POST   /api/consolidation/[id]/add-package
+POST   /api/consolidation/[id]/close
 
-# Cobertura de testes
-npm run test:coverage
+# Envios
+GET    /api/shipments
+POST   /api/shipments
+GET    /api/shipments/[id]
+
+# Transportadoras
+GET    /api/carriers
+POST   /api/carriers
+PUT    /api/carriers/[id]
+
+# Pagamentos
+POST   /api/payments/create-intent
+POST   /api/payments/confirm
+POST   /api/stripe/create-checkout-session
+POST   /api/paypal/create-order
 ```
 
-### Tipos de Testes
+## 🐳 Deploy com Docker
 
-- **Unitários** - Funções e componentes isolados
-- **Integração** - APIs e serviços
-- **E2E** - Fluxos completos do usuário
-- **Performance** - Testes de carga e stress
+### **1. Build da imagem**
+```bash
+docker build -t euaconecta-platform .
+```
 
----
+### **2. Execute com Docker Compose**
+```bash
+docker-compose up -d
+```
 
-## 🚀 Deploy
+### **3. Configure o banco de dados**
+```bash
+# Execute as migrações
+docker exec -it euaconecta-platform npx prisma migrate deploy
 
-### Deploy em Produção
+# Execute o seed
+docker exec -it euaconecta-platform npx prisma db seed
+```
 
-1. **Configure as variáveis de ambiente** de produção
-2. **Execute as migrações** do banco de dados
-3. **Configure o servidor web** (Nginx/Apache)
-4. **Configure SSL** e certificados
-5. **Configure monitoramento** e logs
+## 🚀 Deploy em Produção
 
-### Opções de Deploy
+### **Vercel (Recomendado)**
+1. Conecte o repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
 
-- **Vercel** - Deploy automático do Next.js
-- **Docker** - Containerização completa
-- **VPS** - Servidor virtual privado
-- **AWS/GCP/Azure** - Cloud providers
+### **Railway/Neon (Banco de Dados)**
+1. Crie uma instância PostgreSQL
+2. Configure a `DATABASE_URL`
+3. Execute as migrações
 
----
+### **AWS S3 (Storage)**
+1. Crie um bucket S3
+2. Configure as credenciais
+3. Ajuste as permissões
 
-## 🤝 Contribuição
+## 👥 Contribuição
 
-### Como Contribuir
-
-1. **Fork** o repositório
-2. **Crie uma branch** para sua feature (`git checkout -b feature/nova-feature`)
-3. **Commit** suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. **Push** para a branch (`git push origin feature/nova-feature`)
-5. **Abra um Pull Request**
-
-### Padrões de Código
-
-- **ESLint** - Siga as regras de linting
-- **Prettier** - Formatação automática
-- **Conventional Commits** - Mensagens de commit padronizadas
-- **TypeScript** - Tipagem obrigatória
-- **Testes** - Cobertura mínima de 80%
-
-### Reportar Bugs
-
-- Use o sistema de **Issues** do GitHub
-- Inclua **logs** e **screenshots**
-- Descreva o **comportamento esperado**
-- Especifique a **versão** e **ambiente**
-
----
-
-## 📊 Status do Projeto
-
-### ✅ Funcionalidades Implementadas
-
-- [x] Sistema de autenticação
-- [x] Gerenciamento de usuários
-- [x] Cadastro de pacotes
-- [x] Sistema de consolidação
-- [x] Integração com pagamentos
-- [x] Dashboard administrativo
-- [x] API RESTful completa
-- [x] Sistema de notificações
-- [x] Upload de arquivos
-- [x] Relatórios e análises
-
-### 🚧 Em Desenvolvimento
-
-- [ ] App mobile (React Native)
-- [ ] Integração com mais transportadoras
-- [ ] Sistema de chat em tempo real
-- [ ] Analytics avançados
-- [ ] Integração com marketplaces
-
-### 📋 Roadmap
-
-- **Q1 2024** - Melhorias na UX/UI
-- **Q2 2024** - App mobile
-- **Q3 2024** - Integrações avançadas
-- **Q4 2024** - IA para otimização de rotas
-
----
-
-## 📞 Suporte
-
-### Canais de Suporte
-
-- **Email** - suporte@euaconecta.com
-- **Chat** - Sistema integrado na plataforma
-- **Tickets** - Sistema de suporte interno
-- **Documentação** - Guias e tutoriais
-
-### Horário de Atendimento
-
-- **Segunda a Sexta** - 9h às 18h (Brasil)
-- **Sábado** - 9h às 12h (Brasil)
-- **Emergências** - 24/7 via chat
-
----
+1. **Fork** o projeto
+2. **Crie** uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** para a branch (`git push origin feature/AmazingFeature`)
+5. **Abra** um Pull Request
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-### Resumo da Licença
+## 🆘 Suporte
 
-- ✅ **Uso comercial** permitido
-- ✅ **Modificação** permitida
-- ✅ **Distribuição** permitida
-- ✅ **Uso privado** permitido
-- ❌ **Responsabilidade** não garantida
+- **Email**: support@euaconecta.com
+- **Documentação**: [docs/](docs/)
+- **Issues**: [GitHub Issues](https://github.com/viniciussvasques/euaconecta-plataforma/issues)
 
 ---
 
-## 🙏 Agradecimentos
-
-- **Next.js Team** - Framework incrível
-- **Vercel** - Plataforma de deploy
-- **Prisma** - ORM moderno
-- **TailwindCSS** - Framework CSS
-- **Comunidade Open Source** - Contribuições valiosas
-
----
-
-## 📈 Métricas
-
-![GitHub stars](https://img.shields.io/github/stars/seu-usuario/euaconecta-platform?style=social)
-![GitHub forks](https://img.shields.io/github/forks/seu-usuario/euaconecta-platform?style=social)
-![GitHub issues](https://img.shields.io/github/issues/seu-usuario/euaconecta-platform)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/seu-usuario/euaconecta-platform)
-
----
-
-**Desenvolvido com ❤️ pela equipe Euaconecta**
-
-*Última atualização: Janeiro 2024*
+**Desenvolvido com ❤️ para conectar o Brasil aos EUA**
