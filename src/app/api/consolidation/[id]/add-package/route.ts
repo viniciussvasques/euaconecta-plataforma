@@ -1,0 +1,56 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { consolidationService } from '@/lib/consolidation'
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID da consolidação é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    const body = await request.json()
+    const { packageId, weightGrams, weighedBy, weightNotes } = body
+
+    if (!packageId || weightGrams === undefined || !weighedBy) {
+      return NextResponse.json(
+        { success: false, error: 'Dados obrigatórios: packageId, weightGrams, weighedBy' },
+        { status: 400 }
+      )
+    }
+
+    const updatedConsolidation = await consolidationService.addPackageToBox({
+      consolidationId: id,
+      packageId,
+      weightGrams,
+      weighedBy,
+      weightNotes
+    })
+    
+    if (!updatedConsolidation) {
+      return NextResponse.json(
+        { success: false, error: 'Erro ao adicionar pacote à caixa' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: updatedConsolidation,
+      message: 'Pacote adicionado à caixa com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao adicionar pacote à caixa:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { PlatformConfig } from '@/lib/platform-config'
+
+export async function PUT(request: NextRequest) {
+  try {
+    const data = await request.json()
+    // Atualização parcial: validar apenas tipos básicos quando enviados (validações adicionais podem ser aplicadas no form)
+
+    const updatedConfig = await PlatformConfig.update(data)
+    return NextResponse.json({ success: true, data: updatedConfig })
+  } catch (error) {
+    console.error('Erro ao atualizar configuração:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+export async function GET() {
+  try {
+    const config = await PlatformConfig.load()
+    
+    return NextResponse.json({
+      success: true,
+      data: config
+    })
+  } catch (error) {
+    console.error('Erro ao carregar configuração:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

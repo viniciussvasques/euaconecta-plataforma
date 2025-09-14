@@ -1,0 +1,88 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    // Buscar pacotes
+    const packages = await prisma.package.findMany({
+      where: { ownerId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    })
+
+    // Buscar consolidações
+    const consolidations = await prisma.consolidationGroup.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    })
+
+    // Buscar pagamentos
+    const payments = await prisma.payment.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    })
+
+    // Buscar envios
+    const shipments = await prisma.shipment.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    })
+
+    // Converter para formato unificado
+    const history = [
+      ...packages.map(pkg => ({
+        id: pkg.id,
+        type: 'package' as const,
+        title: `Pacote: ${pkg.description || 'Sem descrição'}`,
+        description: `Pedido: ${pkg.orderNumber || 'N/A'} - ${pkg.store || 'Loja não informada'}`,
+        status: pkg.status,
+        date: pkg.createdAt.toISOString(),
+        amount: pkg.purchasePrice ? Number(pkg.purchasePrice) : undefined
+      })),
+      ...consolidations.map(cons => ({
+        id: cons.id,
+        type: 'consolidation' as const,
+        title: `Consolidação ${cons.consolidationType}`,
+        description: `Status: ${cons.status}`,
+        status: cons.status,
+        date: cons.createdAt.toISOString()
+      })),
+      ...payments.map(payment => ({
+        id: payment.id,
+        type: 'payment' as const,
+        title: `Pagamento ${payment.providerCode}`,
+        description: `Status: ${payment.status}`,
+        status: payment.status,
+        date: payment.createdAt.toISOString(),
+        amount: payment.amountCents / 100
+      })),
+      ...shipments.map(shipment => ({
+        id: shipment.id,
+        type: 'shipment' as const,
+        title: `Envio ${shipment.trackingOut || 'Sem rastreamento'}`,
+        description: `Status: ${shipment.status} - ${shipment.outboundCarrier || 'Transportadora não informada'}`,
+        status: shipment.status,
+        date: shipment.createdAt.toISOString()
+      }))
+    ]
+
+    // Ordenar por data (mais recente primeiro)
+    history.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    return NextResponse.json({ success: true, data: history })
+  } catch (error) {
+    console.error('Erro ao buscar histórico do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

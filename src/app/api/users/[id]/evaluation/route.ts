@@ -1,0 +1,210 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/session'
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    const evaluation = await prisma.userEvaluation.findFirst({
+      where: { userId: id },
+      orderBy: { evaluationDate: 'desc' }
+    })
+
+    if (!evaluation) {
+      return NextResponse.json({ success: true, data: null })
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      data: {
+        ...evaluation,
+        overallScore: Number(evaluation.overallScore)
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao buscar avaliação do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getSession()
+    if (!session?.userId) {
+      return NextResponse.json(
+        { success: false, error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await params
+    const body = await request.json()
+
+    const {
+      communicationScore,
+      punctualityScore,
+      packageCareScore,
+      cooperationScore,
+      problemResolutionScore,
+      loyaltyScore,
+      strengths,
+      weaknesses,
+      recommendations
+    } = body
+
+    // Validar scores (0-10)
+    const scores = [
+      communicationScore,
+      punctualityScore,
+      packageCareScore,
+      cooperationScore,
+      problemResolutionScore,
+      loyaltyScore
+    ]
+
+    if (scores.some(score => score < 0 || score > 10)) {
+      return NextResponse.json(
+        { success: false, error: 'Scores devem estar entre 0 e 10' },
+        { status: 400 }
+      )
+    }
+
+    // Calcular nota geral
+    const overallScore = scores.reduce((sum, score) => sum + score, 0) / scores.length
+
+    const evaluation = await prisma.userEvaluation.create({
+      data: {
+        userId: id,
+        communicationScore,
+        punctualityScore,
+        packageCareScore,
+        cooperationScore,
+        problemResolutionScore,
+        loyaltyScore,
+        overallScore,
+        strengths,
+        weaknesses,
+        recommendations,
+        evaluatedBy: session?.userId
+      }
+    })
+
+    return NextResponse.json({ 
+      success: true, 
+      data: {
+        ...evaluation,
+        overallScore: Number(evaluation.overallScore)
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao criar avaliação do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getSession()
+    if (!session?.userId) {
+      return NextResponse.json(
+        { success: false, error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await params
+    const body = await request.json()
+
+    const {
+      communicationScore,
+      punctualityScore,
+      packageCareScore,
+      cooperationScore,
+      problemResolutionScore,
+      loyaltyScore,
+      strengths,
+      weaknesses,
+      recommendations
+    } = body
+
+    // Validar scores (0-10)
+    const scores = [
+      communicationScore,
+      punctualityScore,
+      packageCareScore,
+      cooperationScore,
+      problemResolutionScore,
+      loyaltyScore
+    ]
+
+    if (scores.some(score => score < 0 || score > 10)) {
+      return NextResponse.json(
+        { success: false, error: 'Scores devem estar entre 0 e 10' },
+        { status: 400 }
+      )
+    }
+
+    // Calcular nota geral
+    const overallScore = scores.reduce((sum, score) => sum + score, 0) / scores.length
+
+    const evaluation = await prisma.userEvaluation.updateMany({
+      where: { userId: id },
+      data: {
+        communicationScore,
+        punctualityScore,
+        packageCareScore,
+        cooperationScore,
+        problemResolutionScore,
+        loyaltyScore,
+        overallScore,
+        strengths,
+        weaknesses,
+        recommendations,
+        evaluatedBy: session?.userId
+      }
+    })
+
+    if (evaluation.count === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Avaliação não encontrada' },
+        { status: 404 }
+      )
+    }
+
+    // Buscar a avaliação atualizada
+    const updatedEvaluation = await prisma.userEvaluation.findFirst({
+      where: { userId: id },
+      orderBy: { evaluationDate: 'desc' }
+    })
+
+    return NextResponse.json({ 
+      success: true, 
+      data: {
+        ...updatedEvaluation,
+        overallScore: Number(updatedEvaluation?.overallScore)
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao atualizar avaliação do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

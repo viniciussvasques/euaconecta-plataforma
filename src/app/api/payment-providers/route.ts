@@ -1,0 +1,20 @@
+import { NextResponse } from 'next/server'
+import { PaymentProviderService } from '@/lib/payment-providers'
+
+export async function GET() {
+  try {
+    const paymentProviderService = new PaymentProviderService()
+    const providers = await paymentProviderService.getAll()
+
+    return NextResponse.json({
+      success: true,
+      providers
+    })
+  } catch (error) {
+    console.error('Erro ao buscar provedores de pagamento:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

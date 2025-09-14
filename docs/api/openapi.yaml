@@ -1,0 +1,1288 @@
+openapi: 3.0.3
+info:
+  title: Euaconecta Platform API
+  description: API RESTful para gerenciamento de pacotes, consolidações e operações logísticas
+  version: 1.0.0
+  contact:
+    name: Suporte Euaconecta
+    email: suporte@euaconecta.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desenvolvimento
+  - url: https://api.euaconecta.com
+    description: Servidor de produção
+
+security:
+  - sessionAuth: []
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - Autenticação
+      summary: Autentica um usuário
+      description: Autentica um usuário no sistema e retorna token de sessão
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: password123
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/register:
+    post:
+      tags:
+        - Autenticação
+      summary: Registra um novo usuário
+      description: Cria uma nova conta de usuário no sistema
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                  example: João Silva
+                email:
+                  type: string
+                  format: email
+                  example: joao@example.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: password123
+                role:
+                  type: string
+                  enum: [CLIENT, ADMIN]
+                  example: CLIENT
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/me:
+    get:
+      tags:
+        - Autenticação
+      summary: Retorna dados do usuário autenticado
+      description: Retorna informações do usuário atualmente autenticado
+      responses:
+        '200':
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/packages:
+    get:
+      tags:
+        - Pacotes
+      summary: Lista pacotes do usuário
+      description: Retorna lista de pacotes do usuário autenticado
+      parameters:
+        - name: status
+          in: query
+          description: Filtrar por status
+          schema:
+            type: string
+            enum: [RECEIVED, CONFIRMED, IN_CONSOLIDATION, CONSOLIDATED, SHIPPED]
+        - name: page
+          in: query
+          description: Número da página
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Itens por página
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Lista de pacotes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Package'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Pacotes
+      summary: Cria um novo pacote
+      description: Cria um novo pacote para o usuário autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePackageRequest'
+      responses:
+        '201':
+          description: Pacote criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Package'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/packages/{id}:
+    get:
+      tags:
+        - Pacotes
+      summary: Retorna dados de um pacote
+      description: Retorna informações detalhadas de um pacote específico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do pacote
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados do pacote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Package'
+        '404':
+          description: Pacote não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Pacotes
+      summary: Atualiza um pacote
+      description: Atualiza dados de um pacote existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do pacote
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePackageRequest'
+      responses:
+        '200':
+          description: Pacote atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Package'
+        '404':
+          description: Pacote não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/packages/{id}/confirm:
+    post:
+      tags:
+        - Pacotes
+      summary: Confirma recebimento de um pacote
+      description: Marca um pacote como confirmado pelo usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do pacote
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pacote confirmado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Pacote confirmado com sucesso
+
+  /api/consolidation:
+    get:
+      tags:
+        - Consolidação
+      summary: Lista consolidações do usuário
+      description: Retorna lista de consolidações do usuário autenticado
+      parameters:
+        - name: status
+          in: query
+          description: Filtrar por status
+          schema:
+            type: string
+            enum: [OPEN, PENDING, IN_PROGRESS, READY_TO_SHIP, SHIPPED, CANCELLED]
+        - name: page
+          in: query
+          description: Número da página
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Itens por página
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Lista de consolidações
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Consolidation'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Consolidação
+      summary: Cria uma nova consolidação
+      description: Cria uma nova consolidação para o usuário autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConsolidationRequest'
+      responses:
+        '201':
+          description: Consolidação criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Consolidation'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/consolidation/{id}:
+    get:
+      tags:
+        - Consolidação
+      summary: Retorna dados de uma consolidação
+      description: Retorna informações detalhadas de uma consolidação específica
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da consolidação
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados da consolidação
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Consolidation'
+        '404':
+          description: Consolidação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Consolidação
+      summary: Atualiza uma consolidação
+      description: Atualiza dados de uma consolidação existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da consolidação
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateConsolidationRequest'
+      responses:
+        '200':
+          description: Consolidação atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Consolidation'
+        '404':
+          description: Consolidação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Consolidação
+      summary: Remove uma consolidação
+      description: Remove uma consolidação do sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da consolidação
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Consolidação removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Consolidação removida com sucesso
+        '404':
+          description: Consolidação não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/consolidation/{id}/status:
+    put:
+      tags:
+        - Consolidação
+      summary: Atualiza status de uma consolidação
+      description: Atualiza o status de uma consolidação (admin apenas)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID da consolidação
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, IN_PROGRESS, SHIPPED, CANCELLED]
+                  example: IN_PROGRESS
+                trackingCode:
+                  type: string
+                  example: TRACK123456
+      responses:
+        '200':
+          description: Status atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Status atualizado com sucesso
+        '400':
+          description: Status inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/addresses:
+    get:
+      tags:
+        - Endereços
+      summary: Lista endereços do usuário
+      description: Retorna lista de endereços do usuário autenticado
+      responses:
+        '200':
+          description: Lista de endereços
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Address'
+
+    post:
+      tags:
+        - Endereços
+      summary: Cria um novo endereço
+      description: Cria um novo endereço para o usuário autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddressRequest'
+      responses:
+        '201':
+          description: Endereço criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Address'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/addresses/{id}:
+    get:
+      tags:
+        - Endereços
+      summary: Retorna dados de um endereço
+      description: Retorna informações detalhadas de um endereço específico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do endereço
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados do endereço
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Address'
+        '404':
+          description: Endereço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Endereços
+      summary: Atualiza um endereço
+      description: Atualiza dados de um endereço existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do endereço
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAddressRequest'
+      responses:
+        '200':
+          description: Endereço atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Address'
+        '404':
+          description: Endereço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Endereços
+      summary: Remove um endereço
+      description: Remove um endereço do sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do endereço
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Endereço removido com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Endereço removido com sucesso
+        '404':
+          description: Endereço não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/carriers:
+    get:
+      tags:
+        - Transportadoras
+      summary: Lista transportadoras
+      description: Retorna lista de todas as transportadoras
+      responses:
+        '200':
+          description: Lista de transportadoras
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Carrier'
+
+  /api/carriers/active:
+    get:
+      tags:
+        - Transportadoras
+      summary: Lista transportadoras ativas
+      description: Retorna lista de transportadoras ativas
+      responses:
+        '200':
+          description: Lista de transportadoras ativas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Carrier'
+
+  /api/freight/calculate:
+    get:
+      tags:
+        - Frete
+      summary: Calcula frete
+      description: Calcula o valor do frete para um envio
+      parameters:
+        - name: weight
+          in: query
+          required: true
+          description: Peso em gramas
+          schema:
+            type: integer
+            minimum: 1
+            example: 1000
+        - name: destination
+          in: query
+          required: true
+          description: Destino
+          schema:
+            type: string
+            example: SP
+        - name: serviceType
+          in: query
+          description: Tipo de serviço
+          schema:
+            type: string
+            enum: [STANDARD, EXPRESS, OVERNIGHT]
+            default: STANDARD
+      responses:
+        '200':
+          description: Cálculo do frete
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      cost:
+                        type: number
+                        format: float
+                        example: 15.99
+                      currency:
+                        type: string
+                        example: USD
+                      estimatedDays:
+                        type: integer
+                        example: 3
+                      carrier:
+                        type: string
+                        example: UPS
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Token de sessão obtido através do login
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cmfjo89ni0001omkkxndmuu77
+        name:
+          type: string
+          example: João Silva
+        email:
+          type: string
+          format: email
+          example: joao@example.com
+        role:
+          type: string
+          enum: [CLIENT, ADMIN]
+          example: CLIENT
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+
+    Package:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cmfjo89ni0001omkkxndmuu77
+        description:
+          type: string
+          example: iPhone 15 Pro
+        weightGrams:
+          type: integer
+          example: 187
+        purchasePrice:
+          type: number
+          format: float
+          example: 999.99
+        store:
+          type: string
+          example: Apple Store
+        orderNumber:
+          type: string
+          example: APL123456789
+        carrier:
+          type: string
+          example: UPS
+        declaredValue:
+          type: number
+          format: float
+          example: 999.99
+        packageType:
+          type: string
+          enum: [BOX, ENVELOPE, PACKAGE]
+          example: BOX
+        status:
+          type: string
+          enum: [RECEIVED, CONFIRMED, IN_CONSOLIDATION, CONSOLIDATED, SHIPPED]
+          example: RECEIVED
+        lengthCm:
+          type: integer
+          example: 15
+        widthCm:
+          type: integer
+          example: 8
+        heightCm:
+          type: integer
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+
+    CreatePackageRequest:
+      type: object
+      required:
+        - description
+        - weightGrams
+        - purchasePrice
+        - store
+        - orderNumber
+        - carrier
+        - declaredValue
+        - packageType
+        - lengthCm
+        - widthCm
+        - heightCm
+      properties:
+        description:
+          type: string
+          example: iPhone 15 Pro
+        weightGrams:
+          type: integer
+          minimum: 1
+          example: 187
+        purchasePrice:
+          type: number
+          format: float
+          minimum: 0
+          example: 999.99
+        store:
+          type: string
+          example: Apple Store
+        orderNumber:
+          type: string
+          example: APL123456789
+        carrier:
+          type: string
+          example: UPS
+        declaredValue:
+          type: number
+          format: float
+          minimum: 0
+          example: 999.99
+        packageType:
+          type: string
+          enum: [BOX, ENVELOPE, PACKAGE]
+          example: BOX
+        lengthCm:
+          type: integer
+          minimum: 1
+          example: 15
+        widthCm:
+          type: integer
+          minimum: 1
+          example: 8
+        heightCm:
+          type: integer
+          minimum: 1
+          example: 1
+
+    UpdatePackageRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          example: iPhone 15 Pro Max
+        weightGrams:
+          type: integer
+          minimum: 1
+          example: 221
+        purchasePrice:
+          type: number
+          format: float
+          minimum: 0
+          example: 1199.99
+        store:
+          type: string
+          example: Apple Store
+        orderNumber:
+          type: string
+          example: APL123456789
+        carrier:
+          type: string
+          example: UPS
+        declaredValue:
+          type: number
+          format: float
+          minimum: 0
+          example: 1199.99
+        packageType:
+          type: string
+          enum: [BOX, ENVELOPE, PACKAGE]
+          example: BOX
+        lengthCm:
+          type: integer
+          minimum: 1
+          example: 15
+        widthCm:
+          type: integer
+          minimum: 1
+          example: 8
+        heightCm:
+          type: integer
+          minimum: 1
+          example: 1
+
+    Consolidation:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cmfjo89ni0001omkkxndmuu77
+        name:
+          type: string
+          example: Consolidação Janeiro 2024
+        status:
+          type: string
+          enum: [OPEN, PENDING, IN_PROGRESS, READY_TO_SHIP, SHIPPED, CANCELLED]
+          example: PENDING
+        consolidationType:
+          type: string
+          enum: [SIMPLE, REPACK]
+          example: SIMPLE
+        consolidationFee:
+          type: number
+          format: float
+          example: 5.99
+        storageFee:
+          type: number
+          format: float
+          example: 2.99
+        finalWeightGrams:
+          type: integer
+          example: 500
+        trackingCode:
+          type: string
+          example: TRACK123456
+        customInstructions:
+          type: string
+          example: Manter etiquetas originais
+        packages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Package'
+        user:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+
+    CreateConsolidationRequest:
+      type: object
+      required:
+        - name
+        - consolidationType
+        - packageIds
+      properties:
+        name:
+          type: string
+          example: Consolidação Janeiro 2024
+        consolidationType:
+          type: string
+          enum: [SIMPLE, REPACK]
+          example: SIMPLE
+        packageIds:
+          type: array
+          items:
+            type: string
+          example: ["package_id_1", "package_id_2"]
+        customInstructions:
+          type: string
+          example: Manter etiquetas originais
+
+    UpdateConsolidationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Consolidação Janeiro 2024 - Atualizada
+        consolidationType:
+          type: string
+          enum: [SIMPLE, REPACK]
+          example: SIMPLE
+        customInstructions:
+          type: string
+          example: Manter etiquetas originais e adicionar proteção extra
+        finalWeightGrams:
+          type: integer
+          example: 500
+        trackingCode:
+          type: string
+          example: TRACK123456
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cmfjo89ni0001omkkxndmuu77
+        name:
+          type: string
+          example: Casa
+        street:
+          type: string
+          example: Rua das Flores, 123
+        city:
+          type: string
+          example: São Paulo
+        state:
+          type: string
+          example: SP
+        zipCode:
+          type: string
+          example: 01234-567
+        country:
+          type: string
+          example: Brasil
+        isDefault:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+
+    CreateAddressRequest:
+      type: object
+      required:
+        - name
+        - street
+        - city
+        - state
+        - zipCode
+        - country
+      properties:
+        name:
+          type: string
+          example: Casa
+        street:
+          type: string
+          example: Rua das Flores, 123
+        city:
+          type: string
+          example: São Paulo
+        state:
+          type: string
+          example: SP
+        zipCode:
+          type: string
+          example: 01234-567
+        country:
+          type: string
+          example: Brasil
+        isDefault:
+          type: boolean
+          example: false
+
+    UpdateAddressRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Casa - Atualizada
+        street:
+          type: string
+          example: Rua das Flores, 456
+        city:
+          type: string
+          example: São Paulo
+        state:
+          type: string
+          example: SP
+        zipCode:
+          type: string
+          example: 01234-567
+        country:
+          type: string
+          example: Brasil
+        isDefault:
+          type: boolean
+          example: true
+
+    Carrier:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cmfjo89ni0001omkkxndmuu77
+        name:
+          type: string
+          example: UPS
+        code:
+          type: string
+          example: UPS
+        isActive:
+          type: boolean
+          example: true
+        supportedServices:
+          type: array
+          items:
+            type: string
+          example: ["STANDARD", "EXPRESS", "OVERNIGHT"]
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 10
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Mensagem de erro específica
+        code:
+          type: string
+          example: ERROR_CODE
+        details:
+          type: object
+          example: {}
+
+tags:
+  - name: Autenticação
+    description: Endpoints para autenticação e gerenciamento de usuários
+  - name: Pacotes
+    description: Endpoints para gerenciamento de pacotes
+  - name: Consolidação
+    description: Endpoints para gerenciamento de consolidações
+  - name: Endereços
+    description: Endpoints para gerenciamento de endereços
+  - name: Transportadoras
+    description: Endpoints para gerenciamento de transportadoras
+  - name: Frete
+    description: Endpoints para cálculo de frete
+  - name: Pagamentos
+    description: Endpoints para processamento de pagamentos
+  - name: Relatórios
+    description: Endpoints para geração de relatórios
+  - name: Suporte
+    description: Endpoints para sistema de suporte
+  - name: Configurações
+    description: Endpoints para configurações da plataforma

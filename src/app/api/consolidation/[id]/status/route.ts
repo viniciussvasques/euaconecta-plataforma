@@ -1,0 +1,138 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { consolidationService } from '@/lib/consolidation'
+import { prisma } from '@/lib/prisma'
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const { status, trackingCode } = await request.json()
+    
+    // Validar status
+    if (!status || !['PENDING', 'IN_PROGRESS', 'SHIPPED', 'CANCELLED'].includes(status)) {
+      return NextResponse.json(
+        { success: false, error: 'Status inválido' },
+        { status: 400 }
+      )
+    }
+    
+    // Buscar dados da consolidação antes de atualizar
+    const consolidation = await prisma.consolidationGroup.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        packages: true
+      }
+    })
+
+    if (!consolidation) {
+      return NextResponse.json(
+        { success: false, error: 'Consolidação não encontrada' },
+        { status: 404 }
+      )
+    }
+
+    // Buscar endereço padrão do usuário
+    const defaultAddress = await prisma.address.findFirst({
+      where: {
+        userId: consolidation.userId,
+        isDefault: true
+      }
+    })
+    
+    // Atualizar status e código de rastreio se fornecido
+    await consolidationService.updateStatus(id, status as 'PENDING' | 'IN_PROGRESS' | 'SHIPPED' | 'CANCELLED', trackingCode)
+    
+    // Se o status for SHIPPED, atualizar ou criar um Shipment com as informações corretas
+    if (status === 'SHIPPED' && trackingCode) {
+      // Verificar se já existe um shipment para esta consolidação
+      const existingShipment = await prisma.shipment.findFirst({
+        where: {
+          packages: {
+            some: {
+              consolidationGroupId: id
+            }
+          }
+        }
+      })
+
+      if (existingShipment) {
+        // Atualizar o shipment existente
+        await prisma.shipment.update({
+          where: { id: existingShipment.id },
+          data: {
+            status: 'IN_TRANSIT',
+            trackingOut: trackingCode,
+            totalWeightGrams: consolidation.finalWeightGrams || consolidation.currentWeightGrams,
+            toName: defaultAddress?.name || consolidation.user.name,
+            toLine1: defaultAddress?.line1 || 'Endereço não informado',
+            toLine2: defaultAddress?.line2 || '',
+            toCity: defaultAddress?.city || 'Cidade',
+            toState: defaultAddress?.state || 'Estado',
+            toPostalCode: defaultAddress?.postalCode || '00000-000',
+            toCountry: defaultAddress?.country || 'BR',
+            toPhone: null,
+            toEmail: consolidation.user.email,
+            paymentProvider: 'stripe', // TODO: Buscar do pagamento real
+            paymentStatus: 'succeeded',
+            paymentAmount: (Number(consolidation.consolidationFee) + Number(consolidation.storageFee)).toString(),
+            updatedAt: new Date()
+          }
+        })
+      } else {
+        // Criar um novo shipment se não existir
+        await prisma.shipment.create({
+          data: {
+            userId: consolidation.userId,
+            status: 'IN_TRANSIT',
+            outboundCarrier: 'ABC Packet', // TODO: Permitir seleção da transportadora
+            outboundService: 'Standard',
+            trackingOut: trackingCode,
+            totalWeightGrams: consolidation.finalWeightGrams || consolidation.currentWeightGrams,
+            toName: defaultAddress?.name || consolidation.user.name,
+            toLine1: defaultAddress?.line1 || 'Endereço não informado',
+            toLine2: defaultAddress?.line2 || '',
+            toCity: defaultAddress?.city || 'Cidade',
+            toState: defaultAddress?.state || 'Estado',
+            toPostalCode: defaultAddress?.postalCode || '00000-000',
+            toCountry: defaultAddress?.country || 'BR',
+            toPhone: null,
+            toEmail: consolidation.user.email,
+            paymentProvider: 'stripe', // TODO: Buscar do pagamento real
+            paymentStatus: 'succeeded',
+            paymentAmount: (Number(consolidation.consolidationFee) + Number(consolidation.storageFee)).toString(),
+          }
+        })
+
+        // Associar os pacotes ao shipment
+        if (consolidation.packages.length > 0) {
+          await prisma.package.updateMany({
+            where: {
+              consolidationGroupId: id
+            },
+            data: {
+              shipmentId: (await prisma.shipment.findFirst({
+                where: { trackingOut: trackingCode },
+                orderBy: { createdAt: 'desc' }
+              }))?.id
+            }
+          })
+        }
+      }
+    }
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Status atualizado com sucesso'
+    })
+  } catch (error) {
+    console.error('Erro ao atualizar status da consolidação:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

@@ -1,0 +1,147 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { NotificationService } from '@/lib/notifications'
+import { NotificationType } from '@prisma/client'
+
+// GET /api/packages - Listar pacotes
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const filter = searchParams.get('filter') || 'all'
+    const userId = searchParams.get('userId')
+    const limit = searchParams.get('limit')
+
+    const where: Record<string, string | { in: string[] }> = {}
+    
+    if (userId) {
+      where.ownerId = userId
+    }
+    
+    if (filter !== 'all') {
+      where.status = filter
+    }
+
+    const packages = await prisma.package.findMany({
+      where,
+      include: {
+        owner: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      ...(limit && { take: parseInt(limit) }),
+    })
+
+    return NextResponse.json({ success: true, data: packages })
+  } catch (error) {
+    console.error('Erro ao buscar pacotes:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/packages - Criar novo pacote
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    
+    const {
+      ownerId,
+      description,
+      purchaseDate,
+      expectedDeliveryDate,
+      store,
+      orderNumber,
+      purchasePrice,
+      weightGrams,
+      notes,
+      // Novos campos
+      trackingIn,
+      carrier,
+      declaredValue,
+      packageType,
+      lengthCm,
+      widthCm,
+      heightCm,
+    } = body
+
+    // Validar campos obrigatórios
+    if (!ownerId || !description) {
+      return NextResponse.json(
+        { error: 'ID do proprietário e descrição são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar se o usuário existe
+    const user = await prisma.user.findUnique({
+      where: { id: ownerId },
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Usuário não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    const packageData = await prisma.package.create({
+      data: {
+        ownerId,
+        description,
+        purchaseDate: purchaseDate ? new Date(purchaseDate) : null,
+        expectedDeliveryDate: expectedDeliveryDate ? new Date(expectedDeliveryDate) : null,
+        store,
+        orderNumber,
+        purchasePrice: purchasePrice ? parseFloat(purchasePrice) : null,
+        weightGrams: weightGrams ? parseInt(weightGrams) : null,
+        notes,
+        // Novos campos
+        trackingIn,
+        carrier,
+        declaredValue: declaredValue ? parseFloat(declaredValue) : null,
+        packageType,
+        lengthCm: lengthCm ? parseInt(lengthCm) : null,
+        widthCm: widthCm ? parseInt(widthCm) : null,
+        heightCm: heightCm ? parseInt(heightCm) : null,
+        status: 'PENDING',
+      },
+      include: {
+        owner: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })
+
+    // Notificações: cliente e administradores
+    await NotificationService.create({
+      userId: ownerId,
+      type: NotificationType.IN_APP,
+      title: 'Pacote criado',
+      message: `Seu pacote "${description}" foi registrado e aguarda confirmação.`,
+    })
+    await NotificationService.notifyAdmins({
+      type: NotificationType.IN_APP,
+      title: 'Novo pacote pendente',
+      message: `Novo pacote criado por cliente (${packageData.owner?.name || 'Cliente'}) aguardando confirmação.`,
+    })
+
+    return NextResponse.json({ success: true, data: packageData }, { status: 201 })
+  } catch (error) {
+    console.error('Erro ao criar pacote:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

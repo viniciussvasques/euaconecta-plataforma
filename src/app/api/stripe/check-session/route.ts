@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { PaymentProviderService } from '@/lib/payment-providers'
+import Stripe from 'stripe'
+
+let stripe: Stripe | null = null
+
+async function getStripeInstance(): Promise<Stripe> {
+  if (stripe) return stripe
+
+  const paymentProviderService = new PaymentProviderService()
+  const stripeProvider = await paymentProviderService.getByCode('STRIPE')
+  
+  if (!stripeProvider || !stripeProvider.apiSecret) {
+    throw new Error('Credenciais do Stripe não configuradas no painel administrativo')
+  }
+
+  stripe = new Stripe(stripeProvider.apiSecret, {
+    apiVersion: '2025-08-27.basil',
+  })
+
+  return stripe
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const sessionId = searchParams.get('session_id')
+
+    if (!sessionId) {
+      return NextResponse.json(
+        { success: false, error: 'ID da sessão não fornecido' },
+        { status: 400 }
+      )
+    }
+
+    // Buscar informações da sessão do Stripe
+    const stripeInstance = await getStripeInstance()
+    const session = await stripeInstance.checkout.sessions.retrieve(sessionId)
+
+    return NextResponse.json({
+      success: true,
+      session: {
+        id: session.id,
+        payment_status: session.payment_status,
+        status: session.status,
+        metadata: session.metadata,
+        amount_total: session.amount_total,
+        currency: session.currency
+      }
+    })
+
+  } catch (error) {
+    console.error('Erro ao verificar sessão do Stripe:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

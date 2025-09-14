@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+// Criar nova mensagem
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { ticketId, content, isFromUser, userId } = body
+
+    if (!ticketId || !content || isFromUser === undefined) {
+      return NextResponse.json(
+        { success: false, error: 'Dados obrigatórios não fornecidos' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar se o ticket existe
+    const ticket = await prisma.supportTicket.findUnique({
+      where: { id: ticketId }
+    })
+
+    if (!ticket) {
+      return NextResponse.json(
+        { success: false, error: 'Ticket não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    // Criar mensagem
+    const message = await prisma.supportMessage.create({
+      data: {
+        ticketId,
+        content,
+        isFromUser,
+        userId: isFromUser ? userId : null
+      },
+      include: {
+        user: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
+
+    // Atualizar status do ticket se necessário
+    if (isFromUser && ticket.status === 'RESOLVED') {
+      await prisma.supportTicket.update({
+        where: { id: ticketId },
+        data: { status: 'IN_PROGRESS' }
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: message,
+      message: 'Mensagem enviada com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao criar mensagem:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

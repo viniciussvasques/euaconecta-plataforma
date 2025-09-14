@@ -1,0 +1,49 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { carrierService } from '@/lib/carriers'
+
+export async function GET() {
+  try {
+    const carriers = await carrierService.getAllActive()
+    
+    return NextResponse.json({
+      success: true,
+      data: carriers
+    })
+  } catch (error) {
+    console.error('Erro ao buscar transportadoras:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const data = await request.json()
+    
+    // Validar dados obrigatórios
+    if (!data.name || !data.code) {
+      return NextResponse.json(
+        { success: false, error: 'Nome e código são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Criar transportadora
+    const carrier = await carrierService.create(data)
+    
+    return NextResponse.json({
+      success: true,
+      data: carrier
+    }, { status: 201 })
+  } catch (error) {
+    console.error('Erro ao criar transportadora:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

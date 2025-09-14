@@ -1,0 +1,25 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { carrierIntegrationManager } from '@/lib/carrier-integrations/integration-manager'
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: carrierId } = await params
+
+    if (!carrierId) {
+      return NextResponse.json({ success: false, error: 'ID da transportadora é obrigatório' }, { status: 400 })
+    }
+
+    const result = await carrierIntegrationManager.testCarrierConnection(carrierId)
+
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('Erro ao testar conexão da transportadora:', error)
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Erro interno do servidor' 
+    }, { status: 500 })
+  }
+}

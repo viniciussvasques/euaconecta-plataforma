@@ -1,0 +1,135 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { UserService } from '@/lib/users'
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    const body = await request.json()
+    const { name, role, isActive, cpf, phone, ...permissions } = body
+
+    // Para atualizações de perfil do cliente, não validar role obrigatório
+    if (cpf || phone) {
+      // Atualização de perfil do cliente
+      const updatedUser = await UserService.updateUser(id, {
+        cpf,
+        phone,
+        ...(name && { name })
+      })
+      
+      return NextResponse.json({
+        success: true,
+        data: updatedUser,
+        message: 'Perfil atualizado com sucesso'
+      })
+    }
+
+    // Para atualizações administrativas, validar dados obrigatórios
+    if (!name || !role) {
+      return NextResponse.json(
+        { success: false, error: 'Nome e role são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    const updatedUser = await UserService.updateUser(id, {
+      name,
+      role,
+      isActive,
+      ...permissions
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: updatedUser,
+      message: 'Usuário atualizado com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    const user = await UserService.getUserById(id)
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Usuário não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: user
+    })
+
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    await UserService.deleteUser(id)
+
+    return NextResponse.json({
+      success: true,
+      message: 'Usuário deletado com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao deletar usuário:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

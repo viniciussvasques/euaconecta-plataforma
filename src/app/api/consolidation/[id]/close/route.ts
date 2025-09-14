@@ -1,0 +1,100 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { EmailService } from '@/lib/email'
+
+// POST /api/consolidation/[id]/close - Fechar caixa
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: consolidationId } = await params
+
+    // Verificar se a caixa existe
+    const consolidation = await prisma.consolidationGroup.findUnique({
+      where: { id: consolidationId },
+      include: {
+        packages: true,
+        user: true
+      }
+    })
+
+    if (!consolidation) {
+      return NextResponse.json(
+        { success: false, error: 'Caixa não encontrada' },
+        { status: 404 }
+      )
+    }
+
+    if (consolidation.status !== 'OPEN') {
+      return NextResponse.json(
+        { success: false, error: 'Caixa já está fechada ou em processo' },
+        { status: 400 }
+      )
+    }
+
+    if (consolidation.packages.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Caixa deve ter pelo menos um pacote para ser fechada' },
+        { status: 400 }
+      )
+    }
+
+    const body = await request.json().catch(() => ({} as { status?: string; trackingCode?: string }))
+    const trackingCode: string | undefined = body?.trackingCode
+    const finalWeightGrams: number | undefined = body?.finalWeightGrams
+
+    // Fechar a caixa
+    const updatedConsolidation = await prisma.consolidationGroup.update({
+      where: { id: consolidationId },
+      data: {
+        status: 'READY_TO_SHIP',
+        finalWeightGrams: typeof finalWeightGrams === 'number' && finalWeightGrams > 0 ? finalWeightGrams : consolidation.currentWeightGrams,
+        trackingCode: trackingCode || consolidation.trackingCode,
+        updatedAt: new Date()
+      },
+      include: {
+        packages: {
+          select: {
+            id: true,
+            description: true,
+            status: true,
+            weightGrams: true,
+            purchasePrice: true,
+            store: true,
+            orderNumber: true,
+          }
+        },
+        user: true
+      }
+    })
+
+    // Enviar e-mail de pacote enviado se tiver tracking code
+    if (trackingCode && process.env.EMAIL_NOTIFICATIONS !== 'false') {
+      try {
+        const trackingLink = `https://www.abcpacket.com/track/${trackingCode}`
+        const email = EmailService.packageShippedEmail(
+          consolidation.user.name,
+          consolidation.user.email,
+          trackingCode,
+          trackingLink
+        )
+        await EmailService.sendMail(email)
+      } catch (e) {
+        console.error('Falha ao enviar email de pacote enviado:', e)
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: updatedConsolidation,
+      message: 'Caixa fechada com sucesso'
+    })
+  } catch (error) {
+    console.error('Erro ao fechar caixa:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

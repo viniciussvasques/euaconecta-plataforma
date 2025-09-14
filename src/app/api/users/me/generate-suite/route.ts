@@ -1,0 +1,34 @@
+import { NextResponse } from 'next/server'
+import { UserService } from '@/lib/users'
+import { getSession } from '@/lib/session'
+
+export async function POST() {
+  try {
+    const session = await getSession()
+    
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Não autorizado' },
+        { status: 401 }
+      )
+    }
+
+    const updatedUser = await UserService.generateSuiteForClient(session.userId)
+
+    return NextResponse.json({
+      success: true,
+      data: updatedUser,
+      message: 'Suite gerada com sucesso'
+    })
+  } catch (error) {
+    console.error('Erro ao gerar suite:', error)
+    
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erro interno do servidor' 
+      },
+      { status: 500 }
+    )
+  }
+}

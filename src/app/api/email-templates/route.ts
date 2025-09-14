@@ -1,0 +1,121 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+// Buscar todos os templates
+export async function GET() {
+  try {
+    const templates = await prisma.emailTemplate.findMany({
+      orderBy: { type: 'asc' }
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: templates
+    })
+
+  } catch (error) {
+    console.error('Erro ao buscar templates:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// Criar ou atualizar template
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, name, subject, content, type, isActive } = body
+
+    if (!id || !name || !subject || !content || !type) {
+      return NextResponse.json(
+        { success: false, error: 'Dados obrigatórios não fornecidos' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar se o template existe
+    const existingTemplate = await prisma.emailTemplate.findUnique({
+      where: { id }
+    })
+
+    let template
+    if (existingTemplate) {
+      // Atualizar template existente
+      template = await prisma.emailTemplate.update({
+        where: { id },
+        data: {
+          name,
+          subject,
+          content,
+          isActive: isActive ?? true,
+          updatedAt: new Date()
+        }
+      })
+    } else {
+      // Criar novo template
+      template = await prisma.emailTemplate.create({
+        data: {
+          id,
+          name,
+          subject,
+          content,
+          type,
+          isActive: isActive ?? true
+        }
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: template,
+      message: existingTemplate ? 'Template atualizado com sucesso' : 'Template criado com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao salvar template:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// Criar template
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { name, subject, content, type, isActive } = body
+
+    if (!name || !subject || !content || !type) {
+      return NextResponse.json(
+        { success: false, error: 'Dados obrigatórios não fornecidos' },
+        { status: 400 }
+      )
+    }
+
+    const template = await prisma.emailTemplate.create({
+      data: {
+        name,
+        subject,
+        content,
+        type,
+        isActive: isActive ?? true
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: template,
+      message: 'Template criado com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao criar template:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

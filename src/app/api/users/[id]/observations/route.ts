@@ -1,0 +1,72 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getSession } from '@/lib/session'
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    const observations = await prisma.userObservation.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return NextResponse.json({ success: true, data: observations })
+  } catch (error) {
+    console.error('Erro ao buscar observações do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getSession()
+    if (!session?.userId) {
+      return NextResponse.json(
+        { success: false, error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await params
+    const body = await request.json()
+
+    const { title, content, category, priority, isPrivate } = body
+
+    if (!title?.trim() || !content?.trim()) {
+      return NextResponse.json(
+        { success: false, error: 'Título e conteúdo são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    const observation = await prisma.userObservation.create({
+      data: {
+        userId: id,
+        title: title.trim(),
+        content: content.trim(),
+        category: category || 'GENERAL',
+        priority: priority || 'MEDIUM',
+        isPrivate: isPrivate !== false,
+        createdBy: session?.userId
+      }
+    })
+
+    return NextResponse.json({ success: true, data: observation })
+  } catch (error) {
+    console.error('Erro ao criar observação do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

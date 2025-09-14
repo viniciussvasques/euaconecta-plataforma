@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { EmailService } from '@/lib/email'
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const token = searchParams.get('token')
+
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Token ausente' }, { status: 400 })
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        activationToken: token,
+        activationTokenExpires: { gt: new Date() }
+      }
+    })
+
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'Token inválido ou expirado' }, { status: 400 })
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isActive: true,
+        activationToken: null,
+        activationTokenExpires: null
+      }
+    })
+
+    // Enviar e-mail de boas-vindas
+    try {
+      if (process.env.EMAIL_NOTIFICATIONS !== 'false') {
+        const welcome = EmailService.welcomeEmail(user.name, user.email)
+        await EmailService.sendMail(welcome)
+      }
+    } catch (e) {
+      console.error('Falha ao enviar email de boas-vindas:', e)
+    }
+
+    // Redirecionar para a página de sucesso
+    const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/auth/activated`
+    return NextResponse.redirect(redirectUrl)
+  } catch (error) {
+    console.error('Erro ao ativar conta:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+

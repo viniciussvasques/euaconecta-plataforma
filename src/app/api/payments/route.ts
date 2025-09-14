@@ -1,0 +1,95 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+// GET /api/payments - Listar pagamentos
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('userId')
+    const status = searchParams.get('status')
+    const limit = searchParams.get('limit')
+
+    const where: Record<string, string | { in: string[] }> = {}
+    
+    if (userId) {
+      where.userId = userId
+    }
+    
+    if (status) {
+      where.status = status
+    }
+
+    const payments = await prisma.payment.findMany({
+      where,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      ...(limit && { take: parseInt(limit) }),
+    })
+
+    return NextResponse.json({ success: true, data: payments })
+  } catch (error) {
+    console.error('Erro ao buscar pagamentos:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/payments - Criar novo pagamento
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    
+    const {
+      userId,
+      amountCents,
+      currency,
+      provider,
+      intentId,
+      description,
+      receiptUrl,
+    } = body
+
+    // Validar campos obrigatórios
+    if (!userId || !amountCents || !provider) {
+      return NextResponse.json(
+        { success: false, error: 'Usuário, valor e provedor são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar se o usuário existe
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Usuário não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId,
+        amountCents: parseInt(amountCents),
+        currency: currency || 'USD',
+        providerCode: provider,
+        intentId: intentId || '',
+        receiptUrl: receiptUrl || null,
+        status: 'pending',
+      },
+    })
+
+    return NextResponse.json({ success: true, data: payment }, { status: 201 })
+  } catch (error) {
+    console.error('Erro ao criar pagamento:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

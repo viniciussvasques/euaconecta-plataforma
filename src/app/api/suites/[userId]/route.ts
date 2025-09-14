@@ -1,0 +1,76 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { SuiteManager } from '@/lib/suite-manager'
+import { getSession } from '@/lib/session'
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  try {
+    const session = await getSession()
+    if (!session?.userId) {
+      return NextResponse.json(
+        { success: false, error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    const { userId } = await params
+    const body = await request.json()
+    const { suiteNumber } = body
+
+    if (suiteNumber) {
+      // Atribuir número específico
+      const success = await SuiteManager.assignSpecificSuiteNumber(userId, suiteNumber)
+      if (!success) {
+        return NextResponse.json(
+          { success: false, error: 'Número de suite já está em uso' },
+          { status: 400 }
+        )
+      }
+    } else {
+      // Atribuir próximo número disponível
+      await SuiteManager.assignSuiteNumber(userId)
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Suite atribuída com sucesso' 
+    })
+  } catch (error) {
+    console.error('Erro ao atribuir suite:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
+) {
+  try {
+    const session = await getSession()
+    if (!session?.userId) {
+      return NextResponse.json(
+        { success: false, error: 'Não autenticado' },
+        { status: 401 }
+      )
+    }
+
+    const { userId } = await params
+    await SuiteManager.removeSuiteNumber(userId)
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Suite removida com sucesso' 
+    })
+  } catch (error) {
+    console.error('Erro ao remover suite:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

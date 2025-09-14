@@ -1,0 +1,174 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { NotificationService } from '@/lib/notifications'
+import { NotificationType } from '@prisma/client'
+
+// POST /api/consolidation/[id]/consolidate - Consolidar caixa com itens adicionais
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: consolidationId } = await params
+    const body = await request.json()
+    
+    const {
+      extraProtection = [],
+      removeInvoice = false,
+      customInstructions = '',
+      doubleBox = false,
+      bubbleWrap = false,
+      additionalItems = [],
+      serviceType = 'STANDARD',
+      freightCalculation = null,
+      totalWeight = 0,
+      deliveryAddressId
+    } = body
+
+    // Verificar se a caixa existe e está pronta para consolidação
+    const consolidation = await prisma.consolidationGroup.findUnique({
+      where: { id: consolidationId },
+      include: {
+        packages: true
+      }
+    })
+
+    if (!consolidation) {
+      return NextResponse.json(
+        { success: false, error: 'Caixa não encontrada' },
+        { status: 404 }
+      )
+    }
+
+    if (consolidation.status !== 'READY_TO_SHIP') {
+      return NextResponse.json(
+        { success: false, error: 'Caixa deve estar fechada para ser consolidada' },
+        { status: 400 }
+      )
+    }
+
+    if (!deliveryAddressId) {
+      return NextResponse.json(
+        { success: false, error: 'Endereço de entrega é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar se o endereço pertence ao usuário
+    const address = await prisma.address.findFirst({
+      where: { 
+        id: deliveryAddressId,
+        userId: consolidation.userId
+      }
+    })
+
+    if (!address) {
+      return NextResponse.json(
+        { success: false, error: 'Endereço de entrega inválido' },
+        { status: 400 }
+      )
+    }
+
+    // Calcular custos adicionais
+    let additionalCosts = 0
+    
+    // Custo da caixa dupla
+    if (doubleBox) {
+      additionalCosts += 5.00 // $5.00 para caixa dupla
+    }
+    
+    // Custo do plástico bolha
+    if (bubbleWrap) {
+      additionalCosts += 3.00 // $3.00 para plástico bolha
+    }
+    
+    // Custos dos itens adicionais
+    additionalItems.forEach((item: { price?: string }) => {
+      if (item.price) {
+        additionalCosts += parseFloat(item.price)
+      }
+    })
+
+    // Calcular frete se não foi fornecido
+    let freightData = freightCalculation
+    if (!freightData && totalWeight > 0) {
+      const freightResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/freight/calculate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          weightGrams: totalWeight,
+          serviceType: serviceType
+        })
+      })
+
+      if (freightResponse.ok) {
+        const freightResult = await freightResponse.json()
+        freightData = freightResult.data
+      }
+    }
+
+    // Atualizar a consolidação com os itens adicionais
+    const updatedConsolidation = await prisma.consolidationGroup.update({
+      where: { id: consolidationId },
+      data: {
+        status: 'IN_PROGRESS',
+        extraProtection: extraProtection,
+        removeInvoice: removeInvoice,
+        customInstructions: customInstructions,
+        finalWeightGrams: totalWeight,
+        updatedAt: new Date()
+      },
+      include: {
+        packages: {
+          select: {
+            id: true,
+            description: true,
+            status: true,
+            weightGrams: true,
+            purchasePrice: true,
+            store: true,
+            orderNumber: true,
+          }
+        }
+      }
+    })
+
+    // Calcular custo total
+    const freightCost = freightData?.pricing?.finalPrice || 0
+    const totalCost = Number(consolidation.consolidationFee) + Number(consolidation.storageFee) + additionalCosts + freightCost
+
+    // Notificar o usuário sobre a consolidação e estimativa de frete
+    await NotificationService.create({
+      userId: consolidation.userId,
+      type: NotificationType.IN_APP,
+      title: 'Caixa consolidada',
+      message: `Sua caixa foi consolidada. Custos adicionais: $${additionalCosts.toFixed(2)} • Frete estimado: $${freightCost.toFixed(2)} • Total: $${totalCost.toFixed(2)}`,
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        consolidation: updatedConsolidation,
+        freight: freightData,
+        additionalCosts: additionalCosts,
+        totalCost: totalCost,
+        breakdown: {
+          consolidationFee: Number(consolidation.consolidationFee),
+          storageFee: Number(consolidation.storageFee),
+          additionalCosts: additionalCosts,
+          freightCost: freightCost,
+          total: totalCost
+        }
+      },
+      message: 'Caixa consolidada com sucesso'
+    })
+  } catch (error) {
+    console.error('Erro ao consolidar caixa:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

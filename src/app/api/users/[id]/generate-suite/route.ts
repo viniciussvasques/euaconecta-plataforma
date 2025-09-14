@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { UserService } from '@/lib/users'
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID do usuário é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    const updatedUser = await UserService.generateSuiteForClient(id)
+
+    return NextResponse.json({
+      success: true,
+      data: updatedUser,
+      message: 'Suite gerada com sucesso'
+    })
+  } catch (error) {
+    console.error('Erro ao gerar suite:', error)
+    
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erro interno do servidor' 
+      },
+      { status: 500 }
+    )
+  }
+}

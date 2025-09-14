@@ -1,0 +1,82 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { UserService } from '@/lib/users'
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { name, email, password, role, ...permissions } = body
+
+    // Validar dados obrigatórios
+    if (!name || !email || !password || !role) {
+      return NextResponse.json(
+        { success: false, error: 'Nome, email, senha e role são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Validar formato do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, error: 'Formato de email inválido' },
+        { status: 400 }
+      )
+    }
+
+    // Validar senha
+    if (password.length < 6) {
+      return NextResponse.json(
+        { success: false, error: 'A senha deve ter pelo menos 6 caracteres' },
+        { status: 400 }
+      )
+    }
+
+    const user = await UserService.createUser({
+      name,
+      email,
+      password,
+      role,
+      ...permissions
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: user,
+      message: 'Usuário criado com sucesso'
+    })
+
+  } catch (error: unknown) {
+    console.error('Erro ao criar usuário:', error)
+    
+    if ((error as Error)?.message === 'Email já está em uso') {
+      return NextResponse.json(
+        { success: false, error: 'Email já está em uso' },
+        { status: 409 }
+      )
+    }
+
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET() {
+  try {
+    const users = await UserService.getAllUsers()
+    
+    return NextResponse.json({
+      success: true,
+      data: users
+    })
+
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

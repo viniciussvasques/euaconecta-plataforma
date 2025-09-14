@@ -1,0 +1,177 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+// Buscar pacote por ID
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    const packageData = await prisma.package.findUnique({
+      where: { id },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        consolidationGroup: {
+          select: {
+            id: true,
+            name: true,
+            status: true
+          }
+        }
+      }
+    })
+
+    if (!packageData) {
+      return NextResponse.json(
+        { success: false, error: 'Pacote não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: packageData
+    })
+
+  } catch (error) {
+    console.error('Erro ao buscar pacote:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// Atualizar pacote
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const body = await request.json()
+
+    const {
+      description,
+      weightGrams,
+      purchasePrice,
+      store,
+      orderNumber,
+      trackingCode,
+      carrier,
+      declaredValue,
+      packageType,
+      lengthCm,
+      widthCm,
+      heightCm
+    } = body
+
+    // Verificar se o pacote existe
+    const existingPackage = await prisma.package.findUnique({
+      where: { id }
+    })
+
+    if (!existingPackage) {
+      return NextResponse.json(
+        { success: false, error: 'Pacote não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    // Atualizar o pacote
+    const updatedPackage = await prisma.package.update({
+      where: { id },
+      data: {
+        ...(description !== undefined && { description }),
+        ...(weightGrams !== undefined && { weightGrams }),
+        ...(purchasePrice !== undefined && { purchasePrice }),
+        ...(store !== undefined && { store }),
+        ...(orderNumber !== undefined && { orderNumber }),
+        ...(trackingCode !== undefined && { trackingCode }),
+        ...(carrier !== undefined && { carrier }),
+        ...(declaredValue !== undefined && { declaredValue }),
+        ...(packageType !== undefined && { packageType }),
+        ...(lengthCm !== undefined && { lengthCm }),
+        ...(widthCm !== undefined && { widthCm }),
+        ...(heightCm !== undefined && { heightCm }),
+        updatedAt: new Date()
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        consolidationGroup: {
+          select: {
+            id: true,
+            name: true,
+            status: true
+          }
+        }
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: updatedPackage,
+      message: 'Pacote atualizado com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao atualizar pacote:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+// Deletar pacote
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    // Verificar se o pacote existe
+    const existingPackage = await prisma.package.findUnique({
+      where: { id }
+    })
+
+    if (!existingPackage) {
+      return NextResponse.json(
+        { success: false, error: 'Pacote não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    // Deletar o pacote
+    await prisma.package.delete({
+      where: { id }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Pacote deletado com sucesso'
+    })
+
+  } catch (error) {
+    console.error('Erro ao deletar pacote:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
