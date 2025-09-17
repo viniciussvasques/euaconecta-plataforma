@@ -10,7 +10,7 @@ async function getStripeInstance(): Promise<Stripe> {
 
   const paymentProviderService = new PaymentProviderService()
   const stripeProvider = await paymentProviderService.getByCode('STRIPE')
-  
+
   if (!stripeProvider || !stripeProvider.apiSecret) {
     throw new Error('Credenciais do Stripe não configuradas no painel administrativo')
   }
@@ -32,9 +32,20 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId || !session.email) {
+    let userId: string | null = null
+    let email: string | null = null
+    try {
+      const payload = await (await import('@/lib/jwt')).verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+      email = String((payload as unknown as { email?: string }).email || '')
+    } catch {
+      try {
+        const legacy = JSON.parse(sessionCookie.value) as { userId?: string; email?: string }
+        userId = legacy.userId || null
+        email = legacy.email || null
+      } catch {}
+    }
+    if (!userId || !email) {
       return NextResponse.json(
         { success: false, error: 'Sessão inválida' },
         { status: 401 }
@@ -55,7 +66,7 @@ export async function POST(request: NextRequest) {
     const paymentIntentId = `cs_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const payment = await prisma.payment.create({
       data: {
-        userId: session.userId,
+        userId: userId,
         providerCode: 'STRIPE',
         intentId: paymentIntentId,
         currency: currency || 'USD',
@@ -83,9 +94,9 @@ export async function POST(request: NextRequest) {
       mode: 'payment',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/boxes/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/boxes?payment=cancelled`,
-      customer_email: session.email,
+      customer_email: email,
       metadata: {
-        userId: session.userId,
+        userId: userId,
         consolidationId: consolidationId || '',
         paymentId: payment.id,
         description: description || 'Consolidação de Pacotes',

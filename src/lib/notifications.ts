@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from '@/lib/prisma'
 import { NotificationType, NotificationStatus, UserRole } from '@prisma/client'
 
@@ -9,10 +10,31 @@ export type CreateNotificationInput = {
   data?: Record<string, unknown>
   isUrgent?: boolean
   expiresAt?: Date | null
+  actionUrl?: string
+  entityType?: string
+  entityId?: string
+  metadata?: Record<string, unknown>
 }
 
 export class NotificationService {
   static async create(input: CreateNotificationInput) {
+    // Verificar se já existe uma notificação similar recente (últimos 5 minutos)
+    const recentNotification = await prisma.notification.findFirst({
+      where: {
+        userId: input.userId,
+        title: input.title,
+        message: input.message,
+        createdAt: {
+          gte: new Date(Date.now() - 5 * 60 * 1000) // 5 minutos atrás
+        }
+      }
+    })
+
+    if (recentNotification) {
+      console.log('Notificação duplicada evitada:', input.title)
+      return recentNotification
+    }
+
     return prisma.notification.create({
       data: {
         userId: input.userId,
@@ -22,6 +44,10 @@ export class NotificationService {
         status: 'PENDING',
         isUrgent: Boolean(input.isUrgent),
         expiresAt: input.expiresAt ?? null,
+        actionUrl: input.actionUrl,
+        entityType: input.entityType,
+        entityId: input.entityId,
+        metadata: input.metadata ? JSON.stringify(input.metadata) : null,
       },
     })
   }
@@ -34,7 +60,7 @@ export class NotificationService {
     })
   }
 
-  static async markAsRead(id: string, userId: string) {
+  static async markAsRead(id: string, _userId: string) {
     return prisma.notification.update({
       where: { id },
       data: { status: 'READ', readAt: new Date() },
@@ -66,10 +92,13 @@ export class NotificationService {
             status: 'PENDING',
             isUrgent: Boolean(input.isUrgent),
             expiresAt: input.expiresAt ?? null,
+            actionUrl: input.actionUrl,
+            entityType: input.entityType,
+            entityId: input.entityId,
+            metadata: input.metadata ? JSON.stringify(input.metadata) : null,
           },
         })
       )
     )
   }
 }
-

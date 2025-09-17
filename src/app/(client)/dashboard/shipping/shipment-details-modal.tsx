@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X, Package, MapPin, Calendar, DollarSign, Truck, Eye, ExternalLink } from 'lucide-react'
-import { defaultTheme } from '@/lib/design-system'
+import { useState, useEffect, useCallback } from 'react'
+import { X, Package, MapPin, Calendar, DollarSign, Truck, ExternalLink } from 'lucide-react'
 
 interface ShipmentDetails {
   id: string
@@ -85,22 +84,16 @@ export function ShipmentDetailsModal({ shipmentId, isOpen, onClose }: ShipmentDe
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (isOpen && shipmentId) {
-      fetchShipmentDetails()
-    }
-  }, [isOpen, shipmentId])
-
-  const fetchShipmentDetails = async () => {
+  const fetchShipmentDetails = useCallback(async () => {
     if (!shipmentId) return
 
     setLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch(`/api/shipments/${shipmentId}`)
       const data = await response.json()
-      
+
       if (response.ok && data.success) {
         setShipment(data.data)
       } else {
@@ -112,18 +105,28 @@ export function ShipmentDetailsModal({ shipmentId, isOpen, onClose }: ShipmentDe
     } finally {
       setLoading(false)
     }
-  }
+  }, [shipmentId])
+
+  useEffect(() => {
+    if (isOpen && shipmentId) {
+      fetchShipmentDetails()
+    }
+  }, [isOpen, shipmentId, fetchShipmentDetails])
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'DRAFT':
-        return 'bg-gray-100 text-gray-800'
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800'
       case 'IN_TRANSIT':
         return 'bg-blue-100 text-blue-800'
       case 'DELIVERED':
         return 'bg-green-100 text-green-800'
       case 'CANCELLED':
         return 'bg-red-100 text-red-800'
+      case 'DRAFT':
+        return 'bg-gray-100 text-gray-800'
+      case 'PROCESSING':
+        return 'bg-purple-100 text-purple-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -131,14 +134,18 @@ export function ShipmentDetailsModal({ shipmentId, isOpen, onClose }: ShipmentDe
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'DRAFT':
-        return 'Rascunho'
+      case 'PENDING':
+        return 'Pendente'
       case 'IN_TRANSIT':
         return 'Em Trânsito'
       case 'DELIVERED':
         return 'Entregue'
       case 'CANCELLED':
         return 'Cancelado'
+      case 'DRAFT':
+        return 'Rascunho'
+      case 'PROCESSING':
+        return 'Processando'
       default:
         return status
     }
@@ -183,11 +190,11 @@ export function ShipmentDetailsModal({ shipmentId, isOpen, onClose }: ShipmentDe
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Backdrop */}
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-25 transition-opacity"
           onClick={onClose}
         />
-        
+
         {/* Modal */}
         <div className="relative w-full max-w-6xl bg-white rounded-lg shadow-xl">
           {/* Header */}
@@ -396,7 +403,7 @@ export function ShipmentDetailsModal({ shipmentId, isOpen, onClose }: ShipmentDe
                               </span>
                             </div>
                           </div>
-                          
+
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             {pkg.store && (
                               <div className="flex items-center">

@@ -1,29 +1,38 @@
 'use client'
 
 import { useState } from 'react'
-import jsPDF from 'jspdf'
-import JsBarcode from 'jsbarcode'
+import { LabelGenerator, type PackageLabelData } from '@/lib/labels'
 
-interface Package {
-  id: string
+interface FetchedUser {
+  id?: string
+  name?: string
+  email?: string
+  suiteNumber?: number | null
+}
+
+interface FetchedPackage {
+  id?: string
   description?: string
-  status: string
-  weightGrams: number
-  purchasePrice: number
-  store: string
-  orderNumber: string
-  trackingCode?: string
-  carrier?: string
-  declaredValue?: number
-  packageType?: string
-  lengthCm?: number
-  widthCm?: number
-  heightCm?: number
-  user: {
-    id: string
-    name: string
-    email: string
-  }
+  status?: string
+  weightGrams?: number | string | null
+  purchasePrice?: number | string | null
+  store?: string | null
+  orderNumber?: string | null
+  trackingCode?: string | null
+  carrier?: string | null
+  packageType?: string | null
+  lengthCm?: number | null
+  widthCm?: number | null
+  heightCm?: number | null
+  user?: FetchedUser
+  owner?: FetchedUser
+  userId?: string
+  suiteNumber?: number | null
+}
+
+interface UserApiResponse {
+  success: boolean
+  data?: { suiteNumber?: number | null }
 }
 
 interface PrintLabelButtonProps {
@@ -35,162 +44,91 @@ export function PrintLabelButton({ packageId }: PrintLabelButtonProps) {
 
   const generateLabel = async () => {
     setLoading(true)
-    
+
     try {
       // Buscar dados do pacote
       const response = await fetch(`/api/packages/${packageId}`)
       const data = await response.json()
-      
+
       if (!data.success) {
         alert('Erro ao carregar dados do pacote')
         return
       }
 
-      const packageData: Package = data.data
-      
-      // Criar PDF
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [100, 150] // Tamanho padrão de etiqueta
-      })
+      const packageData: FetchedPackage = data.data as FetchedPackage
+      const userObj: FetchedUser = (packageData.user || packageData.owner || {}) as FetchedUser
 
-      // Configurações
-      const pageWidth = pdf.internal.pageSize.getWidth()
-      const pageHeight = pdf.internal.pageSize.getHeight()
-      const margin = 5
-
-      // Cabeçalho
-      pdf.setFontSize(12)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('EUACONECTA', pageWidth / 2, 10, { align: 'center' })
-      
-      pdf.setFontSize(8)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text('Package Label', pageWidth / 2, 15, { align: 'center' })
-
-      // Linha separadora
-      pdf.setLineWidth(0.5)
-      pdf.line(margin, 18, pageWidth - margin, 18)
-
-      // Informações do pacote
-      let yPosition = 25
-      
-      pdf.setFontSize(10)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Package ID:', margin, yPosition)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(packageData.id.slice(-8), margin + 25, yPosition)
-      yPosition += 6
-
-      if (packageData.trackingCode) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('Tracking:', margin, yPosition)
-        pdf.setFont('helvetica', 'normal')
-        pdf.text(packageData.trackingCode, margin + 20, yPosition)
-        yPosition += 6
-      }
-
-      if (packageData.orderNumber) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('Order #:', margin, yPosition)
-        pdf.setFont('helvetica', 'normal')
-        pdf.text(packageData.orderNumber, margin + 20, yPosition)
-        yPosition += 6
-      }
-
-      if (packageData.store) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('Store:', margin, yPosition)
-        pdf.setFont('helvetica', 'normal')
-        pdf.text(packageData.store, margin + 15, yPosition)
-        yPosition += 6
-      }
-
-      // Descrição
-      if (packageData.description) {
-        pdf.setFont('helvetica', 'bold')
-        pdf.text('Description:', margin, yPosition)
-        yPosition += 4
-        
-        pdf.setFont('helvetica', 'normal')
-        pdf.setFontSize(8)
-        const descriptionLines = pdf.splitTextToSize(packageData.description, pageWidth - 2 * margin)
-        pdf.text(descriptionLines, margin, yPosition)
-        yPosition += descriptionLines.length * 3 + 2
-      }
-
-      // Dimensões e peso
-      yPosition += 3
-      pdf.setFontSize(9)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Dimensions & Weight:', margin, yPosition)
-      yPosition += 4
-
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(8)
-      
-      if (packageData.lengthCm && packageData.widthCm && packageData.heightCm) {
-        pdf.text(`${packageData.lengthCm} x ${packageData.widthCm} x ${packageData.heightCm} cm`, margin, yPosition)
-        yPosition += 3
-      }
-      
-      pdf.text(`Weight: ${packageData.weightGrams}g`, margin, yPosition)
-      yPosition += 3
-      
-      if (packageData.purchasePrice) {
-        pdf.text(`Value: $${packageData.purchasePrice.toFixed(2)}`, margin, yPosition)
-        yPosition += 3
-      }
-
-      // Informações do cliente
-      yPosition += 3
-      pdf.setFontSize(9)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Customer:', margin, yPosition)
-      yPosition += 4
-
-      pdf.setFont('helvetica', 'normal')
-      pdf.setFontSize(8)
-      pdf.text(packageData.user.name, margin, yPosition)
-      yPosition += 3
-      pdf.text(packageData.user.email, margin, yPosition)
-
-      // Status
-      yPosition += 6
-      pdf.setFontSize(9)
-      pdf.setFont('helvetica', 'bold')
-      pdf.text('Status:', margin, yPosition)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(packageData.status, margin + 15, yPosition)
-
-      // Código de barras (se houver tracking code)
-      if (packageData.trackingCode) {
+      // Tentar obter a suite caso não venha no payload do pacote
+      let suiteNumber: number | null = (userObj.suiteNumber ?? packageData.suiteNumber ?? null) as number | null
+      const resolvedUserId = String(userObj.id || packageData.userId || '')
+      if (suiteNumber == null && resolvedUserId) {
         try {
-          // Criar canvas para o código de barras
-          const canvas = document.createElement('canvas')
-          JsBarcode(canvas, packageData.trackingCode, {
-            format: 'CODE128',
-            width: 2,
-            height: 30,
-            displayValue: false
-          })
+          const uRes = await fetch(`/api/users/${resolvedUserId}`)
+          if (uRes.ok) {
+            const uData: UserApiResponse = await uRes.json()
+            if (uData.success && typeof uData.data?.suiteNumber !== 'undefined') {
+              suiteNumber = (uData.data?.suiteNumber ?? null) as number | null
+            }
+          }
+        } catch {}
+      }
 
-          // Adicionar código de barras ao PDF
-          const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, pageHeight - 25, pageWidth - 2 * margin, 15)
-        } catch (error) {
-          console.error('Erro ao gerar código de barras:', error)
+      const payload: PackageLabelData = {
+        packageId: String(packageData.id || packageId),
+        userId: resolvedUserId,
+        userName: String(userObj.name || 'Usuário'),
+        userEmail: String(userObj.email || ''),
+        suiteNumber,
+        cpf: null,
+        phone: null,
+        description: String(packageData.description || ''),
+        weightGrams: Number(packageData.weightGrams ?? NaN) || null,
+        purchasePrice: Number(packageData.purchasePrice ?? NaN) || null,
+        store: packageData.store ? String(packageData.store) : null,
+        orderNumber: packageData.orderNumber ? String(packageData.orderNumber) : null,
+        trackingIn: packageData.trackingCode ? String(packageData.trackingCode) : null,
+        carrier: packageData.carrier ? String(packageData.carrier) : null,
+        packageType: packageData.packageType ? String(packageData.packageType) : null,
+        confirmedAt: new Date(),
+        confirmedBy: 'Admin'
+      }
+
+      const blob = await LabelGenerator.generatePackageLabel(payload, '4x6')
+      const url = URL.createObjectURL(blob)
+
+      // Abrir janela dedicada e acionar o diálogo de impressão, sem fechar automaticamente
+      const printWin = window.open('', '_blank')
+      if (printWin) {
+        printWin.document.open()
+        printWin.document.write(`<!doctype html><html><head><title>Etiqueta</title></head>
+          <body style="margin:0">
+            <embed id="pdf" src="${url}" type="application/pdf" style="width:100%;height:100vh" />
+            <script>
+              const tryPrint = () => { try { window.focus(); window.print(); } catch(e){} }
+              window.addEventListener('load', () => setTimeout(tryPrint, 500))
+            <\/script>
+          </body></html>`)
+        printWin.document.close()
+        const timer = setInterval(() => {
+          if (printWin.closed) {
+            clearInterval(timer)
+            URL.revokeObjectURL(url)
+          }
+        }, 1000)
+      } else {
+        const iframe = document.createElement('iframe')
+        iframe.style.position = 'fixed'
+        iframe.style.right = '0'
+        iframe.style.bottom = '0'
+        iframe.style.width = '0'
+        iframe.style.height = '0'
+        iframe.style.border = '0'
+        iframe.src = url
+        document.body.appendChild(iframe)
+        iframe.onload = () => {
+          try { iframe.contentWindow?.focus(); iframe.contentWindow?.print() } catch {}
         }
       }
-
-      // Data de impressão
-      pdf.setFontSize(6)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(`Printed: ${new Date().toLocaleString('pt-BR')}`, margin, pageHeight - 5)
-
-      // Salvar PDF
-      pdf.save(`package-label-${packageData.id.slice(-8)}.pdf`)
 
     } catch (error) {
       console.error('Erro ao gerar etiqueta:', error)

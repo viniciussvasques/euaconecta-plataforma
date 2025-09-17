@@ -187,7 +187,7 @@ export function UserStats({ userId }: UserStatsProps) {
               <div className="ml-3">
                 <p className="text-sm font-medium text-emerald-600">Total Pago</p>
                 <p className="text-2xl font-bold text-emerald-900">
-                  ${stats.totalAmount.toFixed(2)}
+                  ${(stats.totalAmount || 0).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -217,7 +217,7 @@ export function UserStats({ userId }: UserStatsProps) {
               <div className="ml-3">
                 <p className="text-sm font-medium text-blue-600">Valor Médio</p>
                 <p className="text-2xl font-bold text-blue-900">
-                  ${stats.averagePackageValue.toFixed(2)}
+                  ${(stats.averagePackageValue || 0).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -233,7 +233,7 @@ export function UserStats({ userId }: UserStatsProps) {
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600">Último Pacote</p>
                 <p className="text-sm font-bold text-gray-900">
-                  {stats.lastPackageDate 
+                  {stats.lastPackageDate
                     ? new Date(stats.lastPackageDate).toLocaleDateString('pt-BR')
                     : 'N/A'
                   }

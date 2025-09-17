@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { storageService } from '@/lib/storage'
+import { verifyAccessToken } from '@/lib/jwt'
 
 export async function GET(request: NextRequest) {
   try {
     const sessionCookie = request.cookies.get('session')
     if (!sessionCookie) return NextResponse.json({ success: true, data: { remainingDays: 0, usedDays: 0, maxStorageDays: 0 } })
-    const session = JSON.parse(sessionCookie.value)
-    const userId = session?.userId
+    let userId: string | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+    } catch {
+      try { userId = JSON.parse(sessionCookie.value)?.userId || null } catch {}
+    }
     if (!userId) return NextResponse.json({ success: true, data: { remainingDays: 0, usedDays: 0, maxStorageDays: 0 } })
 
     // Carrega a política ATIVA diretamente do banco
@@ -39,5 +45,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
-

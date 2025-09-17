@@ -8,7 +8,7 @@ export class USPSIntegration extends BaseCarrierIntegration {
   protected async validateCredentials(): Promise<boolean> {
     try {
       // Teste básico de autenticação com USPS API
-      const response = await this.makeRequest('?API=TrackV2&XML=<TrackRequest USERID="' + this.apiKey + '"><TrackID ID="1Z999AA1234567890"></TrackID></TrackRequest>', {
+      await this.makeRequest('?API=TrackV2&XML=<TrackRequest USERID="' + this.apiKey + '"><TrackID ID="1Z999AA1234567890"></TrackID></TrackRequest>', {
         method: 'GET'
       })
       return true
@@ -41,12 +41,12 @@ export class USPSIntegration extends BaseCarrierIntegration {
       })
 
       const rates: CarrierRate[] = []
-      
+
       // Parse XML response (simplified)
       if ((response as unknown as string).includes('<RateV4Response>')) {
         const serviceMatch = (response as unknown as string).match(/<Service>([^<]+)<\/Service>/)
         const rateMatch = (response as unknown as string).match(/<Rate>([^<]+)<\/Rate>/)
-        
+
         if (serviceMatch && rateMatch) {
           rates.push({
             serviceType: serviceMatch[1],
@@ -107,7 +107,7 @@ export class USPSIntegration extends BaseCarrierIntegration {
       if ((response as unknown as string).includes('<eVSResponse>')) {
         const trackingMatch = (response as unknown as string).match(/<BarcodeNumber>([^<]+)<\/BarcodeNumber>/)
         const labelMatch = (response as unknown as string).match(/<Postnet>([^<]+)<\/Postnet>/)
-        
+
         if (trackingMatch) {
           return {
             success: true,
@@ -146,7 +146,7 @@ export class USPSIntegration extends BaseCarrierIntegration {
       if ((response as unknown as string).includes('<TrackResponse>')) {
         const statusMatch = (response as unknown as string).match(/<Status>([^<]+)<\/Status>/)
         const summaryMatch = (response as unknown as string).match(/<StatusSummary>([^<]+)<\/StatusSummary>/)
-        
+
         const events = []
         if (summaryMatch) {
           events.push({

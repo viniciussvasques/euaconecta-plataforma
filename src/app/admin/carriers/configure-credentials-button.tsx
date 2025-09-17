@@ -18,12 +18,12 @@ interface ConfigureCredentialsButtonProps {
   onCredentialsSaved: () => void
 }
 
-export function ConfigureCredentialsButton({ 
-  carrier, 
-  onCredentialsSaved 
+export function ConfigureCredentialsButton({
+  carrier,
+  onCredentialsSaved
 }: ConfigureCredentialsButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false) // Removido - não usado
 
   const handleSaveCredentials = async (credentials: {
     apiKey: string
@@ -32,7 +32,7 @@ export function ConfigureCredentialsButton({
     hasApi: boolean
   }) => {
     // setIsLoading(true)
-    
+
     try {
       const response = await fetch(`/api/carriers/${carrier.id}/credentials`, {
         method: 'PUT',

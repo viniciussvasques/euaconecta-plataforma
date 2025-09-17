@@ -81,7 +81,7 @@ export function UserObservations({ userId }: UserObservationsProps) {
       } else {
         setMessage({ type: 'error', text: data.error || 'Erro ao criar observação' })
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão' })
     }
   }
@@ -132,8 +132,8 @@ export function UserObservations({ userId }: UserObservationsProps) {
       {/* Mensagem de Status */}
       {message && (
         <div className={`p-4 rounded-md ${
-          message.type === 'success' 
-            ? 'bg-green-50 text-green-800 border border-green-200' 
+          message.type === 'success'
+            ? 'bg-green-50 text-green-800 border border-green-200'
             : 'bg-red-50 text-red-800 border border-red-200'
         }`}>
           {message.text}
@@ -158,7 +158,7 @@ export function UserObservations({ userId }: UserObservationsProps) {
       {isCreating && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Criar Nova Observação</h4>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Título</label>

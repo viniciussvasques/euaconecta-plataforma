@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * 🎨 SISTEMA DE PERSONALIZAÇÃO EUACONECTA
  * Configurações para personalização completa do sistema
@@ -55,6 +56,21 @@ export interface SystemCustomization {
         popular?: boolean
       }>
     }
+  }
+
+  // ================================
+  // 📞 CONTATO E REDES SOCIAIS
+  // ================================
+  contact: {
+    phone: string
+    email: string
+    address: string
+  }
+
+  socialMedia: {
+    whatsapp: string
+    facebook: string
+    instagram: string
   }
 
   // ================================
@@ -344,6 +360,18 @@ export const defaultCustomization: SystemCustomization = {
       enabled: false,
       plans: []
     }
+  },
+
+  contact: {
+    phone: '+55 (11) 99999-9999',
+    email: 'contato@euaconecta.com',
+    address: 'São Paulo, SP - Brasil'
+  },
+
+  socialMedia: {
+    whatsapp: 'https://wa.me/5511999999999',
+    facebook: 'https://facebook.com/euaconecta',
+    instagram: 'https://instagram.com/euaconecta'
   },
 
   clientDashboard: {

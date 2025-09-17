@@ -54,157 +54,129 @@ export interface ConsolidationLabelData {
 
 export class LabelGenerator {
   // Gerar etiqueta de pacote individual
-  static async generatePackageLabel(data: PackageLabelData): Promise<Blob> {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [100, 150] // Tamanho padrão de etiqueta
-    })
+  static async generatePackageLabel(data: PackageLabelData, size: '4x6' | '3x4' = '4x6'): Promise<Blob> {
+    // Formatos térmicos comuns (mm): 4x6" = 100x150, 3x4" = 76x101
+    const format = size === '4x6' ? [100, 150] : [76, 101]
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format })
 
-    // Configurações
-    const margin = 5
-    const lineHeight = 4
-    let yPosition = margin
-
-    // Função para adicionar texto
-    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
-      doc.setFontSize(fontSize)
-      if (isBold) {
-        doc.setFont('helvetica', 'bold')
-      } else {
-        doc.setFont('helvetica', 'normal')
-      }
-      doc.text(text, margin, yPosition)
-      yPosition += lineHeight
+    // Configurações de impressão térmica
+    const margin = 8
+    let y = margin + 2
+    const line = (yPos: number) => doc.line(margin, yPos, format[0] - margin, yPos)
+    const text = (t: string, fs = 9, bold = false) => {
+      doc.setTextColor(0)
+      doc.setFont('helvetica', bold ? 'bold' : 'normal')
+      doc.setFontSize(fs)
+      doc.text(t, margin, y)
+      y += Math.max(4, fs / 2)
     }
 
-    // Cabeçalho
-    addText('ETIQUETA DE PACOTE', 14, true)
-    addText('─'.repeat(20), 10)
-    yPosition += 2
+    // Topo: Suite grande e ID
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(26)
+    doc.text(`SUITE ${data.suiteNumber ?? 'N/A'}`, margin, y)
+    y += 9
+    doc.setFontSize(12)
+    doc.text(`PACOTE ${data.packageId}`, margin, y)
+    // Remover linha logo abaixo do cabeçalho e dar um respiro extra
+    y += 10
 
-    // Dados do usuário
-    addText('CLIENTE:', 10, true)
-    addText(data.userName, 10)
-    addText(`Suite: ${data.suiteNumber || 'N/A'}`, 9)
-    if (data.cpf) addText(`CPF: ${data.cpf}`, 9)
-    if (data.phone) addText(`Tel: ${data.phone}`, 9)
-    yPosition += 2
+    // De/Para simples (somente preto)
+    // Título de seção sem linha
+    text('PARA:', 11, true)
+    text(`${data.userName}`)
+    if (data.phone) text(`Tel: ${data.phone}`)
+    if (data.cpf) text(`CPF: ${data.cpf}`)
+    y += 1
 
-    // Dados do pacote
-    addText('PACOTE:', 10, true)
-    addText(data.description, 9)
-    if (data.store) addText(`Loja: ${data.store}`, 8)
-    if (data.orderNumber) addText(`Pedido: ${data.orderNumber}`, 8)
-    if (data.trackingIn) addText(`Tracking: ${data.trackingIn}`, 8)
-    if (data.carrier) addText(`Transportadora: ${data.carrier}`, 8)
-    if (data.packageType) addText(`Tipo: ${data.packageType}`, 8)
-    yPosition += 2
+    text('DETALHES:', 11, true)
+    if (data.description) text(`${data.description}`)
+    if (data.store) text(`Loja: ${data.store}`)
+    if (data.orderNumber) text(`Pedido: ${data.orderNumber}`)
+    if (data.trackingIn) text(`Tracking In: ${data.trackingIn}`)
+    if (data.carrier) text(`Carrier: ${data.carrier}`)
+    if (data.packageType) text(`Tipo: ${data.packageType}`)
 
-    // Peso e valor
-    if (data.weightGrams) addText(`Peso: ${data.weightGrams}g`, 9, true)
-    if (data.purchasePrice) addText(`Valor: $${Number(data.purchasePrice).toFixed(2)}`, 9, true)
-    yPosition += 2
+    const weightStr = data.weightGrams ? `${data.weightGrams} g` : 'N/A'
+    const valueStr = data.purchasePrice ? `$${Number(data.purchasePrice).toFixed(2)}` : 'N/A'
+    text(`Peso: ${weightStr}    Valor: ${valueStr}`, 11, true)
+    y += 1
+    text(`Confirmado: ${data.confirmedAt.toLocaleDateString('pt-BR')} • ${data.confirmedBy}`, 8)
+    y += 1
+    line(y)
+    y += 2
 
-    // Data de confirmação
-    addText(`Confirmado em: ${data.confirmedAt.toLocaleDateString('pt-BR')}`, 8)
-    addText(`Por: ${data.confirmedBy}`, 8)
-    yPosition += 3
-
-    // Código de barras
-    const barcodeData = `PKG-${data.packageId}`
+    // Código de barras grande e legível
+    const barcodeData = `${data.packageId}`
     const canvas = document.createElement('canvas')
-    JsBarcode(canvas, barcodeData, {
-      format: 'CODE128',
-      width: 2,
-      height: 30,
-      displayValue: true,
-      fontSize: 8
-    })
-
-    // Adicionar código de barras ao PDF
+    JsBarcode(canvas, barcodeData, { format: 'CODE128', width: 2.0, height: 48, displayValue: false, margin: 0 })
     const barcodeImage = canvas.toDataURL('image/png')
-    doc.addImage(barcodeImage, 'PNG', margin, yPosition, 80, 20)
-    yPosition += 25
+    const barcodeWidth = format[0] - margin * 2
+    doc.addImage(barcodeImage, 'PNG', margin, y, barcodeWidth, 28)
+    y += 32
 
-    // ID do pacote
-    addText(`ID: ${data.packageId}`, 8)
-
+    // Rodapé
+    text(`ID: ${data.packageId}`, 10)
     return doc.output('blob')
   }
 
   // Gerar etiqueta de consolidação
-  static async generateConsolidationLabel(data: ConsolidationLabelData): Promise<Blob> {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [100, 150]
-    })
+  static async generateConsolidationLabel(data: ConsolidationLabelData, size: '4x6' | '3x4' = '4x6'): Promise<Blob> {
+    const format = size === '4x6' ? [100, 150] : [76, 101]
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format })
 
-    const margin = 5
-    const lineHeight = 4
-    let yPosition = margin
-
-    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
-      doc.setFontSize(fontSize)
-      if (isBold) {
-        doc.setFont('helvetica', 'bold')
-      } else {
-        doc.setFont('helvetica', 'normal')
-      }
-      doc.text(text, margin, yPosition)
-      yPosition += lineHeight
+    const margin = 8
+    let y = margin + 2
+    const line = (yPos: number) => doc.line(margin, yPos, format[0] - margin, yPos)
+    const text = (t: string, fs = 9, bold = false) => {
+      doc.setTextColor(0)
+      doc.setFont('helvetica', bold ? 'bold' : 'normal')
+      doc.setFontSize(fs)
+      doc.text(t, margin, y)
+      y += Math.max(4, fs / 2)
     }
 
-    // Cabeçalho
-    addText('ETIQUETA DE CONSOLIDAÇÃO', 14, true)
-    addText('─'.repeat(25), 10)
-    yPosition += 2
+    // Topo: Consolidação + Suite
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(18)
+    doc.text(`CONSOLIDAÇÃO ${data.consolidationId}`, margin, y)
+    y += 7
+    doc.setFontSize(12)
+    doc.text(`SUITE ${data.suiteNumber ?? 'N/A'}  •  ITENS ${data.packages.length}`, margin, y)
+    y += 6
+    line(y)
+    y += 2
 
-    // Dados do cliente
-    addText('CLIENTE:', 10, true)
-    addText(data.userName, 10)
-    addText(`Suite: ${data.suiteNumber || 'N/A'}`, 9)
-    if (data.cpf) addText(`CPF: ${data.cpf}`, 9)
-    if (data.phone) addText(`Tel: ${data.phone}`, 9)
-    yPosition += 2
+    // Cliente e entrega
+    text('CLIENTE:', 10, true)
+    text(`${data.userName}`)
+    if (data.phone) text(`Tel: ${data.phone}`)
+    y += 1
+    text('ENTREGA:', 10, true)
+    text(`${data.address.name}`)
+    text(`${data.address.line1}`)
+    if (data.address.line2) text(`${data.address.line2}`)
+    text(`${data.address.city} - ${data.address.state}  CEP: ${data.address.postalCode}`)
+    y += 1
 
-    // Endereço de entrega
-    addText('ENTREGA:', 10, true)
-    addText(data.address.name, 9)
-    addText(data.address.line1, 9)
-    if (data.address.line2) addText(data.address.line2, 9)
-    addText(`${data.address.city} - ${data.address.state}`, 9)
-    addText(`CEP: ${data.address.postalCode}`, 9)
-    yPosition += 2
+    // Resumo
+    const peso = `${data.totalWeight} g`
+    const valor = `$${data.totalValue.toFixed(2)}`
+    text(`Caixa: ${data.boxSize}    Peso: ${peso}    Valor: ${valor}`, 10, true)
+    y += 1
+    line(y)
+    y += 2
 
-    // Resumo da caixa
-    addText('CAIXA:', 10, true)
-    addText(`Tamanho: ${data.boxSize}`, 9)
-    addText(`Itens: ${data.packages.length}`, 9)
-    addText(`Peso Total: ${data.totalWeight}g`, 9, true)
-    addText(`Valor Total: $${data.totalValue.toFixed(2)}`, 9, true)
-    yPosition += 2
-
-    // Código de barras da consolidação
-    const barcodeData = `CONS-${data.consolidationId}`
+    // Código de barras grande
     const canvas = document.createElement('canvas')
-    JsBarcode(canvas, barcodeData, {
-      format: 'CODE128',
-      width: 2,
-      height: 30,
-      displayValue: true,
-      fontSize: 8
-    })
+    JsBarcode(canvas, `CONS-${data.consolidationId}`, { format: 'CODE128', width: 2.2, height: 42, displayValue: true, fontSize: 10, margin: 0 })
+    const barcodeImg = canvas.toDataURL('image/png')
+    const barcodeWidth = format[0] - margin * 2
+    doc.addImage(barcodeImg, 'PNG', margin, y, barcodeWidth, 24)
+    y += 28
 
-    const barcodeImage = canvas.toDataURL('image/png')
-    doc.addImage(barcodeImage, 'PNG', margin, yPosition, 80, 20)
-    yPosition += 25
-
-    // ID da consolidação
-    addText(`ID: ${data.consolidationId}`, 8)
-    addText(`Criado em: ${data.createdAt.toLocaleDateString('pt-BR')}`, 8)
-
+    // Rodapé
+    text(`Criado: ${data.createdAt.toLocaleDateString('pt-BR')}`, 9)
     return doc.output('blob')
   }
 
@@ -270,7 +242,8 @@ export class LabelGenerator {
     yPosition += 2
 
     // Cabeçalho da tabela
-    const tableStartY = yPosition
+    // Linha inicial da tabela (mantida como referência em versões anteriores)
+    // Removida para evitar warning de variável não utilizada.
     addText('Item', 10, true)
     doc.text('Descrição', margin + 20, yPosition - lineHeight)
     doc.text('Loja', margin + 80, yPosition - lineHeight)

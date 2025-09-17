@@ -7,7 +7,7 @@ const Tabs = React.forwardRef<
     value?: string
     onValueChange?: (value: string) => void
   }
->(({ className, value, onValueChange, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn("w-full", className)}
@@ -36,7 +36,7 @@ const TabsTrigger = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
     value: string
   }
->(({ className, value, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <button
     ref={ref}
     className={cn(
@@ -53,7 +53,7 @@ const TabsContent = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     value: string
   }
->(({ className, value, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(

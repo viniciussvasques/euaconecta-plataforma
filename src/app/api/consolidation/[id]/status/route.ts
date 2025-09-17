@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { consolidationService } from '@/lib/consolidation'
 import { prisma } from '@/lib/prisma'
+import { EventService, SystemEvent } from '@/lib/events'
 
 export async function PUT(
   request: NextRequest,
@@ -9,7 +10,7 @@ export async function PUT(
   try {
     const { id } = await params
     const { status, trackingCode } = await request.json()
-    
+
     // Validar status
     if (!status || !['PENDING', 'IN_PROGRESS', 'SHIPPED', 'CANCELLED'].includes(status)) {
       return NextResponse.json(
@@ -17,7 +18,7 @@ export async function PUT(
         { status: 400 }
       )
     }
-    
+
     // Buscar dados da consolidação antes de atualizar
     const consolidation = await prisma.consolidationGroup.findUnique({
       where: { id },
@@ -41,10 +42,40 @@ export async function PUT(
         isDefault: true
       }
     })
-    
+
     // Atualizar status e código de rastreio se fornecido
     await consolidationService.updateStatus(id, status as 'PENDING' | 'IN_PROGRESS' | 'SHIPPED' | 'CANCELLED', trackingCode)
-    
+
+    // Emitir evento baseado no status
+    let eventType: SystemEvent | null = null
+
+    switch (status) {
+      case 'IN_PROGRESS':
+        eventType = SystemEvent.CONSOLIDATION_IN_PROGRESS
+        break
+      case 'SHIPPED':
+        eventType = SystemEvent.CONSOLIDATION_SHIPPED
+        break
+      case 'CANCELLED':
+        eventType = SystemEvent.CONSOLIDATION_CANCELLED
+        break
+    }
+
+    if (eventType) {
+      await EventService.emit(eventType, {
+        userId: consolidation.userId,
+        entityType: 'ConsolidationGroup',
+        entityId: id,
+        metadata: {
+          consolidationId: id,
+          status,
+          trackingCode: trackingCode || null,
+          packageCount: consolidation.packages.length,
+          weight: consolidation.finalWeightGrams || consolidation.currentWeightGrams
+        }
+      })
+    }
+
     // Se o status for SHIPPED, atualizar ou criar um Shipment com as informações corretas
     if (status === 'SHIPPED' && trackingCode) {
       // Verificar se já existe um shipment para esta consolidação
@@ -122,14 +153,14 @@ export async function PUT(
         }
       }
     }
-    
+
     return NextResponse.json({
       success: true,
       message: 'Status atualizado com sucesso'
     })
   } catch (error) {
     console.error('Erro ao atualizar status da consolidação:', error)
-    
+
     return NextResponse.json(
       { success: false, error: 'Erro interno do servidor' },
       { status: 500 }

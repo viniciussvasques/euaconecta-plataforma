@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface PayPalCheckoutProps {
   amount: number
@@ -58,10 +58,10 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
       try {
         const response = await fetch('/api/payment-providers')
         const data = await response.json()
-        
+
         if (data.success) {
           const paypalProvider = data.providers.find((p: { code: string; apiKey?: string }) => p.code === 'PAYPAL')
-          
+
           if (paypalProvider) {
             setPaypalConfig({
               apiKey: paypalProvider.apiKey
@@ -95,19 +95,19 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
         const script = document.createElement('script')
         script.src = `https://www.paypal.com/sdk/js?client-id=${paypalConfig.apiKey}&currency=${currency}&intent=capture&components=buttons,funding-eligibility`
         script.async = true
-        
+
         script.onload = () => {
           setPaypalLoaded(true)
           setError(null)
         }
-        
+
         script.onerror = () => {
           setError('Erro ao carregar PayPal SDK')
           onError('Erro ao carregar PayPal SDK')
         }
-        
+
         document.head.appendChild(script)
-      } catch (err) {
+      } catch {
         setError('Erro ao inicializar PayPal')
         onError('Erro ao inicializar PayPal')
       }
@@ -118,7 +118,7 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
     }
   }, [currency, onError, paypalConfig])
 
-  const createOrder = async (): Promise<string> => {
+  const createOrder = useCallback(async (): Promise<string> => {
     try {
       const response = await fetch('/api/paypal/create-order', {
         method: 'POST',
@@ -143,12 +143,12 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
       console.error('Erro ao criar ordem:', err)
       throw new Error('Erro ao criar ordem de pagamento')
     }
-  }
+  }, [amount, currency, description])
 
-  const onApprove = async (data: { orderID: string }): Promise<void> => {
+  const onApprove = useCallback(async (data: { orderID: string }): Promise<void> => {
     try {
       setLoading(true)
-      
+
       const response = await fetch('/api/paypal/capture-order', {
         method: 'POST',
         headers: {
@@ -173,17 +173,17 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
     } finally {
       setLoading(false)
     }
-  }
+  }, [onSuccess, onError])
 
-  const handlePayPalError = (err: Error) => {
+  const handlePayPalError = useCallback((err: Error) => {
     console.error('Erro no PayPal:', err)
     onError('Erro no pagamento PayPal')
-  }
+  }, [onError])
 
-  const onCancel = (data: { orderID: string }) => {
+  const onCancel = useCallback((data: { orderID: string }) => {
     console.log('Pagamento cancelado:', data.orderID)
     onError('Pagamento cancelado pelo usuário')
-  }
+  }, [onError])
 
   useEffect(() => {
     if (paypalLoaded && paypalRef.current && !buttonsRendered.current) {
@@ -223,7 +223,7 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
           height: 45,
         },
       })
-      
+
       if (paypalRef.current) {
         try {
           paypalButton.render(paypalRef.current as unknown as string)
@@ -283,4 +283,3 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
     </div>
   )
 }
-

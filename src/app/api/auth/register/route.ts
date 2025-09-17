@@ -6,7 +6,28 @@ import { EmailService } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, password } = await request.json()
+    const { name, email, password, website, turnstileToken } = await request.json()
+    // Honeypot
+    if (website) {
+      return NextResponse.json({ success: true, data: { message: 'OK' } })
+    }
+
+    // Rate limit simples por IP (apenas leitura de cabeçalho)
+    request.headers.get('x-forwarded-for')
+    // Em produção, usar Redis. Aqui, apenas cabeçalho de dica
+
+    // Turnstile (se configurado)
+    if (process.env.TURNSTILE_SECRET_KEY && turnstileToken) {
+      const turnstileRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY, response: turnstileToken })
+      })
+      const t = await turnstileRes.json()
+      if (!t.success) {
+        return NextResponse.json({ success: false, error: 'Falha na verificação anti‑bot' }, { status: 400 })
+      }
+    }
 
     // Validações básicas
     if (!name || !email || !password) {
@@ -78,11 +99,11 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Erro ao criar conta:', error)
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Erro interno do servidor' 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erro interno do servidor'
       },
       { status: 500 }
     )

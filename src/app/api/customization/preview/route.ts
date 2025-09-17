@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { configService } from '@/lib/config-service'
+import type { SystemCustomization } from '@/lib/system-customization'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { customization, previewType } = body
+    const { customization } = body as { customization: SystemCustomization; previewType: 'landing' }
 
     // Validar tipo de pré-visualização
-    const validTypes = ['landing', 'client-dashboard', 'admin-dashboard']
-    if (!validTypes.includes(previewType)) {
+    const validTypes = ['landing']
+    if (!validTypes.includes('landing')) {
       return NextResponse.json(
         { success: false, error: 'Tipo de pré-visualização inválido' },
         { status: 400 }
@@ -19,14 +20,14 @@ export async function POST(request: NextRequest) {
     const customCSS = configService.generateCustomCSS(customization)
 
     // Gerar dados de pré-visualização
-    const previewData = generatePreviewData(customization, previewType)
+    const previewData = generatePreviewData(customization)
 
     return NextResponse.json({
       success: true,
       data: {
         css: customCSS,
         previewData,
-        previewType
+        previewType: 'landing'
       }
     })
   } catch (error) {
@@ -38,32 +39,12 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function generatePreviewData(customization: any, previewType: string) {
-  switch (previewType) {
-    case 'landing':
-      return {
-        heroTitle: customization.landingPage.heroTitle,
-        heroSubtitle: customization.landingPage.heroSubtitle,
-        features: customization.landingPage.features,
-        ctaText: customization.landingPage.ctaText
-      }
-    
-    case 'client-dashboard':
-      return {
-        welcomeMessage: customization.clientDashboard.welcomeMessage,
-        quickActions: customization.clientDashboard.quickActions,
-        recentActivity: customization.clientDashboard.recentActivity,
-        statsCards: customization.clientDashboard.statsCards
-      }
-    
-    case 'admin-dashboard':
-      return {
-        theme: customization.adminDashboard.theme,
-        sidebarCollapsed: customization.adminDashboard.sidebarCollapsed,
-        quickStats: customization.adminDashboard.quickStats
-      }
-    
-    default:
-      return {}
+function generatePreviewData(customization: SystemCustomization) {
+  // Apenas landing conforme escopo atual
+  return {
+    heroTitle: customization.landingPage.hero.title,
+    heroSubtitle: customization.landingPage.hero.subtitle,
+    features: customization.landingPage.features,
+    ctaText: customization.landingPage.hero.ctaText
   }
 }

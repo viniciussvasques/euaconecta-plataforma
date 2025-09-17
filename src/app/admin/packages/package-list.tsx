@@ -96,7 +96,7 @@ export function PackageList() {
 
   return (
     <div className="bg-white shadow rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
+      <div className="px-4 py-4 sm:p-6">
         <div className="mb-4">
           <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-2">
             Filtrar por Status
@@ -114,8 +114,31 @@ export function PackageList() {
           </select>
         </div>
 
-        <div className="overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        {/* Mobile: cards; Desktop: tabela */}
+        <div className="block sm:hidden space-y-3">
+          {packages.map((pkg) => (
+            <div key={pkg.id} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-sm font-semibold text-gray-900 truncate max-w-[70%]">{pkg.owner.name}</div>
+                <span className={`ml-2 inline-flex px-2 py-0.5 text-xs font-semibold rounded-full ${getStatusColor(pkg.status)}`}>
+                  {getStatusText(pkg.status)}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 truncate">{pkg.owner.email}</div>
+              <div className="mt-2 text-sm text-gray-800">{pkg.description || 'Sem descrição'}</div>
+              <div className="mt-1 text-xs text-gray-500">Loja: {pkg.store || 'N/A'}</div>
+              <div className="mt-1 text-xs text-gray-500">Recebido: {new Date(pkg.createdAt).toLocaleDateString('pt-BR')}</div>
+              <div className="mt-3 flex items-center gap-2">
+                <PrintLabelButton packageId={pkg.id} />
+                <EditPackageButton packageId={pkg.id} />
+                <DeletePackageButton packageId={pkg.id} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden sm:block -mx-4 sm:mx-0 overflow-x-auto">
+          <table className="min-w-[720px] sm:min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

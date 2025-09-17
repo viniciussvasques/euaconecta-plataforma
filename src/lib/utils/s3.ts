@@ -16,11 +16,11 @@ export const s3 = new S3Client({
 
 export async function uploadBuffer(key: string, buffer: Buffer, contentType?: string) {
   await s3.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: buffer, ContentType: contentType }))
-  return { key, url: `${process.env.S3_ENDPOINT?.replace(/\/$/, '')}/${bucket}/${key}` }
+  return { key, url: `${process.env.NEXT_PUBLIC_S3_ENDPOINT?.replace(/\/$/, '')}/${bucket}/${key}` }
 }
 
 export function getPublicUrl(key: string) {
-  return `${process.env.S3_ENDPOINT?.replace(/\/$/, '')}/${bucket}/${key}`
+  return `${process.env.NEXT_PUBLIC_S3_ENDPOINT?.replace(/\/$/, '')}/${bucket}/${key}`
 }
 
 

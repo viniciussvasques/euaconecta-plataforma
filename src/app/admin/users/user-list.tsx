@@ -89,8 +89,8 @@ export function UserList({ users }: UserListProps) {
   }
 
   return (
-    <div className="overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
+    <div className="-mx-4 sm:mx-0 overflow-x-auto">
+      <table className="min-w-[900px] sm:min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -134,7 +134,7 @@ export function UserList({ users }: UserListProps) {
                   </div>
                 </div>
               </td>
-              
+
               <td className="px-6 py-4 whitespace-nowrap">
                 {editingUser === user.id ? (
                   <select
@@ -155,7 +155,7 @@ export function UserList({ users }: UserListProps) {
                   </span>
                 )}
               </td>
-              
+
               <td className="px-6 py-4 whitespace-nowrap">
                 {editingUser === user.id ? (
                   <select
@@ -174,7 +174,7 @@ export function UserList({ users }: UserListProps) {
                   </span>
                 )}
               </td>
-              
+
               <td className="px-6 py-4">
                 <div className="text-sm text-gray-900 space-y-1">
                   {editingUser === user.id ? (
@@ -219,7 +219,7 @@ export function UserList({ users }: UserListProps) {
                   )}
                 </div>
               </td>
-              
+
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {user.lastLogin ? (
                   new Date(user.lastLogin).toLocaleDateString('pt-BR')
@@ -227,7 +227,7 @@ export function UserList({ users }: UserListProps) {
                   'Nunca'
                 )}
               </td>
-              
+
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 {editingUser === user.id ? (
                   <div className="space-x-2">

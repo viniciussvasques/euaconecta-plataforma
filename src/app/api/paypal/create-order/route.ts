@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentProviderService } from '@/lib/payment-providers'
+import { verifyAccessToken } from '@/lib/jwt'
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,8 +13,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId || !session.email) {
+    let userId: string | null = null
+    let email: string | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+      email = String((payload as unknown as { email?: string }).email || '')
+    } catch {
+      try {
+        const legacy = JSON.parse(sessionCookie.value) as { userId?: string; email?: string }
+        userId = legacy.userId || null
+        email = legacy.email || null
+      } catch {}
+    }
+    if (!userId || !email) {
       return NextResponse.json(
         { success: false, error: 'Sessão inválida' },
         { status: 401 }
@@ -49,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     const accessToken = await getPayPalAccessToken()
-    
+
     const response = await fetch('https://api-m.sandbox.paypal.com/v2/checkout/orders', {
       method: 'POST',
       headers: {
@@ -86,7 +99,7 @@ export async function POST(request: NextRequest) {
 async function getPayPalAccessToken(): Promise<string> {
   const paymentProviderService = new PaymentProviderService()
   const paypalProvider = await paymentProviderService.getByCode('PAYPAL')
-  
+
   if (!paypalProvider || !paypalProvider.apiKey || !paypalProvider.apiSecret) {
     throw new Error('Credenciais do PayPal não configuradas no painel administrativo')
   }
@@ -103,12 +116,12 @@ async function getPayPalAccessToken(): Promise<string> {
     },
     body: 'grant_type=client_credentials',
   })
-  
+
   const data = await response.json()
-  
+
   if (!data.access_token) {
     throw new Error(`Erro ao obter access token: ${data.error_description || data.error || 'Erro desconhecido'}`)
   }
-  
+
   return data.access_token
 }

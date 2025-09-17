@@ -14,7 +14,7 @@ interface ConsolidationGroup {
   consolidationType?: string
   consolidationFee?: number
   storageFee?: number
-  extraProtection?: boolean
+  extraProtection?: boolean | string[]
   finalWeightGrams?: number
   trackingCode?: string
   user?: { id: string; name: string; email: string }
@@ -24,7 +24,10 @@ interface ConsolidationGroup {
     description?: string
     weightGrams?: number
     status: string
-    createdAt: Date
+    createdAt?: Date
+    purchasePrice?: number
+    store?: string
+    orderNumber?: string
   }>
   consolidationDeadline?: Date
   shippingDeadline?: Date
@@ -41,15 +44,15 @@ interface ConsolidationTabsProps {
   onEdit?: (id: string) => void
 }
 
-export function ConsolidationTabs({ 
-  consolidations, 
-  openConsolidations, 
-  pendingConsolidations, 
-  inProgressConsolidations, 
-  readyToShipConsolidations, 
-  shippedConsolidations, 
-  onStatusUpdate, 
-  onEdit 
+export function ConsolidationTabs({
+  consolidations,
+  openConsolidations,
+  pendingConsolidations,
+  inProgressConsolidations,
+  readyToShipConsolidations,
+  shippedConsolidations,
+  onStatusUpdate,
+  onEdit
 }: ConsolidationTabsProps) {
   const tabs = [
     { id: 'OPEN', label: 'Caixas Abertas', status: 'OPEN' },
@@ -69,7 +72,7 @@ export function ConsolidationTabs({
     ...(shippedConsolidations || []),
     ...(consolidations || [])
   ]
-  
+
   // Log para debug
   console.log('📊 ConsolidationTabs: Estado atual:', {
     activeTab,
@@ -80,11 +83,11 @@ export function ConsolidationTabs({
     shippedConsolidations: shippedConsolidations?.length || 0,
     totalConsolidations: allConsolidations.length
   })
-  
+
   const filteredConsolidations = allConsolidations.filter(
     consolidation => consolidation.status === activeTab
   )
-  
+
   console.log('🔍 ConsolidationTabs: Filtrado para', activeTab, ':', filteredConsolidations.length, 'itens')
 
   return (
@@ -96,11 +99,10 @@ export function ConsolidationTabs({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.status)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === tab.status
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.status
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
             >
               {tab.label}
               <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">

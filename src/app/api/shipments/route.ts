@@ -10,11 +10,11 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit')
 
     const where: Record<string, string | { in: string[] }> = {}
-    
+
     if (userId) {
       where.userId = userId
     }
-    
+
     if (status) {
       // Mapear status do frontend para o enum do Prisma
       const statusMap: Record<string, string> = {
@@ -68,12 +68,12 @@ export async function GET(request: NextRequest) {
     })
 
     const response = NextResponse.json({ success: true, data: shipments })
-    
+
     // Configurar headers de cache para evitar cache desnecessário
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     response.headers.set('Pragma', 'no-cache')
     response.headers.set('Expires', '0')
-    
+
     return response
   } catch (error) {
     console.error('Erro ao buscar envios:', error)
@@ -88,17 +88,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     const {
       userId,
       outboundCarrier,
       trackingOut,
-      estimatedDeliveryDate,
-      actualDeliveryDate,
-      shippingCostCents,
-      insuranceCostCents,
-      customsDutyCents,
-      notes,
+      // estimatedDeliveryDate, // Removido - não usado
+      // actualDeliveryDate, // Removido - não usado
+      // shippingCostCents, // Removido - não usado
+      // insuranceCostCents, // Removido - não usado
+      // customsDutyCents, // Removido - não usado
+      // notes, // Removido - não usado
     } = body
 
     // Validar campos obrigatórios

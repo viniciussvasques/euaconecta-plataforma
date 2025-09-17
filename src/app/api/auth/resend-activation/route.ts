@@ -1,0 +1,46 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { EmailService } from '@/lib/email'
+
+export async function POST(request: NextRequest) {
+  try {
+    const { email } = await request.json()
+    if (!email) {
+      return NextResponse.json({ success: false, error: 'Email é obrigatório' }, { status: 400 })
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user) {
+      return NextResponse.json({ success: false, error: 'Usuário não encontrado' }, { status: 404 })
+    }
+
+    if (user.isActive) {
+      return NextResponse.json({ success: true, data: { message: 'Conta já está ativa' } })
+    }
+
+    // Gerar novo token de ativação (24h)
+    const token = cryptoRandom(48)
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { activationToken: token, activationTokenExpires: expires },
+    })
+
+    // Enviar e-mail
+    const activationLink = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/activate?token=${token}`
+    const emailPayload = EmailService.activationEmail(user.name, user.email, activationLink)
+    await EmailService.sendMail(emailPayload)
+
+    return NextResponse.json({ success: true, data: { message: 'E-mail de ativação reenviado' } })
+  } catch (error) {
+    console.error('Erro ao reenviar ativação:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+function cryptoRandom(length: number): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let out = ''
+  for (let i = 0; i < length; i++) out += chars.charAt(Math.floor(Math.random() * chars.length))
+  return out
+}

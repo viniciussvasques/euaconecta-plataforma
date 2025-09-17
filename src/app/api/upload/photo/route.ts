@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadBuffer } from '@/lib/utils/s3'
 import crypto from 'crypto'
+import { verifyAccessToken } from '@/lib/jwt'
+type MinimalSession = { userId: string; role: string }
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,8 +12,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId || !['ADMIN', 'SUPER_ADMIN', 'OPERATOR'].includes(session.role)) {
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || ''), role: String((payload as unknown as { role?: string }).role || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session || !session.userId || !['ADMIN', 'SUPER_ADMIN', 'OPERATOR'].includes(session.role)) {
       return NextResponse.json({ success: false, error: 'Acesso negado' }, { status: 403 })
     }
 
@@ -35,7 +43,7 @@ export async function POST(request: NextRequest) {
     // Gerar nome único para o arquivo
     const fileExtension = file.name.split('.').pop() || 'jpg'
     const fileName = `package-photos/${crypto.randomUUID()}.${fileExtension}`
-    
+
     // Converter File para Buffer
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)

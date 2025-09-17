@@ -27,7 +27,7 @@ interface EditPackageButtonProps {
 export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [packageData, setPackageData] = useState<Package | null>(null)
+  const [, setPackageData] = useState<Package | null>(null)
   const [formData, setFormData] = useState({
     description: '',
     weightGrams: 0,
@@ -47,7 +47,7 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
     try {
       const response = await fetch(`/api/packages/${packageId}`)
       const data = await response.json()
-      
+
       if (data.success) {
         setPackageData(data.data)
         setFormData({
@@ -91,7 +91,7 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
       })
 
       const data = await response.json()
-      
+
       if (data.success) {
         setIsOpen(false)
         onUpdate?.()
@@ -110,8 +110,8 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name.includes('Grams') || name.includes('Price') || name.includes('Value') || name.includes('Cm') 
-        ? parseFloat(value) || 0 
+      [name]: name.includes('Grams') || name.includes('Price') || name.includes('Value') || name.includes('Cm')
+        ? parseFloat(value) || 0
         : value
     }))
   }
@@ -149,7 +149,7 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
                   {/* Informações Básicas */}
                   <div className="space-y-4">
                     <h4 className="text-lg font-medium text-gray-900">Informações Básicas</h4>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Descrição
@@ -216,7 +216,7 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
                   {/* Dimensões e Peso */}
                   <div className="space-y-4">
                     <h4 className="text-lg font-medium text-gray-900">Dimensões e Peso</h4>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Peso (gramas)
@@ -281,7 +281,7 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
                   {/* Valores */}
                   <div className="space-y-4">
                     <h4 className="text-lg font-medium text-gray-900">Valores</h4>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Preço de Compra (USD)
@@ -316,7 +316,7 @@ export function EditPackageButton({ packageId, onUpdate }: EditPackageButtonProp
                   {/* Rastreamento */}
                   <div className="space-y-4">
                     <h4 className="text-lg font-medium text-gray-900">Rastreamento</h4>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Código de Rastreamento

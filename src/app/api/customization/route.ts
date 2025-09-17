@@ -1,10 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { configService } from '@/lib/config-service'
+import { defaultCustomization } from '@/lib/system-customization'
+import fs from 'fs'
+import path from 'path'
+
+const CONFIG_FILE = path.join(process.cwd(), 'data', 'customization.json')
+
+// Garantir que o diretório existe
+const ensureDataDir = () => {
+  const dataDir = path.join(process.cwd(), 'data')
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true })
+  }
+}
 
 export async function GET() {
   try {
-    const config = await configService.getSystemConfig()
-    
+    ensureDataDir()
+
+    let config = defaultCustomization
+
+    // Tentar carregar configuração salva
+    if (fs.existsSync(CONFIG_FILE)) {
+      try {
+        const savedConfig = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'))
+        config = { ...defaultCustomization, ...savedConfig }
+      } catch (error) {
+        console.error('Erro ao ler arquivo de configuração:', error)
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: config
@@ -22,28 +46,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    // Validar dados básicos
-    if (!body.brandIdentity?.companyName) {
-      return NextResponse.json(
-        { success: false, error: 'Nome da empresa é obrigatório' },
-        { status: 400 }
-      )
-    }
+    ensureDataDir()
 
-    // Salvar configurações usando o serviço
-    const success = await configService.saveSystemConfig(body)
+    // Salvar configuração no arquivo
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(body, null, 2))
 
-    if (success) {
-      return NextResponse.json({
-        success: true,
-        message: 'Configurações salvas com sucesso'
-      })
-    } else {
-      return NextResponse.json(
-        { success: false, error: 'Erro ao salvar configurações' },
-        { status: 500 }
-      )
-    }
+    return NextResponse.json({
+      success: true,
+      message: 'Configurações salvas com sucesso'
+    })
   } catch (error) {
     console.error('Erro ao salvar configurações de personalização:', error)
     return NextResponse.json(

@@ -13,9 +13,20 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId || !session.email) {
+    let userId: string | null = null
+    let email: string | null = null
+    try {
+      const payload = await (await import('@/lib/jwt')).verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+      email = String((payload as unknown as { email?: string }).email || '')
+    } catch {
+      try {
+        const legacy = JSON.parse(sessionCookie.value) as { userId?: string; email?: string }
+        userId = legacy.userId || null
+        email = legacy.email || null
+      } catch {}
+    }
+    if (!userId || !email) {
       return NextResponse.json(
         { success: false, error: 'Sessão inválida' },
         { status: 401 }
@@ -49,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Buscar o pagamento no banco e atualizar status
     const payment = await prisma.payment.findFirst({
-      where: { 
+      where: {
         intentId: orderId,
         providerCode: 'PAYPAL'
       },
@@ -101,7 +112,7 @@ export async function POST(request: NextRequest) {
 async function getPayPalAccessToken(): Promise<string> {
   const paymentProviderService = new PaymentProviderService()
   const paypalProvider = await paymentProviderService.getByCode('PAYPAL')
-  
+
   if (!paypalProvider || !paypalProvider.apiKey || !paypalProvider.apiSecret) {
     throw new Error('Credenciais do PayPal não configuradas no painel administrativo')
   }

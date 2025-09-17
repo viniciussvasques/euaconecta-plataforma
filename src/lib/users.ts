@@ -118,7 +118,17 @@ export class UserService {
    */
   static async updateUser(id: string, updateData: UpdateUserData): Promise<UserWithPermissions> {
     const updatePayload: Record<string, unknown> = { ...updateData }
-    
+
+    // Sanitizar CPF e telefone (somente dígitos)
+    if (typeof updatePayload.cpf === 'string') {
+      const digits = (updatePayload.cpf as string).replace(/[^\d]/g, '')
+      updatePayload.cpf = digits || null
+    }
+    if (typeof updatePayload.phone === 'string') {
+      const digits = (updatePayload.phone as string).replace(/[^\d]/g, '')
+      updatePayload.phone = digits || null
+    }
+
     // Gerenciar suite number baseado no role
     if (updateData.role === UserRole.CLIENT) {
       // Se mudando para CLIENT e não tem suite, gerar uma
@@ -130,7 +140,7 @@ export class UserService {
       // Se mudando para não-CLIENT, remover suite
       updatePayload.suiteNumber = null
     }
-    
+
     // Remover campos undefined
     Object.keys(updatePayload).forEach(key => {
       if (updatePayload[key] === undefined) {
@@ -163,22 +173,22 @@ export class UserService {
    */
   static async generateSuiteForClient(id: string): Promise<UserWithPermissions> {
     const user = await prisma.user.findUnique({ where: { id } })
-    
+
     if (!user) {
       throw new Error('Usuário não encontrado')
     }
-    
+
     if (user.role !== 'CLIENT') {
       throw new Error('Apenas clientes podem ter suites')
     }
-    
+
     const newSuiteNumber = await SuiteManager.getNextSuiteNumber()
-    
+
     const updatedUser = await prisma.user.update({
       where: { id },
       data: { suiteNumber: newSuiteNumber }
     })
-    
+
     return this.mapToUserWithPermissions(updatedUser)
   }
 
@@ -349,7 +359,7 @@ export class UserService {
       id: user.id as string,
       email: user.email as string,
       name: user.name as string,
-      role: user.role as Record<string, unknown>,
+      role: user.role as UserRole,
       isActive: user.isActive as boolean,
       suiteNumber: user.suiteNumber as number | null,
       cpf: (user.cpf as string) || null,

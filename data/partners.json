@@ -1,0 +1,98 @@
+[
+  {
+    "id": "nike",
+    "name": "Nike",
+    "logo": "/brands/nike.svg",
+    "link": "https://www.nike.com/",
+    "description": "Calçados, roupas e equipamentos esportivos",
+    "category": "Fashion",
+    "isActive": true,
+    "order": 1,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T23:39:52.821Z"
+  },
+  {
+    "id": "adidas",
+    "name": "Adidas",
+    "logo": "/brands/adidas.svg",
+    "link": "https://placeholder.com",
+    "description": "Calçados e roupas esportivas",
+    "category": "Fashion",
+    "isActive": true,
+    "order": 2,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  },
+  {
+    "id": "amazon",
+    "name": "Amazon",
+    "logo": "/brands/amazon.svg",
+    "link": "https://placeholder.com",
+    "description": "Marketplace com milhões de produtos",
+    "category": "Marketplace",
+    "isActive": true,
+    "order": 3,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "logo": "/brands/apple.svg",
+    "link": "https://placeholder.com",
+    "description": "Produtos Apple: iPhone, Mac, iPad",
+    "category": "Electronics",
+    "isActive": true,
+    "order": 4,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  },
+  {
+    "id": "bestbuy",
+    "name": "Best Buy",
+    "logo": "/brands/bestbuy.svg",
+    "link": "https://placeholder.com",
+    "description": "Eletrônicos e tecnologia",
+    "category": "Electronics",
+    "isActive": true,
+    "order": 5,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  },
+  {
+    "id": "target",
+    "name": "Target",
+    "logo": "/brands/target.svg",
+    "link": "https://placeholder.com",
+    "description": "Loja de departamentos",
+    "category": "Retail",
+    "isActive": true,
+    "order": 6,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  },
+  {
+    "id": "walmart",
+    "name": "Walmart",
+    "logo": "/brands/walmart.svg",
+    "link": "https://placeholder.com",
+    "description": "Supermercado e produtos diversos",
+    "category": "Retail",
+    "isActive": true,
+    "order": 7,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  },
+  {
+    "id": "samsung",
+    "name": "Samsung",
+    "logo": "/brands/samsung.svg",
+    "link": "https://placeholder.com",
+    "description": "Eletrônicos Samsung",
+    "category": "Electronics",
+    "isActive": true,
+    "order": 8,
+    "createdAt": "2025-09-16T22:53:38.210Z",
+    "updatedAt": "2025-09-16T22:53:38.210Z"
+  }
+]

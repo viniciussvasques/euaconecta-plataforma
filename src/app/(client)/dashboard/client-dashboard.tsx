@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ClientStats, ClientPackages, ClientBoxes, ClientRecentActivity } from './index'
+import { ClientStats, ClientRecentActivity } from './index'
+import { QuickGuide } from './components/quick-guide'
+import { FeaturedBlog } from './components/featured-blog'
+import { CollapsiblePackages } from './components/collapsible-packages'
+import { CollapsibleBoxes } from './components/collapsible-boxes'
 import { CompleteProfileModal } from './components/complete-profile-modal'
 
 interface User {
@@ -18,9 +22,9 @@ export function ClientDashboard() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [showCompleteProfile, setShowCompleteProfile] = useState(false)
-  const [warehouse, setWarehouse] = useState<{ 
-    id: string; 
-    name: string; 
+  const [warehouse, setWarehouse] = useState<{
+    id: string;
+    name: string;
     address: string;
     line1: string;
     line2?: string;
@@ -38,7 +42,7 @@ export function ClientDashboard() {
       try {
         const response = await fetch('/api/auth/me')
         const data = await response.json()
-        
+
         if (response.ok && data.success) {
           setUser(data.data)
           // Verificar se precisa completar o perfil
@@ -93,9 +97,9 @@ export function ClientDashboard() {
   const checkProfileCompletion = async (userData: User) => {
     try {
       // Verificar se tem CPF e telefone válidos
-      const hasPersonalData = userData.cpf && userData.phone && 
+      const hasPersonalData = userData.cpf && userData.phone &&
                              userData.cpf.trim() !== '' && userData.phone.trim() !== ''
-      
+
       if (!hasPersonalData) {
         setShowCompleteProfile(true)
         return
@@ -104,8 +108,8 @@ export function ClientDashboard() {
       // Verificar se tem endereços
       const response = await fetch('/api/addresses')
       const data = await response.json()
-      
-      
+
+
       if (data.success && data.data.length === 0) {
         setShowCompleteProfile(true)
       }
@@ -189,11 +193,8 @@ export function ClientDashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
-            <div className="text-xs font-semibold text-purple-600 uppercase tracking-wide">Guia rápido</div>
-            <div className="mt-3 aspect-video bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
-              Vídeo de tutorial (YouTube) — em breve
-            </div>
+          <div className="xl:col-span-1">
+            <QuickGuide />
           </div>
         </div>
 
@@ -203,11 +204,19 @@ export function ClientDashboard() {
         {/* Grid Principal */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           {/* Pacotes */}
-          <ClientPackages userId={user.id} />
-          
+          <CollapsiblePackages userId={user.id} />
+
           {/* Caixas */}
-          <ClientBoxes userId={user.id} />
+          <CollapsibleBoxes userId={user.id} />
         </div>
+
+        {/* Blog em Destaque */}
+        <div className="mt-8">
+          <FeaturedBlog />
+        </div>
+
+
+
 
         {/* Atividade Recente */}
         <div className="mt-8">

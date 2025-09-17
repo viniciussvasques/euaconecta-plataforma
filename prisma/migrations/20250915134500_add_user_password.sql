@@ -1,0 +1,3 @@
+DO $$ BEGIN
+  ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "password" TEXT;
+EXCEPTION WHEN duplicate_column THEN NULL; END $$;

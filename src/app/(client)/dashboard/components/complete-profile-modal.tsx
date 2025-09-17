@@ -63,8 +63,8 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
     try {
       const response = await fetch('/api/addresses')
       const data = await response.json()
-      
-      
+
+
       if (data.success) {
         setAddresses(data.data)
       }
@@ -75,12 +75,12 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
 
   const validateCPF = (cpf: string): boolean => {
     cpf = cpf.replace(/[^\d]/g, '')
-    
+
     if (cpf.length !== 11) return false
-    
+
     // Verificar se todos os dígitos são iguais
     if (/^(\d)\1{10}$/.test(cpf)) return false
-    
+
     // Validar primeiro dígito verificador
     let sum = 0
     for (let i = 0; i < 9; i++) {
@@ -89,7 +89,7 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
     let remainder = 11 - (sum % 11)
     if (remainder === 10 || remainder === 11) remainder = 0
     if (remainder !== parseInt(cpf.charAt(9))) return false
-    
+
     // Validar segundo dígito verificador
     sum = 0
     for (let i = 0; i < 10; i++) {
@@ -98,7 +98,7 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
     remainder = 11 - (sum % 11)
     if (remainder === 10 || remainder === 11) remainder = 0
     if (remainder !== parseInt(cpf.charAt(10))) return false
-    
+
     return true
   }
 
@@ -137,7 +137,7 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
         alert('Telefone inválido')
         return
       }
-      
+
       // Salvar dados pessoais
       setLoading(true)
       try {
@@ -149,11 +149,12 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
             phone: formData.phone.replace(/[^\d]/g, '')
           })
         })
-        
+
         if (response.ok) {
-          const data = await response.json()
+          await response.json()
           // Atualizar o usuário com os novos dados
           const updatedUser = { ...user, cpf: formData.cpf.replace(/[^\d]/g, ''), phone: formData.phone.replace(/[^\d]/g, '') }
+          onComplete(updatedUser)
           setStep(2)
         } else {
           const errorData = await response.json()
@@ -167,13 +168,13 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
       }
     } else if (step === 2) {
       // Validar endereço
-      if (!formData.address.name || !formData.address.line1 || 
-          !formData.address.city || !formData.address.state || 
+      if (!formData.address.name || !formData.address.line1 ||
+          !formData.address.city || !formData.address.state ||
           !formData.address.postalCode) {
         alert('Preencha todos os campos obrigatórios do endereço')
         return
       }
-      
+
       // Criar endereço
       setLoading(true)
       try {
@@ -185,13 +186,13 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
             isDefault: true
           })
         })
-        
+
         if (response.ok) {
           // Atualizar o usuário com os dados salvos
-          const updatedUser = { 
-            ...user, 
-            cpf: formData.cpf.replace(/[^\d]/g, ''), 
-            phone: formData.phone.replace(/[^\d]/g, '') 
+          const updatedUser = {
+            ...user,
+            cpf: formData.cpf.replace(/[^\d]/g, ''),
+            phone: formData.phone.replace(/[^\d]/g, '')
           }
           onComplete(updatedUser)
         } else {
@@ -215,10 +216,10 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
   const isDataComplete = () => {
     // Verificar se tem CPF e telefone
     const hasPersonalData = user.cpf && user.phone && user.cpf.trim() !== '' && user.phone.trim() !== ''
-    
+
     // Verificar se tem endereços
     const hasAddresses = addresses.length > 0
-    
+
     return hasPersonalData && hasAddresses
   }
 
@@ -259,7 +260,7 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
             <span>{Math.round(getProgress())}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${getProgress()}%` }}
             />
@@ -459,7 +460,7 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
           >
             Pular por enquanto
           </button>
-          
+
           <div className="flex space-x-3">
             {step > 1 && (
               <button
@@ -469,7 +470,7 @@ export function CompleteProfileModal({ user, onComplete, onSkip }: CompleteProfi
                 Voltar
               </button>
             )}
-            
+
             <button
               onClick={handleNext}
               disabled={loading}

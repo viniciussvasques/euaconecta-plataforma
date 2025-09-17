@@ -6,7 +6,7 @@ import { ConsolidationGroupData } from '@/lib/consolidation'
 interface UpdateConsolidationButtonProps {
   consolidation: ConsolidationGroupData
   type: 'pending' | 'in_progress'
-  onStatusUpdate?: () => void
+  onStatusUpdate?: (id: string, status: string) => void
 }
 
 export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate }: UpdateConsolidationButtonProps) {
@@ -23,14 +23,14 @@ export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate 
 
     console.log('Iniciando atualização de status:', { consolidationId: consolidation.id, newStatus, trackingCode })
     setUpdating(true)
-    
+
     try {
       const response = await fetch(`/api/consolidation/${consolidation.id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           status: newStatus,
           trackingCode: newStatus === 'SHIPPED' ? trackingCode : undefined
         }),
@@ -55,7 +55,7 @@ export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate 
         })
         onStatusUpdate(consolidation.id, newStatus)
       }
-      
+
       // Mostrar mensagem de sucesso
       alert('Status atualizado com sucesso!')
     } catch (error) {
@@ -104,7 +104,7 @@ export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate 
               </h3>
               <div className="mt-2 px-7 py-3">
                 <p className="text-sm text-gray-500">
-                  {consolidation.status === 'PENDING' 
+                  {consolidation.status === 'PENDING'
                     ? 'Deseja iniciar o processo de consolidação para esta solicitação?'
                     : 'Deseja marcar esta consolidação como concluída?'
                   }
@@ -114,7 +114,7 @@ export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate 
                   <p><strong>Pacotes:</strong> {consolidation.packages.length}</p>
                   <p><strong>Tipo:</strong> {consolidation.consolidationType === 'SIMPLE' ? 'Simple' : 'Repack'}</p>
                 </div>
-                
+
                 {consolidation.status === 'IN_PROGRESS' && (
                   <div className="mt-4">
                     <label htmlFor="trackingCode" className="block text-sm font-medium text-gray-700 mb-2">
@@ -147,7 +147,7 @@ export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate 
                     // Determinar o próximo status baseado no status atual
                     const currentStatus = consolidation.status
                     let nextStatus: 'IN_PROGRESS' | 'SHIPPED'
-                    
+
                     if (currentStatus === 'PENDING') {
                       nextStatus = 'IN_PROGRESS'
                     } else if (currentStatus === 'IN_PROGRESS') {
@@ -155,19 +155,18 @@ export function UpdateConsolidationButton({ consolidation, type, onStatusUpdate 
                     } else {
                       nextStatus = 'IN_PROGRESS' // fallback
                     }
-                    
+
                     console.log('🔄 UpdateConsolidationButton: Determinando próximo status:', {
                       currentStatus,
                       nextStatus,
                       type
                     })
-                    
+
                     handleStatusUpdate(nextStatus)
                   }}
                   disabled={updating}
-                  className={`px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 ${
-                    consolidation.status === 'PENDING' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'
-                  }`}
+                  className={`px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 ${consolidation.status === 'PENDING' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'
+                    }`}
                 >
                   {updating ? 'Atualizando...' : getButtonText()}
                 </button>

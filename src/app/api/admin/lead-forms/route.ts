@@ -1,0 +1,34 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET() {
+  try {
+    const forms = await prisma.leadCaptureForm.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return NextResponse.json({ success: true, data: forms })
+  } catch (error) {
+    console.error('Erro ao buscar formulários de lead:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+
+    const form = await prisma.leadCaptureForm.create({
+      data: {
+        ...body,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    })
+
+    return NextResponse.json({ success: true, data: form })
+  } catch (error) {
+    console.error('Erro ao criar formulário de lead:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}

@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -11,25 +12,25 @@ datasource db {
 }
 
 // Enums
-enum Role { 
-  CUSTOMER 
-  ADMIN 
+enum Role {
+  CUSTOMER
+  ADMIN
 }
 
-enum PackageStatus { 
+enum PackageStatus {
   PENDING
-  RECEIVED 
-  READY_TO_SHIP 
-  SHIPPED 
+  RECEIVED
+  READY_TO_SHIP
+  SHIPPED
 }
 
-enum ShipmentStatus { 
-  DRAFT 
-  LABEL_CREATED 
-  IN_TRANSIT 
-  DELIVERED 
-  RETURNED 
-  CANCELLED 
+enum ShipmentStatus {
+  DRAFT
+  LABEL_CREATED
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+  CANCELLED
 }
 
 
@@ -92,7 +93,7 @@ model PlatformConfig {
   id                    String   @id @default(cuid())
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
-  
+
   // Endereço da empresa
   companyName          String
   addressLine1         String
@@ -103,7 +104,7 @@ model PlatformConfig {
   country              String   @default("US")
   phone                String
   email                String
-  
+
   // Configurações de negócio
   taxRate              Decimal  @default(0) @db.Decimal(5,4)  // 0.0825 = 8.25%
   handlingFee          Decimal  @default(0) @db.Decimal(10,2) // Taxa de manuseio
@@ -115,45 +116,45 @@ model PlatformConfig {
     consolidationPerPackageUsdCents   Int      @default(100)
     repackMultiplier                  Float    @default(1.5)
     currency                          String   @default("USD")
-    
+
     // Markup sobre frete (monetização)
     freightMarkupPercentage           Float    @default(0.15)  // 15% sobre frete da transportadora
     freightMarkupMinAmount            Int      @default(200)   // $2.00 mínimo
     freightMarkupMaxAmount            Int      @default(5000)  // $50.00 máximo
     processingFeeUsdCents             Int      @default(300)   // $3.00 taxa de processamento
-  
+
   // Configurações de envio
   defaultCarrier       String   @default("USPS")
   defaultService       String   @default("Priority")
   insuranceRequired    Boolean  @default(false)
   minInsuranceAmount   Decimal  @default(0) @db.Decimal(10,2)
-  
+
   // Configurações de pagamento
   stripeEnabled        Boolean  @default(false)
   paypalEnabled        Boolean  @default(false)
   autoInvoice          Boolean  @default(true)
-  
+
   // Configurações de notificação
   emailNotifications   Boolean  @default(true)
   smsNotifications     Boolean  @default(false)
   webhookUrl           String?
-  
+
   // Configurações de integração
   shipstationEnabled   Boolean  @default(false)
   shipstationApiKey    String?
   shipstationApiSecret String?
-  
+
   // Configurações de upload
   s3Enabled            Boolean  @default(false)
   s3BucketName         String?
   s3Region             String?
   maxFileSize          Int      @default(10485760) // 10MB
-  
+
   // Configurações de segurança
   maxLoginAttempts     Int      @default(5)
   sessionTimeout       Int      @default(3600)    // 1 hora
   require2FA           Boolean  @default(false)
-  
+
   // Configurações de suporte
   supportEmail         String?
   supportPhone         String?
@@ -171,14 +172,14 @@ model User {
   activationToken        String?  @unique
   activationTokenExpires DateTime?
   lastLogin DateTime?
-  
+
   // Dados pessoais obrigatórios
   cpf       String?  // CPF do usuário (obrigatório para clientes)
   phone     String?  // Telefone do usuário (obrigatório para clientes)
-  
+
   // Suite única para endereço interno
   suiteNumber Int?   @unique // Número da suite (começando em 2350)
-  
+
   // Campos de permissões
   permissions String[] // Array de permissões específicas
   canManageUsers Boolean @default(false)
@@ -187,7 +188,7 @@ model User {
   canManageCarriers Boolean @default(false)
   canViewFinancials Boolean @default(false)
   canManageSettings Boolean @default(false)
-  
+
   // Relacionamentos
   addresses Address[]
   packages Package[]
@@ -205,9 +206,11 @@ model User {
   userNotificationSettings UserNotificationSettings?
   evaluations UserEvaluation[]
   observations UserObservation[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  refreshTokens RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 // Endereços de armazém (configurados no Admin)
@@ -260,7 +263,7 @@ model Package {
   updatedAt      DateTime       @updatedAt
   ownerId        String
   owner          User           @relation(fields: [ownerId], references: [id])
-  
+
   // Informações de compra
   purchaseDate           DateTime?        // Data da compra
   expectedDeliveryDate   DateTime?        // Data prevista de chegada
@@ -268,23 +271,23 @@ model Package {
   store                  String?          // Loja (Amazon, eBay, etc.)
   orderNumber            String?          // Número do pedido
   purchasePrice          Decimal?         @db.Decimal(10,2) // Preço da compra
-  
+
   // Informações de entrega
   carrier                String?          // quem entregou até sua casa (UPS/FedEx/USPS)
   trackingIn             String?          // tracking de entrada (até seu endereço)
   trackingPhoto          String?          // URL foto no S3
   deliveryConfirmation   Boolean          @default(false)   // Cliente confirmou recebimento
-  
+
   // Tipo de embalagem
   packageType            String?          // envelope, caixa, sacola, etc.
-  
+
   // Descrição e valor
   description            String?
   declaredValue          Decimal?         @db.Decimal(10,2)
-  
+
       // Dimensões e peso
     weightGrams            Int?              // Peso em gramas (pesado ao chegar
-    
+
     // Rastreamento de peso
     weighedAt              DateTime?         // Quando foi pesado
     weighedBy              String?           // Quem pesou (ID do operador)
@@ -292,37 +295,37 @@ model Package {
   lengthCm               Int?
   widthCm                Int?
   heightCm               Int?
-  
+
   // Status e observações
   status                 PackageStatus    @default(PENDING)
   packageCondition       String?          // Estado do pacote ao chegar
   notes                  String?
-  
+
   // Confirmação de recebimento (admin)
   confirmedWeightGrams   Int?             // Peso confirmado pelo admin
   confirmationPhoto      String?          // Foto do pacote ao chegar
   confirmedAt            DateTime?        // Data de confirmação
   confirmedBy            String?          // ID do admin que confirmou
-  
+
   // Relacionamentos
   shipmentId             String?
   shipment               Shipment?        @relation(fields: [shipmentId], references: [id])
-  
+
   // Novas funcionalidades de consolidação
   consolidationStatus    ConsolidationStatus @default(PENDING)
   consolidationGroupId   String?            // Para agrupar pacotes
-  
+
   // Dimensões estruturadas
   dimensionsId           String?
   dimensions             PackageDimensions? @relation(fields: [dimensionsId], references: [id])
-  
+
   // Proteções aplicadas
   protectionApplied      ProtectionType[]
-  
+
   // Rastreamento de mudanças
   repackedAt            DateTime?
   repackedBy            String?            // ID do operador
-  
+
   // Relacionamentos
   consolidationGroup    ConsolidationGroup? @relation(fields: [consolidationGroupId], references: [id])
 }
@@ -343,11 +346,11 @@ model Shipment {
   trackingOut     String?
   totalWeightGrams Int?
   insuranceUsd    Decimal?        @db.Decimal(10,2)
-  
+
   // Relacionamento com transportadora
   carrierId       String?
   carrier         Carrier?        @relation(fields: [carrierId], references: [id])
-  
+
   // Endereço de destino (simplificado)
   toName          String?
   toLine1         String?
@@ -358,7 +361,7 @@ model Shipment {
   toCountry       String?
   toPhone         String?
   toEmail         String?
-  
+
   // Informações de pagamento (simplificado)
   paymentProvider String?         // stripe/paypal
   paymentStatus   String?         // succeeded, pending, failed
@@ -381,7 +384,7 @@ model Payment {
   amountCents  Int
   status       String   // succeeded, pending, failed
   receiptUrl   String?
-  
+
   @@map("payments")
 }
 
@@ -395,10 +398,10 @@ model Invoice {
   amountCents Int
   pdfUrl      String?
   status      String   // paid, open, uncollectible, void
-  
+
   // Relacionamentos
   payments    Payment[]
-  
+
   @@map("invoices")
 }
 
@@ -413,7 +416,7 @@ model PaymentMethod {
   expMonth  Int?
   expYear   Int?
   default   Boolean  @default(false)
-  
+
   @@map("payment_methods")
 }
 
@@ -423,44 +426,44 @@ model Carrier {
   name        String   // Nome da transportadora (ex: "Transportadora Local")
   code        String   @unique // Código único (ex: "LOCAL", "CUSTOM")
   description String?  // Descrição opcional
-  
+
   // Configurações de API
   hasApi      Boolean  @default(false) // Se tem integração via API
   apiKey      String?  // Chave da API (se aplicável)
   apiSecret  String?  // Secret da API (se aplicável)
   apiUrl      String?  // URL da API
-  
+
   // Configurações de Taxas
   baseRate    Decimal  @default(0) // Taxa base
   ratePerKg   Decimal  @default(0) // Taxa por kg
   ratePerKm   Decimal  @default(0) // Taxa por km (se aplicável)
-  
+
   // Configurações de Serviços
   services    CarrierService[]
-  
+
   // Configurações de Seguro
   insuranceAvailable Boolean @default(false)
   insuranceRate      Decimal @default(0) // Taxa de seguro (%)
   minInsuranceValue  Decimal @default(0) // Valor mínimo para seguro
   maxInsuranceValue  Decimal @default(0) // Valor máximo para seguro
-  
+
   // Configurações de Entrega
   deliveryZones      CarrierZone[]
-  
+
   // Tabelas de Preços Dinâmicas
   pricingTables      CarrierPricingTable[]
   estimatedDays      Int     @default(3) // Dias estimados para entrega
-  
+
   // Status e Metadados
   isActive    Boolean @default(true)
   priority    Int     @default(0) // Prioridade para seleção automática
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   // Relacionamentos
   shipments   Shipment[]
-  
+
   @@map("carriers")
 }
 
@@ -468,64 +471,64 @@ model CarrierService {
   id          String   @id @default(cuid())
   name        String   // Nome do serviço (ex: "Padrão", "Expresso", "Econômico")
   code        String   // Código do serviço
-  
+
   // Taxas específicas do serviço
   baseRate    Decimal  @default(0)
   ratePerKg   Decimal  @default(0)
   ratePerKm   Decimal  @default(0)
-  
+
   // Configurações do serviço
   estimatedDays Int    @default(3)
   isActive     Boolean @default(true)
-  
+
   // Relacionamento com transportadora
   carrierId   String
   carrier     Carrier  @relation(fields: [carrierId], references: [id], onDelete: Cascade)
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@map("carrier_services")
 }
 
 model CarrierZone {
   id          String   @id @default(cuid())
   name        String   // Nome da zona (ex: "São Paulo Capital", "Interior SP")
-  
+
   // Configurações da zona
   baseRate    Decimal  @default(0)
   ratePerKg   Decimal  @default(0)
   estimatedDays Int    @default(3)
-  
+
   // Relacionamento com transportadora
   carrierId   String
   carrier     Carrier  @relation(fields: [carrierId], references: [id], onDelete: Cascade)
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@map("carrier_zones")
 }
 
 model CarrierPricingTable {
   id          String   @id @default(cuid())
-  
+
   // Identificação da tabela
   name        String   // Nome da tabela (ex: "Packet Standard", "Packet Express")
   serviceCode String   // Código do serviço
-  
+
   // Configurações da tabela
   minWeight   Decimal  @default(0) // Peso mínimo em gramas
   maxWeight   Decimal  @default(0) // Peso máximo em gramas
   price       Decimal  @default(0) // Preço para esta faixa
-  
+
   // Relacionamento com transportadora
   carrierId   String
   carrier     Carrier  @relation(fields: [carrierId], references: [id], onDelete: Cascade)
-  
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@map("carrier_pricing_tables")
 }
 
@@ -539,7 +542,7 @@ model EmailTemplate {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@map("email_templates")
 }
 
@@ -551,21 +554,21 @@ model SupportTicket {
   status      SupportStatus @default(OPEN)
   priority    SupportPriority @default(MEDIUM)
   category    SupportCategory // Categoria do problema
-  
+
   // Relacionamentos
   userId      String
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   assignedTo  String?       // ID do admin responsável
   assignedUser User?        @relation("AssignedTickets", fields: [assignedTo], references: [id])
-  
+
   // Mensagens do ticket
   messages    SupportMessage[]
-  
+
   // Metadados
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   closedAt    DateTime?     // Data de fechamento
-  
+
   @@map("support_tickets")
 }
 
@@ -574,13 +577,13 @@ model SystemCustomization {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   key         String   @unique
   value       Json
   description String?
   isActive    Boolean  @default(true)
   version     Int      @default(1)
-  
+
   @@map("system_customization")
 }
 
@@ -588,16 +591,16 @@ model SupportMessage {
   id        String   @id @default(cuid())
   content   String   // Conteúdo da mensagem
   isFromUser Boolean // true se é do usuário, false se é do admin
-  
+
   // Relacionamentos
   ticketId  String
   ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   userId    String?       // ID do usuário (se isFromUser = true)
   user      User?         @relation(fields: [userId], references: [id])
-  
+
   // Metadados
   createdAt DateTime @default(now())
-  
+
   @@map("support_messages")
 }
 
@@ -627,25 +630,25 @@ enum SupportCategory {
 // Sistema de Dimensões de Pacotes
 model PackageDimensions {
   id                    String   @id @default(cuid())
-  
+
   length                Decimal  @db.Decimal(8,2) // cm
   width                 Decimal  @db.Decimal(8,2) // cm
   height                Decimal  @db.Decimal(8,2) // cm
   weight                Decimal  @db.Decimal(8,2) // kg
-  
+
   // Volume calculado
   volume                Decimal  @db.Decimal(10,2) // cm³
-  
+
   // Categoria de tamanho
   sizeCategory          PackageSizeCategory
-  
+
   // Relacionamentos
   packages              Package[]
   consolidationGroups   ConsolidationGroup[]
-  
+
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
   @@map("package_dimensions")
 }
 
@@ -655,23 +658,23 @@ model ProtectionService {
   name                  String   // "Bubble Wrap Extra", "Dupla Caixa"
   code                  String   @unique
   description           String?
-  
+
   // Tipo de proteção
   protectionType        ProtectionType
   category              ProtectionCategory
-  
+
   // Preços
   basePrice            Decimal  @db.Decimal(10,2)
   pricePerKg           Decimal  @db.Decimal(10,2)
   pricePerDimension    Decimal  @db.Decimal(10,2)
-  
+
   // Configurações
   isActive             Boolean  @default(true)
   priority             Int      @default(0)
-  
+
   createdAt            DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
   @@map("protection_services")
 }
 
@@ -702,62 +705,62 @@ model ProtectionService {
 // Sistema de Consolidação
 model ConsolidationGroup {
   id                    String   @id @default(cuid())
-  
+
   // Identificação da caixa
   name                  String?  // Nome da caixa (opcional)
   notes                 String?  // Observações da caixa (opcional)
   boxSize               String?  // Tamanho da caixa (XS, S, M, L, XL, XXL, XXXL)
-  
+
   // Tipo de consolidação
   consolidationType     ConsolidationType
   status               ConsolidationStatus @default(OPEN) // Começa aberta
-  
+
   // Pacotes incluídos
   packages             Package[]
-  
+
   // Configurações de serviço
   extraProtection      ProtectionType[]
   removeInvoice        Boolean  @default(false)
   customInstructions   String?
-  
+
   // Peso e dimensões em tempo real
   currentWeightGrams   Int      @default(0) // Peso atual da caixa
   estimatedFinalWeightGrams Int? // Peso estimado final (com embalagem)
   maxItemsAllowed      Int      @default(20) // Máximo de itens permitidos
-  
+
   // Dimensões consolidadas (quando fechada)
   finalWeightGrams    Int?
-  
+
   // Fotos e documentação
   beforePhotos         String[] // URLs
   afterPhotos          String[] // URLs
-  
+
   // Taxas e prazos
   consolidationFee     Decimal  @db.Decimal(10,2)
   storageDaysAllowed   Int      @default(30)
   storageDaysUsed      Int      @default(0)
   storageFee           Decimal  @db.Decimal(10,2)
-  
+
   // Prazos
   openedAt             DateTime @default(now()) // Quando foi aberta
   consolidationDeadline DateTime?
   shippingDeadline     DateTime?
   closedAt             DateTime? // Quando foi fechada
-  
+
   // Rastreio
   trackingCode         String? // Código de rastreio da transportadora
-  
+
   // Relacionamentos
   userId               String
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Relacionamento com dimensões
   finalDimensionsId    String?
   finalDimensions      PackageDimensions? @relation(fields: [finalDimensionsId], references: [id])
-  
+
   createdAt            DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
   @@map("consolidation_groups")
 }
 
@@ -766,25 +769,31 @@ model Notification {
   id                    String   @id @default(cuid())
   userId                String
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Tipo e conteúdo
   type                  NotificationType
   title                 String
   message               String
   status                NotificationStatus @default(PENDING)
-  
+
+  // Link e dados relacionados
+  actionUrl             String?  // URL para onde a notificação deve levar
+  entityType            String?  // Tipo da entidade relacionada (Package, ConsolidationGroup, etc.)
+  entityId              String?  // ID da entidade relacionada
+  metadata              String?  // JSON com dados adicionais
+
   // Metadados
   sentAt                DateTime?
   readAt                DateTime?
   errorMessage          String?
-  
+
   // Configurações
   isUrgent              Boolean  @default(false)
   expiresAt              DateTime?
-  
+
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
   @@map("notifications")
 }
 
@@ -793,22 +802,54 @@ model AuditLog {
   id                    String   @id @default(cuid())
   userId                String?
   user                  User?    @relation(fields: [userId], references: [id])
-  
+
   // Ação realizada
   action                String   // CREATE, UPDATE, DELETE, etc.
   entityType            String   // Package, ConsolidationGroup, etc.
   entityId              String   // ID da entidade afetada
-  
+
   // Dados da mudança
   oldValues             String?  // JSON dos valores anteriores
   newValues             String?  // JSON dos valores novos
-  
+
   // Metadados
   ipAddress             String?
   userAgent             String?
   timestamp             DateTime @default(now())
-  
+
   @@map("audit_logs")
+}
+
+// Refresh tokens para sessões longas (rotacionados por uso)
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// Tokens de redefinição de senha (single-use)
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 // Provedores de Pagamento
@@ -829,10 +870,10 @@ model PaymentProvider {
   percentageFee         Decimal  @db.Decimal(5,4) @default(0)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
   // Relacionamentos
   payments              Payment[]
-  
+
   @@map("payment_providers")
 }
 
@@ -841,21 +882,21 @@ model Report {
   id                    String   @id @default(cuid())
   userId                String
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Configuração do relatório
   name                  String
   type                  String   // consolidation, storage, financial, etc.
   parameters            String   // JSON com parâmetros do relatório
-  
+
   // Resultados
   status                String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
   resultUrl             String?  // URL do arquivo gerado
   errorMessage          String?
-  
+
   // Metadados
   createdAt             DateTime @default(now())
   completedAt           DateTime?
-  
+
   @@map("reports")
 }
 
@@ -864,25 +905,25 @@ model UserNotificationSettings {
   id                    String   @id @default(cuid())
   userId                String   @unique
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Preferências de notificação
   emailEnabled          Boolean  @default(true)
   smsEnabled            Boolean  @default(false)
   pushEnabled           Boolean  @default(true)
   inAppEnabled          Boolean  @default(true)
-  
+
   // Tipos de notificação
   consolidationUpdates  Boolean  @default(true)
   storageWarnings       Boolean  @default(true)
   deliveryUpdates       Boolean  @default(true)
   systemAnnouncements   Boolean  @default(true)
-  
+
   // Frequência
   digestFrequency       String   @default("DAILY") // IMMEDIATE, HOURLY, DAILY, WEEKLY
-  
+
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
   @@map("user_notification_settings")
 }
 
@@ -891,7 +932,7 @@ model UserEvaluation {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Avaliações por categoria (0-10)
   communicationScore    Int     // Comunicação e resposta
   punctualityScore      Int     // Pontualidade nos pagamentos
@@ -899,20 +940,20 @@ model UserEvaluation {
   cooperationScore      Int     // Cooperação e facilidade
   problemResolutionScore Int    // Resolução de problemas
   loyaltyScore          Int     // Fidelidade e retorno
-  
+
   // Nota geral calculada
   overallScore          Decimal @db.Decimal(3, 2)
-  
+
   // Observações da avaliação
   strengths             String? // Pontos fortes
   weaknesses            String? // Pontos de melhoria
   recommendations       String? // Recomendações
-  
+
   // Metadados
   evaluatedBy           String  // ID do admin que avaliou
   evaluationDate        DateTime @default(now())
   lastUpdated           DateTime @updatedAt
-  
+
   @@map("user_evaluations")
 }
 
@@ -921,18 +962,156 @@ model UserObservation {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   // Conteúdo da observação
   title       String
   content     String
   category    String   // "GENERAL", "PAYMENT", "COMMUNICATION", "PACKAGE", "SUPPORT"
   priority    String   // "LOW", "MEDIUM", "HIGH", "CRITICAL"
-  
+
   // Metadados
   createdBy   String   // ID do admin que criou
   isPrivate   Boolean  @default(true) // Se é visível apenas para admins
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@map("user_observations")
+}
+
+// Tutoriais do Centro de Aprendizado
+model Tutorial {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  type        String   // "VIDEO", "ARTICLE"
+  duration    Int      // em minutos
+  difficulty  String   // "BEGINNER", "INTERMEDIATE", "ADVANCED"
+  videoUrl    String?  // URL do vídeo (para tutoriais de vídeo)
+  content     String?  // Conteúdo do artigo (para tutoriais de artigo)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0) // Ordem de exibição
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tutorials")
+}
+
+// Parceiros/Lojas Parceiras
+model Partner {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  logo        String   // Emoji ou URL da logo
+  url         String   // URL da loja
+  category    String   // Categoria da loja
+  discount    String   // Desconto oferecido
+  rating      Float    @default(5.0) // Avaliação da loja
+  isActive    Boolean  @default(true)
+  order       Int      @default(0) // Ordem de exibição
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("partners")
+}
+
+// Depoimentos de Clientes
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String   // Nome do cliente
+  role        String   // Cargo/função
+  company     String?  // Empresa (opcional)
+  content     String   // Conteúdo do depoimento
+  rating      Int      @default(5) // Avaliação de 1 a 5 estrelas
+  avatar      String?  // URL do avatar (opcional)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0) // Ordem de exibição
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+// Sistema de SEO e Analytics
+model SEOConfig {
+  id                    String   @id @default(cuid())
+  siteName              String
+  siteDescription       String
+  siteUrl               String
+  defaultTitle          String
+  defaultDescription    String
+  defaultKeywords       String[] // Array de palavras-chave
+  ogImage               String
+  twitterHandle         String?
+  facebookAppId         String?
+  googleSiteVerification String?
+  bingSiteVerification  String?
+  yandexSiteVerification String?
+  structuredData        Json     // Dados estruturados JSON-LD
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("seo_config")
+}
+
+model AnalyticsConfig {
+  id                    String   @id @default(cuid())
+  googleAnalyticsId     String?
+  googleTagManagerId    String?
+  facebookPixelId        String?
+  hotjarId              String?
+  mixpanelToken         String?
+  amplitudeApiKey       String?
+  customScripts         Json     // { head: string[], body: string[] }
+  trackingEvents        Json     // Configurações de eventos
+  conversionGoals       Json     // Metas de conversão
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("analytics_config")
+}
+
+model LeadCaptureForm {
+  id                    String   @id @default(cuid())
+  name                  String
+  type                  String   // popup, inline, floating, exit_intent
+  title                 String
+  description           String
+  fields                Json     // Array de campos do formulário
+  submitButtonText      String
+  successMessage        String
+  redirectUrl           String?
+  triggerSettings       Json     // Configurações de trigger
+  styling               Json     // Configurações de estilo
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("lead_capture_forms")
+}
+
+model SitemapConfig {
+  id                    String   @id @default(cuid())
+  includeBlog           Boolean  @default(true)
+  includePages          Boolean  @default(true)
+  includeProducts       Boolean  @default(false)
+  customUrls            Json     // Array de URLs customizadas
+  excludeUrls           String[] // URLs para excluir
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("sitemap_config")
+}
+
+model RobotsConfig {
+  id                    String   @id @default(cuid())
+  userAgent             String   @default("*")
+  allow                 String[] @default([])
+  disallow              String[] @default([])
+  crawlDelay            Int?
+  sitemap               String
+  customRules           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("robots_config")
 }

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentProviderService } from '@/lib/payment-providers'
 import { prisma } from '@/lib/prisma'
+import { verifyAccessToken } from '@/lib/jwt'
+type MinimalSession = { userId: string; email?: string }
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,9 +14,14 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId || !session.email) {
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || ''), email: String((payload as unknown as { email?: string }).email || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session?.userId) {
       return NextResponse.json(
         { success: false, error: 'Sessão inválida' },
         { status: 401 }
@@ -22,10 +29,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { 
-      amount, 
-      currency, 
-      providerId, 
+    const {
+      amount,
+      currency,
+      providerId,
       consolidationId
     } = body
 
@@ -40,7 +47,7 @@ export async function POST(request: NextRequest) {
     // Buscar provedor de pagamento
     const paymentProviderService = new PaymentProviderService()
     const provider = await paymentProviderService.getById(providerId)
-    
+
     if (!provider) {
       return NextResponse.json(
         { success: false, error: 'Provedor de pagamento não encontrado' },
@@ -76,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     // Gerar client secret baseado no provedor
     let clientSecret = ''
-    
+
     if (provider.code === 'STRIPE') {
       // Implementar Stripe Payment Intent
       clientSecret = `pi_${payment.intentId}_secret_${Math.random().toString(36).substr(2, 9)}`

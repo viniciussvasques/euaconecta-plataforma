@@ -11,7 +11,7 @@ interface ConsolidationListProps {
   onEdit?: (id: string) => void
 }
 
-export function ConsolidationList({ consolidations, type = 'pending', onStatusUpdate, onEdit }: ConsolidationListProps) {
+export function ConsolidationList({ consolidations, type = 'pending', onStatusUpdate }: ConsolidationListProps) {
   if (consolidations.length === 0) {
     return (
       <div className="text-center py-8">
@@ -22,7 +22,7 @@ export function ConsolidationList({ consolidations, type = 'pending', onStatusUp
           {type === 'pending' ? 'Nenhuma consolidação pendente' : 'Nenhuma consolidação em progresso'}
         </h3>
         <p className="mt-1 text-sm text-gray-500">
-          {type === 'pending' 
+          {type === 'pending'
             ? 'Todas as consolidações foram processadas ou não há solicitações pendentes.'
             : 'Todas as consolidações foram concluídas ou não há trabalhos em andamento.'
           }
@@ -71,23 +71,23 @@ export function ConsolidationList({ consolidations, type = 'pending', onStatusUp
                         Armazenamento: ${consolidation.storageFee.toFixed(2)}
                       </span>
                     </div>
-                    
+
                     {/* Informações do usuário */}
                     <div className="mt-2 text-sm text-gray-600">
                       <span className="font-medium">Cliente:</span> {consolidation.user?.name || 'N/A'} ({consolidation.user?.email || 'N/A'})
                     </div>
-                    
+
                     {/* Endereço de entrega */}
                     {consolidation.deliveryAddress && (
                       <div className="mt-1 text-sm text-gray-600">
                         <span className="font-medium">Entrega:</span> {consolidation.deliveryAddress.city}, {consolidation.deliveryAddress.state}
                       </div>
                     )}
-                    
+
                     {/* Código de rastreamento */}
                     {consolidation.trackingCode && (
                       <div className="mt-1 text-sm text-gray-600">
-                        <span className="font-medium">Rastreamento:</span> 
+                        <span className="font-medium">Rastreamento:</span>
                         <span className="ml-1 font-mono bg-gray-100 px-2 py-1 rounded text-xs">
                           {consolidation.trackingCode}
                         </span>
@@ -101,27 +101,27 @@ export function ConsolidationList({ consolidations, type = 'pending', onStatusUp
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                  type === 'pending' 
-                    ? 'bg-yellow-100 text-yellow-800' 
+                  type === 'pending'
+                    ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-blue-100 text-blue-800'
                 }`}>
                   {type === 'pending' ? 'Pendente' : 'Em Progresso'}
                 </span>
-                
-                <EditConsolidationButton 
+
+                <EditConsolidationButton
                   consolidation={consolidation}
                 />
-                <UpdateConsolidationButton 
-                  consolidation={consolidation} 
+                <UpdateConsolidationButton
+                  consolidation={consolidation}
                   type={type}
                   onStatusUpdate={onStatusUpdate}
                 />
               </div>
             </div>
-            
+
             {/* Detalhes dos pacotes */}
             <div className="mt-4 border-t border-gray-200 pt-4">
               <h5 className="text-sm font-medium text-gray-900 mb-2">Pacotes incluídos:</h5>
@@ -136,7 +136,7 @@ export function ConsolidationList({ consolidations, type = 'pending', onStatusUp
                 ))}
               </div>
             </div>
-            
+
             {/* Proteções aplicadas */}
             {consolidation.extraProtection.length > 0 && (
               <div className="mt-4 border-t border-gray-200 pt-4">
@@ -150,7 +150,7 @@ export function ConsolidationList({ consolidations, type = 'pending', onStatusUp
                 </div>
               </div>
             )}
-            
+
             {/* Resumo Financeiro */}
             <div className="mt-4 border-t border-gray-200 pt-4">
               <h5 className="text-sm font-medium text-gray-900 mb-3">Resumo Financeiro</h5>
@@ -177,7 +177,7 @@ export function ConsolidationList({ consolidations, type = 'pending', onStatusUp
                 </div>
               </div>
             </div>
-            
+
             {/* Prazos */}
             <div className="mt-4 border-t border-gray-200 pt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">

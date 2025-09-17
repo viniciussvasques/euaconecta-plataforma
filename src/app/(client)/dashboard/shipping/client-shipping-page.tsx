@@ -51,7 +51,7 @@ export function ClientShippingPage() {
       try {
         const response = await fetch('/api/auth/me')
         const data = await response.json()
-        
+
         if (response.ok && data.success) {
           setUser(data.data)
         } else {
@@ -74,7 +74,7 @@ export function ClientShippingPage() {
     } else {
       setLoading(true)
     }
-    
+
     try {
       const params = new URLSearchParams({
         userId: user.id,
@@ -93,7 +93,7 @@ export function ClientShippingPage() {
         }
       })
       const data = await response.json()
-      
+
       if (response.ok && data.success) {
         setShipments(data.data)
       } else {
@@ -126,14 +126,18 @@ export function ClientShippingPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'PENDING':
         return 'bg-yellow-100 text-yellow-800'
-      case 'in_transit':
+      case 'IN_TRANSIT':
         return 'bg-blue-100 text-blue-800'
-      case 'delivered':
+      case 'DELIVERED':
         return 'bg-green-100 text-green-800'
-      case 'cancelled':
+      case 'CANCELLED':
         return 'bg-red-100 text-red-800'
+      case 'DRAFT':
+        return 'bg-gray-100 text-gray-800'
+      case 'PROCESSING':
+        return 'bg-purple-100 text-purple-800'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -141,14 +145,18 @@ export function ClientShippingPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
+      case 'PENDING':
         return 'Pendente'
-      case 'in_transit':
+      case 'IN_TRANSIT':
         return 'Em Trânsito'
-      case 'delivered':
+      case 'DELIVERED':
         return 'Entregue'
-      case 'cancelled':
+      case 'CANCELLED':
         return 'Cancelado'
+      case 'DRAFT':
+        return 'Rascunho'
+      case 'PROCESSING':
+        return 'Processando'
       default:
         return status
     }
@@ -271,7 +279,7 @@ export function ClientShippingPage() {
               Nenhum envio encontrado
             </h3>
             <p className="text-gray-500">
-              {filter !== 'all' 
+              {filter !== 'all'
                 ? 'Tente ajustar os filtros.'
                 : 'Você ainda não tem envios registrados.'
               }
@@ -291,7 +299,7 @@ export function ClientShippingPage() {
                         {getStatusText(shipment.status)}
                       </span>
                     </div>
-                    
+
                     <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                       <div>
                         <span className="font-medium">Transportadora:</span> {shipment.outboundCarrier}
@@ -315,8 +323,8 @@ export function ClientShippingPage() {
                       </div>
                       <div>
                         <span className="font-medium">Tipo:</span> {
-                          shipment.packages.length > 0 && shipment.packages[0].consolidationGroup 
-                            ? getConsolidationTypeText(shipment.packages[0].consolidationGroup.consolidationType) 
+                          shipment.packages.length > 0 && shipment.packages[0].consolidationGroup
+                            ? getConsolidationTypeText(shipment.packages[0].consolidationGroup.consolidationType)
                             : 'N/A'
                         }
                       </div>
@@ -382,7 +390,7 @@ export function ClientShippingPage() {
                     >
                       Ver Detalhes
                     </button>
-                    
+
                     {shipment.trackingOut && (
                       <button
                         onClick={() => handleTrackShipment(shipment.trackingOut!)}

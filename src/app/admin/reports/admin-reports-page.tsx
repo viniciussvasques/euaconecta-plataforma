@@ -49,7 +49,7 @@ export function AdminReportsPage() {
 
       const response = await fetch(`/api/reports/dashboard?${params}`)
       const data = await response.json()
-      
+
       if (response.ok && data.success) {
         setReportData(data.data)
       }
@@ -73,7 +73,7 @@ export function AdminReportsPage() {
 
       const response = await fetch(`/api/reports/generate-pdf?${params}`)
       const blob = await response.blob()
-      
+
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -97,7 +97,7 @@ export function AdminReportsPage() {
 
       const response = await fetch(`/api/reports/generate-excel?${params}`)
       const blob = await response.blob()
-      
+
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -304,7 +304,7 @@ export function AdminReportsPage() {
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Top Usuários</h3>
               <div className="space-y-3">
-                {reportData.topUsers.map((user, index) => (
+                {reportData.topUsers.map((user) => (
                   <div key={user.id} className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-900">{user.name}</p>

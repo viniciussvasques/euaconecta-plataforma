@@ -52,7 +52,7 @@ export default function StoragePolicyForm() {
       if (!res.ok || !data?.success) throw new Error(data?.error || 'Erro')
       setMsg('Política criada e ativada com sucesso!')
       setTimeout(() => window.location.reload(), 800)
-    } catch (err) {
+    } catch {
       setMsg('Falha ao criar política.')
     } finally {
       setSaving(false)
@@ -149,4 +149,3 @@ export default function StoragePolicyForm() {
     </form>
   )
 }
-

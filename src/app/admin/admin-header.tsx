@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { NotificationsBell } from '@/app/components/notifications-bell'
 import { useAuth } from './auth-provider'
+import { useShell } from './ui-shell-context'
 
 export function AdminHeader() {
   const { user, logout } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const { sidebarOpen, setSidebarOpen } = useShell()
 
   // Fechar menu quando clicar fora
   useEffect(() => {
@@ -41,34 +43,45 @@ export function AdminHeader() {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="px-6 py-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-sm text-gray-500">Bem-vindo de volta, {user?.name}</p>
+    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <div className="px-3 sm:px-6 py-2 sm:py-3">
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              aria-label="Abrir menu"
+              className="p-2 text-gray-600 rounded-lg border border-gray-200 sm:hidden"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-xs sm:text-sm text-gray-500">Bem-vindo de volta, {user?.name}</p>
+            </div>
           </div>
-          
-          <div className="flex items-center space-x-4">
+
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Search */}
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white placeholder-gray-500"
-              />
+            <div className="relative hidden md:block">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
+              <input
+                type="text"
+                placeholder="Buscar..."
+                className="md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 bg-white placeholder-gray-500"
+              />
             </div>
 
             {/* Notifications */}
             <NotificationsBell />
 
             {/* Quick Actions */}
-            <div className="flex items-center space-x-2">
+            <div className="hidden sm:flex items-center space-x-2">
               <button className="p-2 text-gray-400 hover:text-gray-600" title="Adicionar Pacote">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -109,8 +122,8 @@ export function AdminHeader() {
                     <p className="text-xs text-gray-500">{user?.email}</p>
                     <p className="text-xs text-indigo-600 font-medium">{getRoleLabel(user?.role || '')}</p>
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={() => {
                       setShowUserMenu(false)
                       router.push('/admin/users')
@@ -122,8 +135,8 @@ export function AdminHeader() {
                     </svg>
                     Meu Perfil
                   </button>
-                  
-                  <button 
+
+                  <button
                     onClick={() => {
                       setShowUserMenu(false)
                       router.push('/admin/platform-config')
@@ -136,8 +149,8 @@ export function AdminHeader() {
                     </svg>
                     Configurações
                   </button>
-                  
-                  <button 
+
+                  <button
                     onClick={() => {
                       setShowUserMenu(false)
                       alert('Funcionalidade de ajuda em desenvolvimento')
@@ -149,10 +162,10 @@ export function AdminHeader() {
                     </svg>
                     Ajuda
                   </button>
-                  
+
                   <div className="border-t border-gray-100"></div>
-                  
-                  <button 
+
+                  <button
                     onClick={logout}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
                   >

@@ -1,0 +1,25 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET() {
+  try {
+    let config = await prisma.sitemapConfig.findFirst()
+
+    if (!config) {
+      config = await prisma.sitemapConfig.create({
+        data: {
+          includeBlog: true,
+          includePages: true,
+          includeProducts: false,
+          customUrls: [],
+          excludeUrls: ['/admin', '/api', '/dashboard/boxes/payment-success']
+        }
+      })
+    }
+
+    return NextResponse.json({ success: true, data: config })
+  } catch (error) {
+    console.error('Erro ao buscar configuração do sitemap:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}

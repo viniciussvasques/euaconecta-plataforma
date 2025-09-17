@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { storageService } from '@/lib/storage'
 
+// GET: lista políticas e política ativa
 export async function GET() {
   try {
-    const policies = await storageService.getAllPolicies()
-    
-    return NextResponse.json({
-      success: true,
-      data: policies
-    })
+    const [active, list] = await Promise.all([
+      storageService.getActivePolicy(),
+      storageService.getAllPolicies(),
+    ])
+    return NextResponse.json({ success: true, data: { active, list } })
   } catch (error) {
     console.error('Erro ao buscar políticas de armazenamento:', error)
-    
     return NextResponse.json(
       { success: false, error: 'Erro interno do servidor' },
       { status: 500 }
@@ -19,45 +19,50 @@ export async function GET() {
   }
 }
 
+// POST: cria e ativa uma nova política
+const StoragePolicyInput = z.object({
+  freeDays: z.number().int().min(0),
+  dailyRateSmall: z.number().int().nonnegative().optional().default(0),
+  dailyRateMedium: z.number().int().nonnegative().optional().default(0),
+  dailyRateLarge: z.number().int().nonnegative().optional().default(0),
+  dailyRatePerItem: z.number().int().nonnegative().optional().default(0),
+  flatDailyRateUsdCents: z.number().int().nonnegative().optional().default(0),
+  maxDaysAllowed: z.number().int().min(1).optional().default(90),
+  warningDays: z.number().int().min(0).optional().default(7),
+  excludeWeekends: z.boolean().optional().default(true),
+  // campos adicionais vindos do form, aceitos mas não persistidos por enquanto
+  prorateAfterFree: z.boolean().optional().default(true),
+  notifyBeforeCharge: z.boolean().optional().default(true),
+  graceExtensionDays: z.number().int().min(0).optional().default(0),
+  currency: z.string().optional().default('USD'),
+  notes: z.string().optional().default(''),
+})
+
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
-    
-    // Validar dados obrigatórios
-    if (!data.freeDays) {
-      return NextResponse.json(
-        { success: false, error: 'Período gratuito é obrigatório' },
-        { status: 400 }
-      )
-    }
-    
-    // Criar política com valores padrão para campos não enviados
-    const policyData = {
-      freeDays: data.freeDays,
-      dailyRateSmall: data.dailyRateSmall || 0,
-      dailyRateMedium: data.dailyRateMedium || 0,
-      dailyRateLarge: data.dailyRateLarge || 0,
-      dailyRatePerItem: data.dailyRatePerItem || 0,
-      flatDailyRateUsdCents: data.flatDailyRateUsdCents,
-      maxDaysAllowed: data.maxDaysAllowed || 90,
-      warningDays: data.warningDays || 7,
-      weekendCharges: false,
-      holidayCharges: false
-    }
-    
-    // Criar política
-    const policy = await storageService.create(policyData)
-    
-    return NextResponse.json({
-      success: true,
-      data: policy
-    }, { status: 201 })
-  } catch (error) {
+    const json = await request.json()
+    const input = StoragePolicyInput.parse(json)
+
+    // Mapear campos do form para a entidade de política
+    // No serviço, weekendCharges indica se DEVE cobrar fim de semana.
+    // O form envia excludeWeekends (não contar fds) => weekendCharges = !excludeWeekends
+    const created = await storageService.create({
+      freeDays: input.freeDays,
+      dailyRateSmall: input.dailyRateSmall,
+      dailyRateMedium: input.dailyRateMedium,
+      dailyRateLarge: input.dailyRateLarge,
+      dailyRatePerItem: input.dailyRatePerItem,
+      flatDailyRateUsdCents: input.flatDailyRateUsdCents,
+      maxDaysAllowed: input.maxDaysAllowed,
+      warningDays: input.warningDays,
+      weekendCharges: !input.excludeWeekends,
+      holidayCharges: false,
+    })
+
+    return NextResponse.json({ success: true, data: created })
+  } catch (error: unknown) {
     console.error('Erro ao criar política de armazenamento:', error)
-    
-    return NextResponse.json(
-      { success: false, error: 'Erro interno do servidor' },
-      { status: 500 }
-    )
+    const msg = (error as { issues?: Array<{ message: string }> })?.issues?.[0]?.message || 'Erro interno do servidor'
+    return NextResponse.json({ success: false, error: msg }, { status: 500 })
   }
 }

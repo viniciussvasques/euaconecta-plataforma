@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, Loader2 } from 'lucide-react'
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
@@ -15,7 +15,7 @@ export default function PaymentSuccessPage() {
       try {
         const sessionId = searchParams.get('session_id')
         const paymentStatus = searchParams.get('payment')
-        
+
         if (paymentStatus === 'cancelled') {
           setStatus('error')
           setMessage('Pagamento cancelado pelo usuário')
@@ -50,7 +50,7 @@ export default function PaymentSuccessPage() {
           if (confirmData.success) {
             setStatus('success')
             setMessage('Pagamento confirmado com sucesso!')
-            
+
             // Redirecionar após 3 segundos
             setTimeout(() => {
               router.push('/dashboard/boxes')
@@ -124,5 +124,25 @@ export default function PaymentSuccessPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+          <Loader2 className="h-16 w-16 text-blue-600 animate-spin mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Carregando...
+          </h1>
+          <p className="text-gray-600">
+            Aguarde enquanto carregamos a página...
+          </p>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   )
 }

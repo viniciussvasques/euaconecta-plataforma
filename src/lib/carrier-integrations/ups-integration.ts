@@ -8,7 +8,7 @@ export class UPSIntegration extends BaseCarrierIntegration {
   protected async validateCredentials(): Promise<boolean> {
     try {
       // Teste básico de autenticação com UPS API
-      const response = await this.makeRequest('/rating/v1/Rate', {
+      await this.makeRequest('/rating/v1/Rate', {
         method: 'POST',
         body: JSON.stringify({
           RateRequest: {
@@ -28,7 +28,7 @@ export class UPSIntegration extends BaseCarrierIntegration {
     }
   }
 
-  async getRates(weight: number, origin: string, destination: string, serviceType?: string): Promise<CarrierRate[]> {
+  async getRates(weight: number, origin: string, destination: string): Promise<CarrierRate[]> {
     try {
       const response = await this.makeRequest('/rating/v1/Rate', {
         method: 'POST',
@@ -70,7 +70,7 @@ export class UPSIntegration extends BaseCarrierIntegration {
       })
 
       const rates: CarrierRate[] = []
-      
+
     const rateResponse = (response as Record<string, unknown>).RateResponse as Record<string, unknown>
     if (rateResponse?.RatedShipment) {
       const shipments = Array.isArray(rateResponse.RatedShipment)

@@ -1,29 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { UserService } from '@/lib/users'
+import { verifyAccessToken } from '@/lib/jwt'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const sessionCookie = request.cookies.get('session')
-    
-    if (!sessionCookie) {
-      return NextResponse.json(
-        { success: false, error: 'Não autenticado' },
-        { status: 401 }
-      )
+    const sessionCookie = request.cookies.get('session')?.value
+    if (!sessionCookie) return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 })
+
+    // Tenta JWT
+    let userId: string | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie)
+      userId = String(payload.sub || '')
+    } catch {
+      // Legacy JSON cookie
+      try {
+        const legacy = JSON.parse(sessionCookie)
+        userId = legacy?.userId || null
+      } catch {}
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    
-    if (!session || !session.userId) {
-      return NextResponse.json(
-        { success: false, error: 'Não autenticado' },
-        { status: 401 }
-      )
-    }
+    if (!userId) return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 })
 
-    // Buscar dados completos do usuário
-    const user = await UserService.getUserById(session.userId)
-    
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: 'Usuário não encontrado' },
@@ -33,11 +33,29 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: user
+      data: {
+        userId: user.id,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        permissions: user.permissions || [],
+        canManageUsers: user.canManageUsers || false,
+        canManageConsolidations: user.canManageConsolidations || false,
+        canManagePackages: user.canManagePackages || false,
+        canManageCarriers: user.canManageCarriers || false,
+        canViewFinancials: user.canViewFinancials || false,
+        canManageSettings: user.canManageSettings || false,
+        cpf: user.cpf || null,
+        phone: user.phone || null,
+        suiteNumber: user.suiteNumber || null,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin || null,
+      }
     })
   } catch (error) {
     console.error('Erro ao verificar sessão:', error)
-    
+
     return NextResponse.json(
       { success: false, error: 'Erro interno do servidor' },
       { status: 500 }

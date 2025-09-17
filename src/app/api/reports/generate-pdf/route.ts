@@ -78,11 +78,11 @@ export async function GET(request: NextRequest) {
 
     // Generate PDF
     const doc = new jsPDF()
-    
+
     // Header
     doc.setFontSize(20)
     doc.text('Relatório de Consolidações', 20, 30)
-    
+
     doc.setFontSize(12)
     doc.text(`Período: ${startDate} a ${endDate}`, 20, 45)
     doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 20, 55)
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     // Summary
     doc.setFontSize(16)
     doc.text('Resumo Geral', 20, 75)
-    
+
     doc.setFontSize(12)
     doc.text(`Total de Usuários: ${totalUsers}`, 20, 90)
     doc.text(`Total de Pacotes: ${totalPackages}`, 20, 100)
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     doc.text('Data', 160, yPosition)
     yPosition += 10
 
-    consolidations.forEach((consolidation, index) => {
+    consolidations.forEach((consolidation) => {
       if (yPosition > 280) {
         doc.addPage()
         yPosition = 20
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
       }
 
       const totalValue = Number(consolidation.consolidationFee) + Number(consolidation.storageFee)
-      
+
       doc.text(consolidation.id.substring(0, 8), 20, yPosition)
       doc.text(consolidation.user.name || 'Sem nome', 40, yPosition)
       doc.text(consolidation.status, 80, yPosition)
@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
     }
 
     const pdfBuffer = doc.output('arraybuffer')
-    
+
     return new NextResponse(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',

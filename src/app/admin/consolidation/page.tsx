@@ -2,31 +2,31 @@ import { consolidationService } from '@/lib/consolidation'
 import { ConsolidationManager } from './consolidation-manager'
 import CreateConsolidationButton from './create-consolidation-button'
 
-interface ConsolidationGroup {
-  id: string
-  name?: string
-  status: string
-  userId: string
-  createdAt: Date
-  updatedAt: Date
-  consolidationType?: string
-  consolidationFee?: number
-  storageFee?: number
-  extraProtection?: boolean
-  finalWeightGrams?: number
-  trackingCode?: string
-  user?: { id: string; name: string; email: string }
-  deliveryAddress?: { name: string; line1: string; line2?: string; city: string; state: string; postalCode: string; country: string }
-  packages?: Array<{
-    id: string
-    description?: string
-    weightGrams?: number
-    status: string
-    createdAt: Date
-  }>
-  consolidationDeadline?: Date
-  shippingDeadline?: Date
-}
+// interface ConsolidationGroup {
+//   id: string
+//   name?: string
+//   status: string
+//   userId: string
+//   createdAt: Date
+//   updatedAt: Date
+//   consolidationType?: string
+//   consolidationFee?: number
+//   storageFee?: number
+//   extraProtection?: boolean
+//   finalWeightGrams?: number
+//   trackingCode?: string
+//   user?: { id: string; name: string; email: string }
+//   deliveryAddress?: { name: string; line1: string; line2?: string; city: string; state: string; postalCode: string; country: string }
+//   packages?: Array<{
+//     id: string
+//     description?: string
+//     weightGrams?: number
+//     status: string
+//     createdAt: Date
+//   }>
+//   consolidationDeadline?: Date
+//   shippingDeadline?: Date
+// }
 
 export default async function ConsolidationPage() {
   // Buscar consolidações por status
@@ -35,11 +35,11 @@ export default async function ConsolidationPage() {
   const inProgressConsolidations = await consolidationService.getByStatus('IN_PROGRESS')
   const readyToShipConsolidations = await consolidationService.getByStatus('READY_TO_SHIP')
   const shippedConsolidations = await consolidationService.getByStatus('SHIPPED')
-  
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gerenciamento de Consolidações</h1>
           <p className="mt-2 text-sm text-gray-700">
@@ -50,7 +50,7 @@ export default async function ConsolidationPage() {
       </div>
 
       {/* Dashboard Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-4">
             <div className="flex items-center">
@@ -173,7 +173,7 @@ export default async function ConsolidationPage() {
       </div>
 
       {/* Tabs de Consolidações */}
-      <ConsolidationManager 
+      <ConsolidationManager
         initialOpenConsolidations={openConsolidations}
         initialPendingConsolidations={pendingConsolidations}
         initialInProgressConsolidations={inProgressConsolidations}

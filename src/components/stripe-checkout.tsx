@@ -12,7 +12,7 @@ interface StripeCheckoutProps {
   onError: (error: string) => void
 }
 
-export function StripeCheckout({ amount, currency, description, consolidationId, onSuccess, onError }: StripeCheckoutProps) {
+export function StripeCheckout({ amount, currency, description, consolidationId, onError }: StripeCheckoutProps) {
   const [stripe, setStripe] = useState<Stripe | null>(null)
   const [loading, setLoading] = useState(false)
   const [stripeConfig, setStripeConfig] = useState<{apiKey?: string} | null>(null)
@@ -23,7 +23,7 @@ export function StripeCheckout({ amount, currency, description, consolidationId,
       try {
         const response = await fetch('/api/payment-providers')
         const data = await response.json()
-        
+
         if (data.success) {
           const stripeProvider = data.providers.find((p: { code: string; apiKey?: string }) => p.code === 'STRIPE')
           if (stripeProvider) {
@@ -50,7 +50,7 @@ export function StripeCheckout({ amount, currency, description, consolidationId,
       const stripeInstance = await loadStripe(stripeConfig.apiKey)
       setStripe(stripeInstance)
     }
-    
+
     if (stripeConfig) {
       initializeStripe()
     }

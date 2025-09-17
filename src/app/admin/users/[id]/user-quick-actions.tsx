@@ -16,8 +16,8 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
     isActive: user.isActive,
     role: user.role
   })
-  const [suiteNumber, setSuiteNumber] = useState(user.suiteNumber?.toString() || '')
-  const [isEditingSuite, setIsEditingSuite] = useState(false)
+  const [, setSuiteNumber] = useState(user.suiteNumber?.toString() || '')
+  // const [, setIsEditingSuite] = useState(false) // Removido - não usado
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
@@ -112,9 +112,9 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
 
       if (response.ok && data.success) {
         onUserUpdate(data.data)
-        setMessage({ 
-          type: 'success', 
-          text: `Usuário ${newStatus ? 'ativado' : 'desativado'} com sucesso!` 
+        setMessage({
+          type: 'success',
+          text: `Usuário ${newStatus ? 'ativado' : 'desativado'} com sucesso!`
         })
       } else {
         setMessage({ type: 'error', text: data.error || 'Erro ao alterar status' })
@@ -131,8 +131,8 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
       {/* Mensagem de Status */}
       {message && (
         <div className={`p-4 rounded-md ${
-          message.type === 'success' 
-            ? 'bg-green-50 text-green-800 border border-green-200' 
+          message.type === 'success'
+            ? 'bg-green-50 text-green-800 border border-green-200'
             : 'bg-red-50 text-red-800 border border-red-200'
         }`}>
           {message.text}
@@ -216,7 +216,7 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
                 </select>
               ) : (
                 <p className="mt-1 text-gray-900">
-                  {user.role === 'CLIENT' ? 'Cliente' : 
+                  {user.role === 'CLIENT' ? 'Cliente' :
                    user.role === 'ADMIN' ? 'Administrador' :
                    user.role === 'OPERATOR' ? 'Operador' :
                    user.role === 'MANAGER' ? 'Gerente' : 'Suporte'}
@@ -229,7 +229,7 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
         {/* Ações de Status */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">⚡ Ações Rápidas</h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div>
@@ -288,7 +288,7 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
       {user.role === 'CLIENT' && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">🏢 Gerenciamento de Suite</h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
               <div>
@@ -336,7 +336,7 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
       {/* Informações de Conta */}
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">ℹ️ Informações da Conta</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h4 className="font-medium text-gray-900 mb-2">Datas Importantes</h4>

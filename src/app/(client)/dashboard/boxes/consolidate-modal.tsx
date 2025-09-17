@@ -78,6 +78,17 @@ interface ConsolidateModalProps {
   onSuccess: () => void
 }
 
+// Tabela de pesos das caixas baseada no tamanho (fora do componente para estabilidade de referência)
+const BOX_WEIGHTS = {
+  'XS': 50,    // 50g
+  'S': 100,    // 100g
+  'M': 150,    // 150g
+  'L': 200,    // 200g
+  'XL': 300,   // 300g
+  'XXL': 500,  // 500g
+  'XXXL': 800  // 800g
+}
+
 export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -97,24 +108,13 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [consolidationId, setConsolidationId] = useState<string>('')
 
-  // Tabela de pesos das caixas baseada no tamanho
-  const BOX_WEIGHTS = {
-    'XS': 50,    // 50g
-    'S': 100,    // 100g
-    'M': 150,    // 150g
-    'L': 200,    // 200g
-    'XL': 300,   // 300g
-    'XXL': 500,  // 500g
-    'XXXL': 800  // 800g
-  }
-
   // Calcular peso total (caixa + pacotes + itens adicionais)
   const calculateTotalWeight = useCallback(() => {
     const boxWeight = BOX_WEIGHTS[box.boxSize as keyof typeof BOX_WEIGHTS] || 200
     const packagesWeight = box.packages.reduce((total, pkg) => total + (pkg.weightGrams || 0), 0)
     const additionalWeight = formData.doubleBox ? 100 : 0 // 100g para caixa dupla
     const bubbleWrapWeight = formData.bubbleWrap ? 50 : 0 // 50g para plástico bolha
-    
+
     return boxWeight + packagesWeight + additionalWeight + bubbleWrapWeight
   }, [box.boxSize, box.packages, formData.doubleBox, formData.bubbleWrap])
 
@@ -124,7 +124,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
       try {
         const response = await fetch('/api/addresses')
         const data = await response.json()
-        
+
         if (data.success) {
           setAddresses(data.data)
           // Selecionar endereço padrão automaticamente
@@ -142,7 +142,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
       try {
         const response = await fetch('/api/carriers/active')
         const data = await response.json()
-        
+
         if (data.success) {
           setCarriers(data.data)
           // Selecionar ABC automaticamente se disponível
@@ -151,14 +151,14 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
             setSelectedCarrierId(abcCarrier.id)
           }
         }
-      } catch {
-        console.error('Erro ao buscar transportadoras:', error)
+      } catch (err) {
+        console.error('Erro ao buscar transportadoras:', err)
       }
     }
 
     fetchAddresses()
     fetchCarriers()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Calcular frete quando mudanças ocorrem
   useEffect(() => {
@@ -168,7 +168,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
       setCalculatingFreight(true)
       try {
         const totalWeight = calculateTotalWeight()
-        
+
         const response = await fetch('/api/freight/calculate', {
           method: 'POST',
           headers: {
@@ -183,14 +183,14 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
         })
 
         const data = await response.json()
-        
+
         if (data.success) {
           setFreightCalculation(data.data)
         } else {
           console.error('Erro ao calcular frete:', data.error)
         }
-      } catch {
-        console.error('Erro ao calcular frete:', error)
+      } catch (err) {
+        console.error('Erro ao calcular frete:', err)
       } finally {
         setCalculatingFreight(false)
       }
@@ -201,7 +201,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!freightCalculation) {
       setError('Aguardando cálculo de frete...')
       return
@@ -216,9 +216,9 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
       setError('Selecione uma transportadora')
       return
     }
-    
+
     setError('')
-    
+
     // Abrir modal de pagamento em vez de consolidar diretamente
     setConsolidationId(box.id)
     setShowPaymentModal(true)
@@ -249,14 +249,14 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
       })
 
       const data = await response.json()
-      
+
       if (data.success) {
         onSuccess()
         onClose()
       } else {
         setError(data.error || 'Erro ao consolidar caixa')
       }
-    } catch (error) {
+    } catch {
       setError('Erro ao consolidar caixa')
     } finally {
       setLoading(false)
@@ -375,14 +375,14 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
                 <MapPin className="h-5 w-5 mr-2" />
                 Endereço de Entrega
               </h3>
-              
+
               {addresses.length === 0 ? (
                 <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
                   <p className="text-yellow-800 text-sm">
                     Você precisa cadastrar pelo menos um endereço de entrega nas suas configurações.
                   </p>
-                  <a 
-                    href="/dashboard/settings" 
+                  <a
+                    href="/dashboard/settings"
                     className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2 inline-block"
                   >
                     Ir para Configurações →
@@ -438,7 +438,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
                 <Truck className="h-5 w-5 mr-2" />
                 Transportadora
               </h3>
-              
+
               {carriers.length === 0 ? (
                 <div className="p-4 border border-yellow-200 rounded-lg bg-yellow-50">
                   <p className="text-yellow-800 text-sm">
@@ -495,10 +495,10 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
                 <Truck className="h-5 w-5 mr-2" />
                 Serviço de Frete
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Standard */}
-                <div 
+                <div
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.serviceType === 'STANDARD'
                       ? 'border-green-500 bg-green-50'
@@ -526,7 +526,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
                 </div>
 
                 {/* Express */}
-                <div 
+                <div
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                     formData.serviceType === 'EXPRESS'
                       ? 'border-green-500 bg-green-50'
@@ -586,7 +586,7 @@ export function ConsolidateModal({ box, onClose, onSuccess }: ConsolidateModalPr
             {/* Itens Adicionais */}
             <div>
               <h3 className="font-medium text-gray-900 mb-4">Itens Adicionais</h3>
-              
+
               <div className="space-y-4">
                 {/* Caixa Dupla */}
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">

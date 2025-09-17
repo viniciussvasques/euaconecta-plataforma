@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyAccessToken } from '@/lib/jwt'
+type MinimalSession = { userId: string; role: string }
 
 function ensureAdmin(session: { role?: string }) {
   return session && ['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(session.role || '')
@@ -12,13 +14,24 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const sessionCookie = request.cookies.get('session')
-  if (!sessionCookie) return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
-  const session = JSON.parse(sessionCookie.value)
-  if (!ensureAdmin(session)) return NextResponse.json({ success: false, error: 'Acesso negado' }, { status: 403 })
+  if (!sessionCookie) {
+    return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
+  }
+  try {
+    // Validar JWT ou aceitar legado
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || ''), role: String((payload as unknown as { role?: string }).role || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session || !ensureAdmin(session)) return NextResponse.json({ success: false, error: 'Acesso negado' }, { status: 403 })
+  } catch {
+    return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
+  }
 
   const body = await request.json()
   const created = await prisma.warehouseAddress.create({ data: body })
   return NextResponse.json({ success: true, data: created })
 }
-
-

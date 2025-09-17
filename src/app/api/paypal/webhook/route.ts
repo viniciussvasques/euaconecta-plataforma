@@ -1,24 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { EmailService } from '@/lib/email'
+import { EventService, SystemEvent } from '@/lib/events'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
-    // Verificar se é um evento de pagamento aprovado
-    if (body.event_type === 'PAYMENT.CAPTURE.COMPLETED') {
-      const resource = body.resource
-      const orderId = resource.custom_id
-      
-      if (!orderId) {
-        console.log('Order ID not found in PayPal webhook')
-        return NextResponse.json({ error: 'Order ID not found' }, { status: 400 })
-      }
+    const eventType = body.event_type
 
-      // Buscar o pagamento no banco
-      const payment = await prisma.payment.findFirst({
-        where: { 
+    console.log(`PayPal webhook received: ${eventType}`)
+
+    // Função auxiliar para buscar pagamento
+    const findPayment = async (orderId: string) => {
+      return await prisma.payment.findFirst({
+        where: {
           intentId: orderId,
           providerCode: 'PAYPAL'
         },
@@ -26,9 +21,57 @@ export async function POST(request: NextRequest) {
           user: true
         }
       })
+    }
 
+    // Função auxiliar para enviar email de confirmação
+    const sendConfirmationEmail = async (payment: { id: string; user: { email: string; name: string }; amountCents: number }) => {
+      if (payment.user) {
+        await EmailService.sendMail({
+          to: payment.user.email,
+          subject: '✅ Pagamento Confirmado - Euaconecta',
+          html: EmailService.paymentConfirmationEmail(
+            payment.user.name,
+            Number(payment.amountCents) / 100,
+            'PayPal',
+            payment.id
+          )
+        })
+      }
+    }
+
+    // Eventos de Checkout/Order
+    if (eventType === 'CHECKOUT.ORDER.APPROVED') {
+      const resource = body.resource
+      const orderId = resource.id
+      console.log('PayPal order approved:', orderId)
+    }
+
+    if (eventType === 'CHECKOUT.ORDER.VOIDED') {
+      const resource = body.resource
+      const orderId = resource.id
+
+      const payment = await findPayment(orderId)
       if (payment) {
-        // Atualizar status do pagamento
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: { status: 'cancelled' }
+        })
+        console.log('PayPal order voided:', orderId)
+      }
+    }
+
+    // Eventos de Payment Capture
+    if (eventType === 'PAYMENT.CAPTURE.COMPLETED') {
+      const resource = body.resource
+      const orderId = resource.custom_id || resource.id
+
+      if (!orderId) {
+        console.log('Order ID not found in PayPal webhook')
+        return NextResponse.json({ error: 'Order ID not found' }, { status: 400 })
+      }
+
+      const payment = await findPayment(orderId)
+      if (payment) {
         await prisma.payment.update({
           where: { id: payment.id },
           data: {
@@ -37,52 +80,145 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // Enviar email de confirmação
-        if (payment.user) {
-          await EmailService.sendMail({
-            to: payment.user.email,
-            subject: '✅ Pagamento Confirmado - Euaconecta',
-            html: EmailService.paymentConfirmationEmail(
-              payment.user.name,
-              Number(payment.amountCents) / 100,
-              'PayPal',
-              payment.id
-            )
-          })
-        }
+        // Emitir evento de pagamento bem-sucedido
+        await EventService.emit(SystemEvent.PAYMENT_SUCCEEDED, {
+          userId: payment.userId,
+          entityType: 'Payment',
+          entityId: payment.id,
+          metadata: {
+            amount: payment.amountCents,
+            provider: 'paypal',
+            currency: payment.currency
+          }
+        })
 
+        await sendConfirmationEmail(payment)
         console.log('PayPal payment succeeded:', orderId)
       } else {
         console.log('Payment not found for order ID:', orderId)
       }
     }
 
-    // Verificar se é um evento de pagamento cancelado
-    if (body.event_type === 'PAYMENT.CAPTURE.DENIED') {
+    if (eventType === 'PAYMENT.CAPTURE.DENIED') {
       const resource = body.resource
-      const orderId = resource.custom_id
-      
-      if (orderId) {
-        await prisma.payment.updateMany({
-          where: { 
-            intentId: orderId,
-            providerCode: 'PAYPAL'
-          },
-          data: {
-            status: 'failed'
-          }
-        })
+      const orderId = resource.custom_id || resource.id
 
-        console.log('PayPal payment failed:', orderId)
+      if (orderId) {
+        const payment = await findPayment(orderId)
+        if (payment) {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: { status: 'failed' }
+          })
+
+          // Emitir evento de pagamento falhado
+          await EventService.emit(SystemEvent.PAYMENT_FAILED, {
+            userId: payment.userId,
+            entityType: 'Payment',
+            entityId: payment.id,
+            metadata: {
+              amount: payment.amountCents,
+              provider: 'paypal',
+              currency: payment.currency,
+              reason: 'payment_denied'
+            }
+          })
+        }
+        console.log('PayPal payment denied:', orderId)
       }
     }
 
-    // Verificar se é um evento de pagamento cancelado pelo usuário
-    if (body.event_type === 'CHECKOUT.ORDER.APPROVED') {
+    if (eventType === 'PAYMENT.CAPTURE.REFUNDED') {
       const resource = body.resource
-      const orderId = resource.id
-      
-      console.log('PayPal order approved:', orderId)
+      const orderId = resource.custom_id || resource.id
+
+      if (orderId) {
+        const payment = await findPayment(orderId)
+        if (payment) {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: { status: 'refunded' }
+          })
+        }
+        console.log('PayPal payment refunded:', orderId)
+      }
+    }
+
+    if (eventType === 'PAYMENT.CAPTURE.REVERSED') {
+      const resource = body.resource
+      const orderId = resource.custom_id || resource.id
+
+      if (orderId) {
+        const payment = await findPayment(orderId)
+        if (payment) {
+          await prisma.payment.update({
+            where: { id: payment.id },
+            data: { status: 'reversed' }
+          })
+        }
+        console.log('PayPal payment reversed:', orderId)
+      }
+    }
+
+    // Eventos de Authorization
+    if (eventType === 'PAYMENT.AUTHORIZATION.CREATED') {
+      const resource = body.resource
+      const orderId = resource.custom_id || resource.id
+      console.log('PayPal authorization created:', orderId)
+    }
+
+    if (eventType === 'PAYMENT.AUTHORIZATION.VOIDED') {
+      const resource = body.resource
+      const orderId = resource.custom_id || resource.id
+      console.log('PayPal authorization voided:', orderId)
+    }
+
+    // Eventos de Billing Subscription (para futuras implementações)
+    if (eventType === 'BILLING.SUBSCRIPTION.CREATED') {
+      const resource = body.resource
+      console.log('PayPal subscription created:', resource.id)
+    }
+
+    if (eventType === 'BILLING.SUBSCRIPTION.ACTIVATED') {
+      const resource = body.resource
+      console.log('PayPal subscription activated:', resource.id)
+    }
+
+    if (eventType === 'BILLING.SUBSCRIPTION.CANCELLED') {
+      const resource = body.resource
+      console.log('PayPal subscription cancelled:', resource.id)
+    }
+
+    if (eventType === 'BILLING.SUBSCRIPTION.EXPIRED') {
+      const resource = body.resource
+      console.log('PayPal subscription expired:', resource.id)
+    }
+
+    // Eventos de Dispute (para monitoramento)
+    if (eventType === 'CUSTOMER.DISPUTE.CREATED') {
+      const resource = body.resource
+      console.log('PayPal dispute created:', resource.dispute_id)
+    }
+
+    if (eventType === 'CUSTOMER.DISPUTE.RESOLVED') {
+      const resource = body.resource
+      console.log('PayPal dispute resolved:', resource.dispute_id)
+    }
+
+    // Eventos de Payout (para futuras implementações)
+    if (eventType === 'PAYOUTS.PAYOUT.CREATED') {
+      const resource = body.resource
+      console.log('PayPal payout created:', resource.payout_batch_id)
+    }
+
+    if (eventType === 'PAYOUTS.PAYOUT.SUCCEEDED') {
+      const resource = body.resource
+      console.log('PayPal payout succeeded:', resource.payout_batch_id)
+    }
+
+    if (eventType === 'PAYOUTS.PAYOUT.FAILED') {
+      const resource = body.resource
+      console.log('PayPal payout failed:', resource.payout_batch_id)
     }
 
     return NextResponse.json({ received: true })

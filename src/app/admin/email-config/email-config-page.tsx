@@ -16,6 +16,10 @@ export function EmailConfigPage() {
   const [loading, setLoading] = useState(true)
   const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null)
   const [saving, setSaving] = useState(false)
+  const [verifying, setVerifying] = useState(false)
+  const [verifyResult, setVerifyResult] = useState<string>('')
+  const [testTo, setTestTo] = useState<string>('')
+  const [sendingTest, setSendingTest] = useState(false)
 
   useEffect(() => {
     fetchTemplates()
@@ -25,7 +29,7 @@ export function EmailConfigPage() {
     try {
       const response = await fetch('/api/email-templates')
       const data = await response.json()
-      
+
       if (data.success) {
         setTemplates(data.data)
       }
@@ -48,9 +52,9 @@ export function EmailConfigPage() {
       })
 
       const data = await response.json()
-      
+
       if (data.success) {
-        setTemplates(prev => 
+        setTemplates(prev =>
           prev.map(t => t.id === template.id ? template : t)
         )
         setEditingTemplate(null)
@@ -97,6 +101,74 @@ export function EmailConfigPage() {
         </p>
       </div>
 
+      {/* SMTP Actions */}
+      <div className="bg-white shadow rounded-lg p-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-medium text-gray-900">Conexão SMTP</h2>
+            <p className="text-sm text-gray-600">Verifique a conexão e envie um e-mail de teste.</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={async () => {
+                setVerifying(true)
+                setVerifyResult('')
+                try {
+                  const res = await fetch('/api/admin/email/verify')
+                  const data = await res.json()
+                  setVerifyResult(data.success ? 'Conexão SMTP verificada com sucesso.' : (data.error || 'Falha na verificação.'))
+                } catch {
+                  setVerifyResult('Erro ao verificar SMTP.')
+                } finally {
+                  setVerifying(false)
+                }
+              }}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+              disabled={verifying}
+            >
+              {verifying ? 'Verificando...' : 'Verificar SMTP'}
+            </button>
+            <div className="flex items-center gap-2">
+              <input
+                type="email"
+                value={testTo}
+                onChange={(e) => setTestTo(e.target.value)}
+                placeholder="destinatario@exemplo.com"
+                className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={async () => {
+                  if (!testTo) return
+                  setSendingTest(true)
+                  try {
+                    const res = await fetch('/api/admin/email/test-send', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ to: testTo })
+                    })
+                    const data = await res.json()
+                    setVerifyResult(data.success ? 'Email de teste enviado.' : (data.error || 'Falha ao enviar email de teste.'))
+                  } catch {
+                    setVerifyResult('Erro ao enviar email de teste.')
+                  } finally {
+                    setSendingTest(false)
+                  }
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50"
+                disabled={sendingTest || !testTo}
+              >
+                {sendingTest ? 'Enviando...' : 'Enviar teste'}
+              </button>
+            </div>
+          </div>
+        </div>
+        {verifyResult && (
+          <p className="mt-3 text-sm {verifyResult.includes('sucesso') ? 'text-green-700' : 'text-gray-700'}">
+            {verifyResult}
+          </p>
+        )}
+      </div>
+
       {/* Templates List */}
       <div className="bg-white shadow rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
@@ -115,14 +187,14 @@ export function EmailConfigPage() {
                       {getTemplateTypeText(template.type)}
                     </h3>
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      template.isActive 
-                        ? 'bg-green-100 text-green-800' 
+                      template.isActive
+                        ? 'bg-green-100 text-green-800'
                         : 'bg-gray-100 text-gray-800'
                     }`}>
                       {template.isActive ? 'Ativo' : 'Inativo'}
                     </span>
                   </div>
-                  
+
                   <div className="mt-2">
                     <p className="text-sm font-medium text-gray-700">
                       Assunto: {template.subject}

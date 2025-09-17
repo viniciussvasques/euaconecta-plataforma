@@ -70,17 +70,17 @@ export function UserEvaluation({ userId }: UserEvaluationProps) {
     loadEvaluation()
   }, [userId])
 
-  const calculateOverallScore = () => {
-    const scores = [
-      editData.communicationScore,
-      editData.punctualityScore,
-      editData.packageCareScore,
-      editData.cooperationScore,
-      editData.problemResolutionScore,
-      editData.loyaltyScore
-    ]
-    return (scores.reduce((sum, score) => sum + score, 0) / scores.length).toFixed(2)
-  }
+  // const calculateOverallScore = () => {
+  //   const scores = [
+  //     editData.communicationScore,
+  //     editData.punctualityScore,
+  //     editData.packageCareScore,
+  //     editData.cooperationScore,
+  //     editData.problemResolutionScore,
+  //     editData.loyaltyScore
+  //   ]
+  //   return (scores.reduce((sum, score) => sum + score, 0) / scores.length).toFixed(2)
+  // }
 
   const handleSave = async () => {
     setSaving(true)
@@ -104,7 +104,7 @@ export function UserEvaluation({ userId }: UserEvaluationProps) {
       } else {
         setMessage({ type: 'error', text: data.error || 'Erro ao salvar avaliação' })
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão' })
     } finally {
       setSaving(false)
@@ -159,8 +159,8 @@ export function UserEvaluation({ userId }: UserEvaluationProps) {
       {/* Mensagem de Status */}
       {message && (
         <div className={`p-4 rounded-md ${
-          message.type === 'success' 
-            ? 'bg-green-50 text-green-800 border border-green-200' 
+          message.type === 'success'
+            ? 'bg-green-50 text-green-800 border border-green-200'
             : 'bg-red-50 text-red-800 border border-red-200'
         }`}>
           {message.text}
@@ -173,7 +173,7 @@ export function UserEvaluation({ userId }: UserEvaluationProps) {
           <h3 className="text-lg font-semibold text-gray-900">⭐ Avaliação Interna do Cliente</h3>
           <p className="text-sm text-gray-500">Avaliação confidencial para uso administrativo</p>
         </div>
-        
+
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
@@ -265,7 +265,7 @@ export function UserEvaluation({ userId }: UserEvaluationProps) {
       {(evaluation || isEditing) && (
         <div className="space-y-4">
           <h4 className="text-lg font-semibold text-gray-900">Observações</h4>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Pontos Fortes</label>

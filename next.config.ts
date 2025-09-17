@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -21,6 +22,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Configuração para permitir cross-origin requests em desenvolvimento
+  allowedDevOrigins: [
+    'app.euaconecta.com',
+    'euaconecta.com',
+    'www.euaconecta.com'
+  ],
 };
 
 export default nextConfig;

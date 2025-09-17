@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 export function LoginForm() {
@@ -137,6 +138,9 @@ export function LoginForm() {
             'Entrar'
           )}
         </button>
+        <div className="mt-3 text-sm">
+          <Link href="/auth/forgot" className="text-blue-600 hover:underline">Esqueci minha senha</Link>
+        </div>
       </div>
     </form>
   )

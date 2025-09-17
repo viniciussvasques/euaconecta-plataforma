@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { addressService } from '@/lib/addresses'
+import { verifyAccessToken } from '@/lib/jwt'
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,12 +10,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId) {
+    let userId: string | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+    } catch {
+      try {
+        const legacy = JSON.parse(sessionCookie.value)
+        userId = legacy?.userId || null
+      } catch {}
+    }
+    if (!userId) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const addresses = await addressService.getByUserId(session.userId)
+    const addresses = await addressService.getByUserId(userId)
 
     return NextResponse.json({
       success: true,
@@ -37,8 +47,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId) {
+    let userId: string | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+    } catch {
+      try {
+        const legacy = JSON.parse(sessionCookie.value)
+        userId = legacy?.userId || null
+      } catch {}
+    }
+    if (!userId) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
@@ -54,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     const address = await addressService.create({
-      userId: session.userId,
+      userId,
       name,
       line1,
       line2,

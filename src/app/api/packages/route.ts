@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { NotificationService } from '@/lib/notifications'
-import { NotificationType } from '@prisma/client'
+import { EventService, SystemEvent } from '@/lib/events'
 
 // GET /api/packages - Listar pacotes
 export async function GET(request: NextRequest) {
@@ -12,11 +11,11 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit')
 
     const where: Record<string, string | { in: string[] }> = {}
-    
+
     if (userId) {
       where.ownerId = userId
     }
-    
+
     if (filter !== 'all') {
       where.status = filter
     }
@@ -51,7 +50,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     const {
       ownerId,
       description,
@@ -123,17 +122,30 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Notificações: cliente e administradores
-    await NotificationService.create({
+    // Emitir eventos: cliente e administradores
+    await EventService.emit(SystemEvent.PACKAGE_CREATED, {
       userId: ownerId,
-      type: NotificationType.IN_APP,
-      title: 'Pacote criado',
-      message: `Seu pacote "${description}" foi registrado e aguarda confirmação.`,
+      entityType: 'Package',
+      entityId: packageData.id,
+      metadata: {
+        description,
+        store,
+        orderNumber,
+        ownerName: packageData.owner?.name
+      }
     })
-    await NotificationService.notifyAdmins({
-      type: NotificationType.IN_APP,
-      title: 'Novo pacote pendente',
-      message: `Novo pacote criado por cliente (${packageData.owner?.name || 'Cliente'}) aguardando confirmação.`,
+
+    // Notificar administradores sobre novo pacote
+    await EventService.emitToAdmins(SystemEvent.PACKAGE_CREATED, {
+      entityType: 'Package',
+      entityId: packageData.id,
+      metadata: {
+        description,
+        store,
+        orderNumber,
+        ownerName: packageData.owner?.name,
+        isAdminNotification: true
+      }
     })
 
     return NextResponse.json({ success: true, data: packageData }, { status: 201 })

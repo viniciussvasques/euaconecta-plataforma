@@ -99,11 +99,11 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
       try {
         const response = await fetch(`/api/packages?userId=${user.id}&filter=RECEIVED`)
         const data = await response.json()
-        
+
         if (response.ok && data.success) {
           // Filtrar apenas pacotes que não estão em nenhuma consolidação
-          const available = data.data.filter((pkg: Package) => 
-            pkg.status === 'RECEIVED' && 
+          const available = data.data.filter((pkg: Package) =>
+            pkg.status === 'RECEIVED' &&
             !(pkg as { consolidationGroupId?: string }).consolidationGroupId // Pacote não está em nenhuma consolidação
           )
           setAvailablePackages(available)
@@ -119,22 +119,19 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
   }, [user])
 
   const handlePackageToggle = (packageId: string) => {
-    setSelectedPackages(prev => 
-      prev.includes(packageId) 
+    setSelectedPackages(prev =>
+      prev.includes(packageId)
         ? prev.filter(id => id !== packageId)
         : [...prev, packageId]
     )
   }
 
-  const getSelectedBoxSize = () => {
-    return BOX_SIZES.find(size => size.id === formData.boxSize)
-  }
 
   // Removido cálculo de frete - será feito apenas na consolidação
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!user) {
       setError('Usuário não encontrado')
       return
@@ -217,7 +214,7 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
             <label className="block text-sm font-medium text-gray-700 mb-4">
               Escolha o Tamanho da Caixa
             </label>
-            
+
             {/* Grid de caixas com animação visual */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {BOX_SIZES.map((size) => (
@@ -232,7 +229,7 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
                 >
                   {/* Ícone da caixa com tamanho proporcional */}
                   <div className="flex justify-center mb-3">
-                    <div 
+                    <div
                       className={`bg-gray-200 border-2 border-gray-400 rounded transition-all duration-300 ${
                         formData.boxSize === size.id ? 'bg-green-200 border-green-400' : ''
                       }`}
@@ -246,7 +243,7 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Informações da caixa */}
                   <div className="text-center">
                     <h4 className="font-medium text-sm text-gray-900">{size.name}</h4>
@@ -254,7 +251,7 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
                     <p className="text-xs text-gray-500 mt-1">Até {size.maxWeight}kg</p>
                     <p className="text-xs text-gray-500 mt-1">{size.description}</p>
                   </div>
-                  
+
                   {/* Checkbox visual */}
                   {formData.boxSize === size.id && (
                     <div className="absolute top-2 right-2">
@@ -304,7 +301,7 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
                 <Package className="h-4 w-4 inline mr-2" />
                 Adicionar Pacotes (Opcional)
               </label>
-              
+
               {loadingPackages ? (
                 <div className="text-center py-4">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
@@ -346,7 +343,7 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
                   ))}
                 </div>
               )}
-              
+
               {selectedPackages.length > 0 && (
                 <div className="mt-2 text-sm text-green-700">
                   ✓ {selectedPackages.length} pacote(s) selecionado(s)
@@ -402,33 +399,6 @@ export function CreateBoxModal({ user, onClose, onSuccess }: CreateBoxModalProps
           </form>
         </div>
 
-        {/* Footer */}
-        <div className="px-8 py-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={loading || !formData.boxSize}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Criando...
-                </div>
-              ) : (
-                'Criar Caixa'
-              )}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   )

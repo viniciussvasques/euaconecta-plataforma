@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { NotificationService } from '@/lib/notifications'
-import { NotificationType } from '@prisma/client'
+import { EventService, SystemEvent } from '@/lib/events'
+import { verifyAccessToken } from '@/lib/jwt'
+type MinimalSession = { userId: string; role: string }
 
 export async function POST(
   request: NextRequest,
@@ -13,9 +14,14 @@ export async function POST(
     if (!sessionCookie) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
-
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId || !['ADMIN', 'SUPER_ADMIN', 'OPERATOR'].includes(session.role)) {
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || ''), role: String((payload as unknown as { role?: string }).role || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session || !session.userId || !['ADMIN', 'SUPER_ADMIN', 'OPERATOR'].includes(session.role)) {
       return NextResponse.json({ success: false, error: 'Acesso negado' }, { status: 403 })
     }
 
@@ -76,12 +82,16 @@ export async function POST(
       }
     })
 
-    // Notificar o dono do pacote
-    await NotificationService.create({
+    // Emitir evento de pacote recebido
+    await EventService.emit(SystemEvent.PACKAGE_RECEIVED, {
       userId: existingPackage.ownerId,
-      type: NotificationType.IN_APP,
-      title: 'Pacote confirmado',
-      message: `Seu pacote foi confirmado e pesado (${confirmedWeightGrams}g).`,
+      entityType: 'Package',
+      entityId: id,
+      metadata: {
+        weight: confirmedWeightGrams,
+        description: updatedPackage.description,
+        packageCondition: packageCondition
+      }
     })
 
     return NextResponse.json({

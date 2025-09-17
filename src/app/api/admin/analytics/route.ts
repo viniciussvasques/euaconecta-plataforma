@@ -1,0 +1,48 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET() {
+  try {
+    let record = await prisma.systemCustomization.findUnique({ where: { key: 'analytics_config' } })
+    if (!record) {
+      const defaultValue = {
+        googleAnalyticsId: '',
+        googleTagManagerId: '',
+        facebookPixelId: '',
+        hotjarId: '',
+        mixpanelToken: '',
+        amplitudeApiKey: '',
+        customScripts: { head: [], body: [] },
+        trackingEvents: {
+          pageView: true,
+          scrollDepth: false,
+          formSubmissions: true,
+          buttonClicks: false,
+          fileDownloads: false,
+          outboundLinks: false
+        },
+        conversionGoals: []
+      }
+      record = await prisma.systemCustomization.create({ data: { key: 'analytics_config', value: defaultValue, description: 'Analytics settings' } })
+    }
+    return NextResponse.json({ success: true, data: record.value })
+  } catch (error) {
+    console.error('Erro ao buscar configuração Analytics:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const saved = await prisma.systemCustomization.upsert({
+      where: { key: 'analytics_config' },
+      update: { value: body },
+      create: { key: 'analytics_config', value: body, description: 'Analytics settings' }
+    })
+    return NextResponse.json({ success: true, data: saved.value })
+  } catch (error) {
+    console.error('Erro ao salvar configuração Analytics:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}

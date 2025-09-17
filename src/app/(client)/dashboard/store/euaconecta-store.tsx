@@ -6,14 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { 
-  ShoppingBag, 
-  Gift, 
-  Star, 
-  Truck, 
-  Shield, 
-  Clock, 
+import {
+  ShoppingBag,
+  Gift,
+  Truck,
+  Shield,
+  Clock,
   Mail,
   Phone,
   MapPin,
@@ -105,7 +103,7 @@ export function EuaconectaStore() {
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600 mb-6">
-                  Nossa loja está sendo desenvolvida com muito carinho para oferecer 
+                  Nossa loja está sendo desenvolvida com muito carinho para oferecer
                   a melhor experiência de compra para nossos clientes.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
@@ -191,7 +189,7 @@ export function EuaconectaStore() {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={handleSubscribe}
                   className="w-full"
                   disabled={!email || isSubscribed}
@@ -245,22 +243,22 @@ export function EuaconectaStore() {
                 <CardTitle className="text-lg">Links Úteis</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <a 
-                  href="/dashboard/support" 
+                <a
+                  href="/dashboard/support"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Central de Ajuda
                 </a>
-                <a 
-                  href="/dashboard/tutorials" 
+                <a
+                  href="/dashboard/tutorials"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Tutoriais
                 </a>
-                <a 
-                  href="/dashboard/stores" 
+                <a
+                  href="/dashboard/stores"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" />

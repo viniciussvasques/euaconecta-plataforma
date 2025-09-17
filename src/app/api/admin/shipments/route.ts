@@ -1,0 +1,31 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+export async function GET() {
+  try {
+    const shipments = await prisma.shipment.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        packages: {
+          select: {
+            id: true,
+            description: true,
+            status: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return NextResponse.json({ success: true, data: shipments })
+  } catch (error) {
+    console.error('Erro ao buscar envios:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}

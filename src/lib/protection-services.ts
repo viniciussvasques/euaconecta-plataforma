@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import type { ProtectionType } from '@prisma/client'
 
 export interface ProtectionServiceData {
   id: string
@@ -35,7 +36,7 @@ export class ProtectionService {
       where: { isActive: true },
       orderBy: { priority: 'asc' }
     })
-    
+
     return services.map(service => ({
       ...service,
       basePrice: Number(service.basePrice),
@@ -46,15 +47,15 @@ export class ProtectionService {
   }
 
   // Buscar por categoria
-  async getByCategory(category: string): Promise<ProtectionServiceData[]> {
+  async getByCategory(category: ProtectionServiceData['category']): Promise<ProtectionServiceData[]> {
     const services = await prisma.protectionService.findMany({
-      where: { 
-        category: category as Record<string, unknown>,
-        isActive: true 
+      where: {
+        category,
+        isActive: true
       },
       orderBy: { priority: 'asc' }
     })
-    
+
     return services.map(service => ({
       ...service,
       basePrice: Number(service.basePrice),
@@ -69,9 +70,9 @@ export class ProtectionService {
     const service = await prisma.protectionService.findUnique({
       where: { id }
     })
-    
+
     if (!service) return null
-    
+
     return {
       ...service,
       basePrice: Number(service.basePrice),
@@ -89,7 +90,7 @@ export class ProtectionService {
         priority: data.priority || 0,
       }
     })
-    
+
     return {
       ...service,
       basePrice: Number(service.basePrice),
@@ -105,7 +106,7 @@ export class ProtectionService {
       where: { id },
       data
     })
-    
+
     return {
       ...service,
       basePrice: Number(service.basePrice),
@@ -129,11 +130,11 @@ export class ProtectionService {
     dimensions: { length: number; width: number; height: number }
   ): number {
     const volume = dimensions.length * dimensions.width * dimensions.height
-    
+
     let totalPrice = service.basePrice
     totalPrice += service.pricePerKg * weightKg
     totalPrice += service.pricePerDimension * volume
-    
+
     return Math.max(0, totalPrice)
   }
 
@@ -157,17 +158,17 @@ export class ProtectionService {
       'books': ['BUBBLE_WRAP', 'SECURITY_TAPE'],
       'default': ['BUBBLE_WRAP', 'SECURITY_TAPE']
     }
-    
+
     const recommendedTypes = recommendations[itemType.toLowerCase()] || recommendations.default
-    
+
     const services = await prisma.protectionService.findMany({
       where: {
-        protectionType: { in: recommendedTypes as Record<string, unknown> },
+        protectionType: { in: recommendedTypes as unknown as ProtectionType[] },
         isActive: true
       },
       orderBy: { priority: 'asc' }
     })
-    
+
     return services.map(service => ({
       ...service,
       basePrice: Number(service.basePrice),

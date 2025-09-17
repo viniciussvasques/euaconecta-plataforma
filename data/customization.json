@@ -1,0 +1,334 @@
+{
+  "branding": {
+    "logo": {
+      "primary": "/logo-euaconecta.png",
+      "favicon": "/favicon.ico"
+    },
+    "colors": {
+      "primary": "#3b82f6",
+      "secondary": "#22c55e",
+      "accent": "#f59e0b"
+    },
+    "fonts": {
+      "primary": "Inter"
+    }
+  },
+  "landingPage": {
+    "hero": {
+      "title": "Receba seus produtos dos EUA no Brasil",
+      "subtitle": "Consolidação de pacotes, envio seguro e rastreamento em tempo real",
+      "ctaText": "Começar Agora",
+      "ctaLink": "/auth/register"
+    }
+  },
+  "contact": {
+    "phone": "+1 (407) 952-3233",
+    "email": "contato@euaconecta.com",
+    "address": "Orlando , FL - United states"
+  },
+  "socialMedia": {
+    "whatsapp": "https://wa.me/14079538380",
+    "facebook": "https://facebook.com/euaconecta",
+    "instagram": "https://instagram.com/euaconecta.redirecionamento"
+  },
+  "clientDashboard": {
+    "layout": {
+      "sidebar": {
+        "collapsed": false,
+        "items": [
+          {
+            "id": "dashboard",
+            "label": "Dashboard",
+            "icon": "home",
+            "href": "/dashboard"
+          },
+          {
+            "id": "packages",
+            "label": "Meus Pacotes",
+            "icon": "package",
+            "href": "/dashboard/packages"
+          },
+          {
+            "id": "boxes",
+            "label": "Minhas Caixas",
+            "icon": "box",
+            "href": "/dashboard/boxes"
+          },
+          {
+            "id": "shipping",
+            "label": "Envios",
+            "icon": "truck",
+            "href": "/dashboard/shipping"
+          },
+          {
+            "id": "payments",
+            "label": "Pagamentos",
+            "icon": "credit-card",
+            "href": "/dashboard/payments"
+          },
+          {
+            "id": "history",
+            "label": "Histórico",
+            "icon": "clock",
+            "href": "/dashboard/history"
+          },
+          {
+            "id": "support",
+            "label": "Suporte",
+            "icon": "help-circle",
+            "href": "/dashboard/support"
+          }
+        ]
+      },
+      "header": {
+        "showNotifications": true,
+        "showProfile": true,
+        "showSearch": true
+      }
+    },
+    "widgets": {
+      "stats": {
+        "enabled": true,
+        "items": [
+          {
+            "id": "packages",
+            "label": "Pacotes Recebidos",
+            "value": "0"
+          },
+          {
+            "id": "boxes",
+            "label": "Caixas Ativas",
+            "value": "0"
+          },
+          {
+            "id": "shipments",
+            "label": "Envios Realizados",
+            "value": "0"
+          }
+        ]
+      },
+      "recentActivity": {
+        "enabled": true,
+        "limit": 5
+      },
+      "quickActions": {
+        "enabled": true,
+        "actions": [
+          {
+            "id": "add-package",
+            "label": "Adicionar Pacote",
+            "icon": "plus",
+            "href": "/dashboard/packages/add"
+          },
+          {
+            "id": "create-box",
+            "label": "Criar Caixa",
+            "icon": "box",
+            "href": "/dashboard/boxes/create"
+          }
+        ]
+      }
+    },
+    "theme": {
+      "primaryColor": "#3b82f6",
+      "sidebarColor": "#ffffff",
+      "headerColor": "#ffffff"
+    }
+  },
+  "adminPanel": {
+    "layout": {
+      "sidebar": {
+        "collapsed": false,
+        "items": [
+          {
+            "id": "dashboard",
+            "label": "Dashboard",
+            "icon": "home",
+            "href": "/admin"
+          },
+          {
+            "id": "users",
+            "label": "Usuários",
+            "icon": "users",
+            "href": "/admin/users"
+          },
+          {
+            "id": "packages",
+            "label": "Pacotes",
+            "icon": "package",
+            "href": "/admin/packages"
+          },
+          {
+            "id": "consolidations",
+            "label": "Consolidações",
+            "icon": "box",
+            "href": "/admin/consolidations"
+          },
+          {
+            "id": "shipments",
+            "label": "Envios",
+            "icon": "truck",
+            "href": "/admin/shipments"
+          },
+          {
+            "id": "payments",
+            "label": "Pagamentos",
+            "icon": "credit-card",
+            "href": "/admin/payments"
+          },
+          {
+            "id": "reports",
+            "label": "Relatórios",
+            "icon": "bar-chart",
+            "href": "/admin/reports"
+          },
+          {
+            "id": "settings",
+            "label": "Configurações",
+            "icon": "settings",
+            "href": "/admin/settings"
+          }
+        ]
+      }
+    },
+    "features": {
+      "userManagement": true,
+      "packageManagement": true,
+      "consolidationManagement": true,
+      "shippingManagement": true,
+      "paymentManagement": true,
+      "reporting": true,
+      "systemSettings": true
+    },
+    "theme": {
+      "primaryColor": "#3b82f6",
+      "sidebarColor": "#1f2937",
+      "headerColor": "#ffffff"
+    }
+  },
+  "communication": {
+    "emails": {
+      "templates": {
+        "welcome": {
+          "subject": "Bem-vindo ao Euaconecta!",
+          "content": "Obrigado por se cadastrar em nossa plataforma.",
+          "enabled": true
+        },
+        "packageReceived": {
+          "subject": "Pacote recebido com sucesso",
+          "content": "Seu pacote foi recebido em nosso armazém.",
+          "enabled": true
+        },
+        "shipmentCreated": {
+          "subject": "Envio criado",
+          "content": "Seu envio foi criado e está sendo processado.",
+          "enabled": true
+        },
+        "paymentConfirmation": {
+          "subject": "Pagamento confirmado",
+          "content": "Seu pagamento foi processado com sucesso.",
+          "enabled": true
+        }
+      },
+      "branding": {
+        "logo": "/logo-euaconecta.png",
+        "primaryColor": "#3b82f6",
+        "footerText": "Euaconecta - Consolidação de Pacotes"
+      }
+    },
+    "notifications": {
+      "inApp": {
+        "enabled": true,
+        "types": [
+          "package_received",
+          "shipment_created",
+          "payment_confirmed"
+        ]
+      },
+      "email": {
+        "enabled": true,
+        "types": [
+          "package_received",
+          "shipment_created",
+          "payment_confirmed"
+        ]
+      },
+      "sms": {
+        "enabled": false,
+        "types": []
+      }
+    }
+  },
+  "features": {
+    "auth": {
+      "socialLogin": {
+        "google": false,
+        "facebook": false,
+        "apple": false
+      },
+      "twoFactor": false,
+      "passwordReset": true
+    },
+    "payments": {
+      "stripe": true,
+      "paypal": false,
+      "pix": false,
+      "boleto": false
+    },
+    "carriers": {
+      "usps": true,
+      "ups": true,
+      "fedex": true,
+      "dhl": false,
+      "custom": []
+    },
+    "consolidation": {
+      "types": [
+        "SIMPLE",
+        "REPACK"
+      ],
+      "protectionOptions": [
+        "BUBBLE_WRAP",
+        "DOUBLE_BOX",
+        "SECURITY_TAPE"
+      ],
+      "storageDays": 30,
+      "maxWeight": 30000
+    },
+    "support": {
+      "ticketSystem": true,
+      "liveChat": false,
+      "knowledgeBase": false,
+      "faq": true
+    }
+  },
+  "localization": {
+    "language": "pt-BR",
+    "currency": "USD",
+    "timezone": "America/Sao_Paulo",
+    "dateFormat": "DD/MM/YYYY",
+    "numberFormat": "pt-BR"
+  },
+  "analytics": {
+    "googleAnalytics": {
+      "enabled": false
+    },
+    "facebookPixel": {
+      "enabled": false
+    },
+    "customEvents": []
+  },
+  "security": {
+    "rateLimiting": {
+      "enabled": true,
+      "requestsPerMinute": 60
+    },
+    "captcha": {
+      "enabled": false
+    },
+    "dataRetention": {
+      "days": 365,
+      "autoDelete": false
+    }
+  }
+}

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { addressService } from '@/lib/addresses'
+import { verifyAccessToken } from '@/lib/jwt'
+type MinimalSession = { userId: string }
 
 export async function GET(
   request: NextRequest,
@@ -12,8 +14,14 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId) {
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session?.userId) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
@@ -59,8 +67,14 @@ export async function PUT(
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId) {
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session?.userId) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
@@ -119,8 +133,14 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 
-    const session = JSON.parse(sessionCookie.value)
-    if (!session.userId) {
+    let session: MinimalSession | null = null
+    try {
+      const payload = await verifyAccessToken(sessionCookie.value)
+      session = { userId: String(payload.sub || '') }
+    } catch {
+      try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
+    }
+    if (!session?.userId) {
       return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     }
 

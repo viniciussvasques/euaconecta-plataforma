@@ -10,11 +10,11 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit')
 
     const where: Record<string, string | { in: string[] }> = {}
-    
+
     if (userId) {
       where.userId = userId
     }
-    
+
     if (status) {
       where.status = status
     }
@@ -41,14 +41,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     const {
       userId,
       amountCents,
       currency,
       provider,
       intentId,
-      description,
+      // description, // Removido - não usado
       receiptUrl,
     } = body
 

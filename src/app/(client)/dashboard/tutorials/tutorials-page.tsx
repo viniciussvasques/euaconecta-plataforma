@@ -1,246 +1,224 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { 
-  Search, 
-  Play, 
-  BookOpen, 
-  ShoppingBag, 
-  Package, 
-  Truck, 
-  CreditCard,
-  Shield,
+import {
+  Search,
+  Play,
+  BookOpen,
   HelpCircle,
-  ExternalLink,
   Clock,
   Star,
-  Filter,
   Grid,
-  List
+  List,
+  Eye
 } from 'lucide-react'
+
+interface Tutorial {
+  id: string
+  title: string
+  description: string
+  type: 'video' | 'article' | 'VIDEO' | 'ARTICLE'
+  duration: number
+  difficulty: 'iniciante' | 'intermediario' | 'avancado'
+  url: string
+  icon: string
+  rating: number
+  views: number
+  isHighlighted: boolean
+  isActive: boolean
+  order: number
+}
 
 export function TutorialsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [tutorials, setTutorials] = useState<Tutorial[]>([])
+  const [loading, setLoading] = useState(true)
 
   const categories = [
     { id: 'all', name: 'Todos os Tutoriais' },
-    { id: 'getting-started', name: 'Primeiros Passos' },
-    { id: 'shopping', name: 'Como Comprar' },
-    { id: 'shipping', name: 'Envio e Entrega' },
-    { id: 'payments', name: 'Pagamentos' },
-    { id: 'troubleshooting', name: 'Solução de Problemas' },
-    { id: 'tips', name: 'Dicas e Truques' }
+    { id: 'iniciante', name: 'Iniciante' },
+    { id: 'intermediario', name: 'Intermediário' },
+    { id: 'avancado', name: 'Avançado' }
   ]
 
-  const tutorials = [
-    {
-      id: 1,
-      title: 'Como começar a importar com a Euaconecta',
-      description: 'Guia completo para novos usuários: desde o cadastro até o primeiro envio',
-      category: 'getting-started',
-      type: 'video',
-      duration: '8 min',
-      difficulty: 'Iniciante',
-      rating: 4.9,
-      views: 12500,
-      featured: true,
-      thumbnail: '🎬',
-      content: 'Aprenda os passos básicos para começar a importar produtos dos EUA com segurança e economia.'
-    },
-    {
-      id: 2,
-      title: 'Onde comprar nos EUA: Melhores lojas',
-      description: 'Lista das melhores lojas americanas com dicas de compra e economia',
-      category: 'shopping',
-      type: 'article',
-      duration: '12 min',
-      difficulty: 'Iniciante',
-      rating: 4.8,
-      views: 8900,
-      featured: true,
-      thumbnail: '🛍️',
-      content: 'Descubra as melhores lojas americanas para comprar produtos com qualidade e preços competitivos.'
-    },
-    {
-      id: 3,
-      title: 'Como consolidar seus pacotes',
-      description: 'Aprenda a juntar vários pacotes em uma única caixa para economizar no frete',
-      category: 'shipping',
-      type: 'video',
-      duration: '6 min',
-      difficulty: 'Intermediário',
-      rating: 4.7,
-      views: 15600,
-      featured: false,
-      thumbnail: '📦',
-      content: 'Técnicas avançadas para consolidar pacotes e reduzir custos de envio.'
-    },
-    {
-      id: 4,
-      title: 'Formas de pagamento aceitas',
-      description: 'Conheça todas as opções de pagamento disponíveis na plataforma',
-      category: 'payments',
-      type: 'article',
-      duration: '5 min',
-      difficulty: 'Iniciante',
-      rating: 4.6,
-      views: 7200,
-      featured: false,
-      thumbnail: '💳',
-      content: 'Informações completas sobre métodos de pagamento, taxas e prazos.'
-    },
-    {
-      id: 5,
-      title: 'Como rastrear seus envios',
-      description: 'Acompanhe seus pacotes desde a compra até a entrega',
-      category: 'shipping',
-      type: 'video',
-      duration: '4 min',
-      difficulty: 'Iniciante',
-      rating: 4.8,
-      views: 9800,
-      featured: false,
-      thumbnail: '🚚',
-      content: 'Aprenda a usar o sistema de rastreamento para acompanhar seus envios em tempo real.'
-    },
-    {
-      id: 6,
-      title: 'Dicas para economizar no frete',
-      description: 'Estratégias comprovadas para reduzir custos de envio',
-      category: 'tips',
-      type: 'article',
-      duration: '10 min',
-      difficulty: 'Intermediário',
-      rating: 4.9,
-      views: 11200,
-      featured: true,
-      thumbnail: '💰',
-      content: 'Dicas valiosas para economizar dinheiro nos custos de envio e importação.'
-    },
-    {
-      id: 7,
-      title: 'Problemas comuns e soluções',
-      description: 'Resolução dos problemas mais frequentes na importação',
-      category: 'troubleshooting',
-      type: 'article',
-      duration: '15 min',
-      difficulty: 'Intermediário',
-      rating: 4.5,
-      views: 6800,
-      featured: false,
-      thumbnail: '🔧',
-      content: 'Soluções para os problemas mais comuns que podem ocorrer durante o processo de importação.'
-    },
-    {
-      id: 8,
-      title: 'Segurança na importação',
-      description: 'Como proteger seus produtos e dados durante o processo',
-      category: 'tips',
-      type: 'video',
-      duration: '7 min',
-      difficulty: 'Iniciante',
-      rating: 4.7,
-      views: 5400,
-      featured: false,
-      thumbnail: '🛡️',
-      content: 'Medidas de segurança essenciais para proteger seus produtos e informações pessoais.'
+  useEffect(() => {
+    const fetchTutorials = async () => {
+      try {
+        const timestamp = Date.now()
+        const random = Math.random()
+        const response = await fetch(`/api/admin/tutorials?t=${timestamp}&refresh=${random}&force=${timestamp}`, {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'If-Modified-Since': '0'
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        if (data.success) {
+          // Normalizar o tipo para minúsculas para evitar divergências ('VIDEO' vs 'video')
+          const normalized = data.data
+            .filter((tutorial: Tutorial) => tutorial.isActive)
+            .map((tutorial: Tutorial) => ({
+              ...tutorial,
+              type: (tutorial.type as unknown as string).toLowerCase() as 'video' | 'article'
+            }))
+          setTutorials(normalized)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar tutoriais:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+    fetchTutorials()
+  }, [])
 
-  const filteredTutorials = tutorials.filter(tutorial => {
+  // Recarregar dados quando a página ganha foco (quando o usuário volta do admin)
+  useEffect(() => {
+    const handleFocus = () => {
+      const fetchTutorials = async () => {
+        try {
+          const timestamp = Date.now()
+          const random = Math.random()
+          const response = await fetch(`/api/admin/tutorials?t=${timestamp}&refresh=${random}&force=${timestamp}`, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+              'If-Modified-Since': '0'
+            }
+          })
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+
+          const data = await response.json()
+          if (data.success) {
+            const normalized = data.data
+              .filter((tutorial: Tutorial) => tutorial.isActive)
+              .map((tutorial: Tutorial) => ({
+                ...tutorial,
+                type: (tutorial.type as unknown as string).toLowerCase() as 'video' | 'article'
+              }))
+            setTutorials(normalized)
+          }
+        } catch (error) {
+          console.error('Erro ao recarregar tutoriais:', error)
+        }
+      }
+      fetchTutorials()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
+
+  const filteredTutorials = tutorials.filter((tutorial: Tutorial) => {
     const matchesSearch = tutorial.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tutorial.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || tutorial.category === selectedCategory
+    const matchesCategory = selectedCategory === 'all' || tutorial.difficulty === selectedCategory
     return matchesSearch && matchesCategory
   })
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Iniciante': return 'bg-green-100 text-green-800'
-      case 'Intermediário': return 'bg-yellow-100 text-yellow-800'
-      case 'Avançado': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'iniciante':
+        return 'bg-green-100 text-green-800'
+      case 'intermediario':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'avancado':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
-  const getTypeIcon = (type: string) => {
-    return type === 'video' ? <Play className="h-4 w-4" /> : <BookOpen className="h-4 w-4" />
+  const getDifficultyLabel = (difficulty: string) => {
+    switch (difficulty) {
+      case 'iniciante':
+        return 'Iniciante'
+      case 'intermediario':
+        return 'Intermediário'
+      case 'avancado':
+        return 'Avançado'
+      default:
+        return difficulty
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando tutoriais...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Tutoriais e Dicas
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+              <BookOpen className="h-5 w-5" />
+              <span className="text-sm font-medium">Centro de Aprendizado</span>
+            </div>
+            <h1 className="text-5xl font-bold mb-6">
+              Tutoriais
             </h1>
-            <p className="text-xl text-gray-600 mb-4">
-              Aprenda a importar com segurança e economia
+            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+              Aprenda a importar com segurança e economia. Guias completos para iniciantes e especialistas.
             </p>
-            <Badge variant="secondary" className="text-lg px-4 py-2">
-              📚 Centro de Aprendizado
-            </Badge>
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">📚 {tutorials.length} Tutoriais</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">🎯 Dicas Práticas</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">💰 Economia Garantida</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">
-                {tutorials.length}
-              </div>
-              <div className="text-sm text-gray-600">Tutoriais Disponíveis</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">
-                4.8
-              </div>
-              <div className="text-sm text-gray-600">Avaliação Média</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">
-                85K+
-              </div>
-              <div className="text-sm text-gray-600">Visualizações</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-orange-600 mb-2">
-                24/7
-              </div>
-              <div className="text-sm text-gray-600">Suporte</div>
-            </CardContent>
-          </Card>
-        </div>
-
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
                 <Input
-                  placeholder="Buscar tutoriais..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Buscar tutoriais..."
                 />
               </div>
             </div>
@@ -249,9 +227,10 @@ export function TutorialsPage() {
             <div className="lg:w-64">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value)}
+                className="w-full h-12 px-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               >
+                <option value="all">Todas as Categorias</option>
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -266,6 +245,7 @@ export function TutorialsPage() {
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
+                className="h-12 px-4"
               >
                 <Grid className="h-4 w-4" />
               </Button>
@@ -273,6 +253,7 @@ export function TutorialsPage() {
                 variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
+                className="h-12 px-4"
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -283,63 +264,76 @@ export function TutorialsPage() {
         {/* Results */}
         <div className="mb-4">
           <p className="text-gray-600">
-            {filteredTutorials.length} tutorial{filteredTutorials.length !== 1 ? 'is' : ''} encontrado{filteredTutorials.length !== 1 ? 's' : ''}
+            {filteredTutorials.length} tutorial{filteredTutorials.length !== 1 ? 's' : ''} encontrado{filteredTutorials.length !== 1 ? 's' : ''}
           </p>
         </div>
 
         {/* Tutorials Grid/List */}
-        <div className={viewMode === 'grid' 
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-          : 'space-y-4'
+        <div className={viewMode === 'grid'
+          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+          : 'space-y-6'
         }>
-          {filteredTutorials.map(tutorial => (
-            <Card key={tutorial.id} className={`hover:shadow-lg transition-shadow ${tutorial.featured ? 'ring-2 ring-blue-500' : ''}`}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
+          {filteredTutorials.map((tutorial: Tutorial) => (
+            <Card key={tutorial.id} className={`group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 overflow-hidden ${tutorial.isHighlighted ? 'ring-2 ring-blue-500 shadow-lg' : ''}`}>
+              {tutorial.isHighlighted && (
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 text-center text-sm font-medium">
+                  ⭐ Tutorial em Destaque
+                </div>
+              )}
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="text-3xl">{tutorial.thumbnail}</div>
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center border border-gray-200 group-hover:shadow-lg transition-shadow">
+                      <span className="text-2xl">{tutorial.icon}</span>
+                    </div>
                     <div>
-                      <CardTitle className="text-lg">{tutorial.title}</CardTitle>
-                      {tutorial.featured && (
-                        <Badge className="mt-1 bg-blue-100 text-blue-800">
-                          <Star className="h-3 w-3 mr-1" />
-                          Destaque
-                        </Badge>
-                      )}
+                      <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {tutorial.title}
+                      </CardTitle>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-gray-500">
-                    {getTypeIcon(tutorial.type)}
-                    <span className="text-sm">{tutorial.type === 'video' ? 'Vídeo' : 'Artigo'}</span>
-                  </div>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getDifficultyColor(tutorial.difficulty)}`}>
+                    {getDifficultyLabel(tutorial.difficulty)}
+                  </span>
                 </div>
-                <CardDescription className="mt-2">
+                <CardDescription className="text-gray-600 leading-relaxed">
                   {tutorial.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Meta Info */}
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>{tutorial.duration}</span>
+              <CardContent className="pt-0 space-y-4">
+                {/* Type and Duration */}
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                    {tutorial.type === 'video' ? (
+                      <Play className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <BookOpen className="h-4 w-4 text-blue-600" />
+                    )}
+                    <span className="font-medium text-gray-700 capitalize">{tutorial.type === 'video' ? 'Vídeo' : 'Artigo'}</span>
                   </div>
-                  <Badge className={getDifficultyColor(tutorial.difficulty)}>
-                    {tutorial.difficulty}
-                  </Badge>
+                  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                    <Clock className="h-4 w-4 text-green-600" />
+                    <span className="font-medium text-gray-700">{tutorial.duration} min</span>
+                  </div>
                 </div>
 
                 {/* Rating and Views */}
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center justify-between text-sm bg-gray-50 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
                     <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-gray-600">{tutorial.rating}</span>
+                    <span className="font-medium text-gray-700">{tutorial.rating}</span>
                   </div>
-                  <span className="text-gray-500">{tutorial.views.toLocaleString()} visualizações</span>
+                  <div className="flex items-center gap-1 text-gray-600">
+                    <Eye className="h-4 w-4" />
+                    <span>{tutorial.views.toLocaleString()}</span>
+                  </div>
                 </div>
 
                 {/* Action Button */}
-                <Button className="w-full">
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => window.open(tutorial.url, '_blank')}
+                >
                   {tutorial.type === 'video' ? (
                     <>
                       <Play className="h-4 w-4 mr-2" />
@@ -368,26 +362,6 @@ export function TutorialsPage() {
             </p>
           </div>
         )}
-
-        {/* Help Section */}
-        <div className="mt-12 bg-blue-50 rounded-lg p-8 text-center">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Precisa de mais ajuda?
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Nossa equipe de suporte está sempre pronta para ajudar você
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="outline" onClick={() => window.open('/dashboard/support', '_self')}>
-              <HelpCircle className="h-4 w-4 mr-2" />
-              Central de Ajuda
-            </Button>
-            <Button onClick={() => window.open('/dashboard/stores', '_self')}>
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Ver Lojas Parceiras
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   )

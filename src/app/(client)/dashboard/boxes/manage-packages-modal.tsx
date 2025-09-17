@@ -20,6 +20,7 @@ interface ConsolidationBox {
   packages: Package[]
   currentWeightGrams: number
   maxItemsAllowed: number
+  userId?: string
 }
 
 interface ManagePackagesModalProps {
@@ -39,33 +40,34 @@ export function ManagePackagesModal({ box, onClose, onUpdate }: ManagePackagesMo
     const fetchAvailablePackages = async () => {
       setLoadingPackages(true)
       try {
-        const response = await fetch('/api/packages?filter=RECEIVED')
+        const query = box.userId ? `?userId=${box.userId}&filter=RECEIVED` : `?filter=RECEIVED`
+        const response = await fetch(`/api/packages${query}`)
         const data = await response.json()
-        
+
         if (data.success) {
           // Filtrar pacotes que não estão em nenhuma caixa
           const packagesInBox = box.packages.map(pkg => pkg.id)
-          const available = data.data.filter((pkg: Package) => 
-            !packagesInBox.includes(pkg.id) && 
-            pkg.status === 'RECEIVED' && 
+          const available = data.data.filter((pkg: Package) =>
+            !packagesInBox.includes(pkg.id) &&
+            pkg.status === 'RECEIVED' &&
             !(pkg as { consolidationGroupId?: string }).consolidationGroupId // Pacote não está em nenhuma consolidação
           )
           setAvailablePackages(available)
         }
-      } catch {
-        console.error('Erro ao buscar pacotes:', error)
+      } catch (err) {
+        console.error('Erro ao buscar pacotes:', err)
       } finally {
         setLoadingPackages(false)
       }
     }
 
     fetchAvailablePackages()
-  }, [box.packages])
+  }, [box.packages, box.userId])
 
   const addPackageToBox = async (packageId: string) => {
     setLoading(true)
     setError('')
-    
+
     try {
       const response = await fetch(`/api/consolidation/${box.id}/packages`, {
         method: 'POST',
@@ -76,13 +78,13 @@ export function ManagePackagesModal({ box, onClose, onUpdate }: ManagePackagesMo
       })
 
       const data = await response.json()
-      
+
       if (data.success) {
         onUpdate() // Atualizar a lista de caixas
       } else {
         setError(data.error || 'Erro ao adicionar pacote')
       }
-    } catch (error) {
+    } catch {
       setError('Erro ao adicionar pacote')
     } finally {
       setLoading(false)
@@ -92,20 +94,20 @@ export function ManagePackagesModal({ box, onClose, onUpdate }: ManagePackagesMo
   const removePackageFromBox = async (packageId: string) => {
     setLoading(true)
     setError('')
-    
+
     try {
       const response = await fetch(`/api/consolidation/${box.id}/packages?packageId=${packageId}`, {
         method: 'DELETE'
       })
 
       const data = await response.json()
-      
+
       if (data.success) {
         onUpdate() // Atualizar a lista de caixas
       } else {
         setError(data.error || 'Erro ao remover pacote')
       }
-    } catch (error) {
+    } catch {
       setError('Erro ao remover pacote')
     } finally {
       setLoading(false)
@@ -137,8 +139,8 @@ export function ManagePackagesModal({ box, onClose, onUpdate }: ManagePackagesMo
               Gerenciar Pacotes - {box.name || 'Caixa sem nome'}
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              Status: <span className="font-medium">{box.status}</span> • 
-              Peso atual: <span className="font-medium">{formatWeight(box.currentWeightGrams)}</span> • 
+              Status: <span className="font-medium">{box.status}</span> •
+              Peso atual: <span className="font-medium">{formatWeight(box.currentWeightGrams)}</span> •
               Itens: {box.packages.length}/{box.maxItemsAllowed}
             </p>
           </div>
@@ -164,7 +166,7 @@ export function ManagePackagesModal({ box, onClose, onUpdate }: ManagePackagesMo
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Pacotes na Caixa ({box.packages.length})
               </h3>
-              
+
               {box.packages.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Package className="h-12 w-12 mx-auto mb-3 text-gray-300" />
@@ -215,7 +217,7 @@ export function ManagePackagesModal({ box, onClose, onUpdate }: ManagePackagesMo
               <h3 className="text-lg font-medium text-gray-900 mb-4">
                 Pacotes Disponíveis ({availablePackages.length})
               </h3>
-              
+
               {loadingPackages ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>

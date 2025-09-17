@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from './prisma'
 
 export interface PlatformConfigData {
@@ -34,13 +35,13 @@ export interface PlatformConfigData {
   maxLoginAttempts: number
   sessionTimeout: number
   require2FA: boolean
-  
+
   // Novos campos dinâmicos
   consolidationBaseFeeUsdCents: number
   consolidationPerPackageUsdCents: number
   repackMultiplier: number
   currency: string
-  
+
   // Markup sobre frete (monetização)
   freightMarkupPercentage: number
   freightMarkupMinAmount: number
@@ -127,13 +128,13 @@ export const PlatformConfig = {
       maxLoginAttempts: Number(anyCfg.maxLoginAttempts ?? 5),
       sessionTimeout: Number(anyCfg.sessionTimeout ?? 3600),
       require2FA: Boolean(anyCfg.require2FA ?? false),
-      
+
       // Novos campos dinâmicos
       consolidationBaseFeeUsdCents: Number(anyCfg.consolidationBaseFeeUsdCents ?? 500),
       consolidationPerPackageUsdCents: Number(anyCfg.consolidationPerPackageUsdCents ?? 100),
       repackMultiplier: Number(anyCfg.repackMultiplier ?? 1.5),
       currency: (anyCfg.currency as string) ?? 'USD',
-      
+
       // Markup sobre frete
       freightMarkupPercentage: Number(anyCfg.freightMarkupPercentage ?? 0.15),
       freightMarkupMinAmount: Number(anyCfg.freightMarkupMinAmount ?? 200),
@@ -219,4 +220,3 @@ export const PlatformConfig = {
     return cachedConfig as PlatformConfigData
   },
 }
-

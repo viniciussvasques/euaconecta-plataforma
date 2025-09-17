@@ -17,13 +17,18 @@ export function getTransporter(opts?: Partial<MailerOptions>) {
   const port = Number(opts?.port || process.env.SMTP_PORT || 465)
   const secure = String(opts?.secure ?? process.env.SMTP_SECURE ?? 'true') === 'true'
   const user = opts?.user || process.env.SMTP_USER || ''
-  const pass = opts?.pass || process.env.SMTP_PASS || ''
+  const pass = opts?.pass || process.env.SMTP_PASS || process.env.SMTP_PASSWORD || ''
 
   cachedTransporter = nodemailer.createTransport({
     host,
     port,
     secure,
     auth: { user, pass },
+    logger: process.env.SMTP_DEBUG === 'true',
+    debug: process.env.SMTP_DEBUG === 'true',
+    connectionTimeout: Number(process.env.SMTP_CONN_TIMEOUT || 20000),
+    greetingTimeout: Number(process.env.SMTP_GREET_TIMEOUT || 20000),
+    socketTimeout: Number(process.env.SMTP_SOCKET_TIMEOUT || 20000),
   })
   return cachedTransporter
 }
@@ -31,6 +36,15 @@ export function getTransporter(opts?: Partial<MailerOptions>) {
 export async function sendMail(to: string, subject: string, html: string) {
   const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@example.com'
   const transporter = getTransporter()
+  if (process.env.SMTP_VERIFY === 'true') {
+    try {
+      await transporter.verify()
+    } catch (e) {
+      // Surface verification errors to logs
+      console.error('SMTP verification failed:', e)
+      throw e
+    }
+  }
   await transporter.sendMail({ from, to, subject, html })
 }
 
@@ -44,7 +58,7 @@ export const EmailService = {
   async sendMail(options: EmailOptions) {
     const transporter = getTransporter()
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: `"EuaConecta" <${process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@euaconecta.com'}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -105,6 +119,39 @@ export const EmailService = {
                   <a href="${activationLink}" style="display:inline-block;background:#10b981;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Ativar minha conta</a>
                 </p>
                 <p>Se você não criou uma conta, ignore este e-mail.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;color:#9ca3af;font-size:12px;border-top:1px solid #f3f4f6;">
+                <p style="margin:0;">Equipe EuaConecta • <a href="${process.env.NEXT_PUBLIC_APP_URL}" style="color:#6b7280;text-decoration:none;">${process.env.NEXT_PUBLIC_APP_URL}</a></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      `,
+    }
+  },
+
+  passwordResetEmail(userName: string, userEmail: string, resetLink: string) {
+    return {
+      to: userEmail,
+      subject: 'Redefinição de Senha - Euaconecta',
+      html: `
+        <div style="font-family:Arial,Helvetica,sans-serif;background:#f6f8fb;padding:24px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e6e9f0;">
+            <tr>
+              <td style="padding:24px 24px 0 24px;">
+                <h1 style="margin:0 0 8px 0;font-size:22px;color:#111827;">Redefinição de Senha</h1>
+                <p style="margin:0;color:#6b7280;font-size:14px;">Olá, ${userName || 'usuário'}.</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 24px;color:#374151;font-size:14px;line-height:1.6;">
+                <p>Recebemos uma solicitação para redefinir sua senha. Se foi você, clique abaixo:</p>
+                <p>
+                  <a href="${resetLink}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:600;">Redefinir Senha</a>
+                </p>
+                <p>Se você não solicitou, ignore este e‑mail. O link expira em 60 minutos.</p>
               </td>
             </tr>
             <tr>
@@ -185,5 +232,3 @@ export const EmailService = {
     `
   },
 }
-
-

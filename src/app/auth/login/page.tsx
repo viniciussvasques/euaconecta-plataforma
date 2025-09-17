@@ -42,12 +42,12 @@ export default function LoginPage() {
           <div className="bg-white/80 backdrop-blur-sm py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-gray-200">
             <LoginForm />
           </div>
-          
+
           <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-600">
               Não tem uma conta?{' '}
-              <Link 
-                href="/auth/register" 
+              <Link
+                href="/auth/register"
                 className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
               >
                 Criar conta gratuita
@@ -55,7 +55,7 @@ export default function LoginPage() {
             </p>
             <p className="text-sm text-gray-600">
               <Link
-                href="/auth/forgot-password"
+                href="/auth/forgot"
                 className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
               >
                 Esqueceu sua senha?

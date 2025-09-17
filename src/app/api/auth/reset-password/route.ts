@@ -1,0 +1,66 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
+
+export async function POST(request: NextRequest) {
+  try {
+    const { token, password } = await request.json()
+    if (!token || !password) {
+      return NextResponse.json({ success: false, error: 'Dados inválidos' }, { status: 400 })
+    }
+
+    if (password.length < 6) {
+      return NextResponse.json({ success: false, error: 'Senha muito curta' }, { status: 400 })
+    }
+
+    // Encontrar possível token
+    const candidates = await prisma.passwordResetToken.findMany({ where: { usedAt: null }, orderBy: { createdAt: 'desc' }, take: 20 })
+    let matched: { id: string; userId: string; expiresAt: Date } | null = null
+    for (const t of candidates) {
+      const ok = await bcrypt.compare(token, t.tokenHash)
+      if (ok) { matched = { id: t.id, userId: t.userId, expiresAt: t.expiresAt }; break }
+    }
+    if (!matched) return NextResponse.json({ success: false, error: 'Token inválido' }, { status: 400 })
+    if (matched.expiresAt.getTime() < Date.now()) return NextResponse.json({ success: false, error: 'Token expirado' }, { status: 400 })
+
+    const hash = await bcrypt.hash(password, 12)
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: matched.userId }, data: { password: hash } }),
+      prisma.passwordResetToken.update({ where: { id: matched.id }, data: { usedAt: new Date() } }),
+      prisma.refreshToken.updateMany({ where: { userId: matched.userId, revokedAt: null }, data: { revokedAt: new Date() } })
+    ])
+
+    return NextResponse.json({ success: true, message: 'Senha redefinida. Faça login novamente.' })
+  } catch (error) {
+    console.error('Erro em reset-password:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

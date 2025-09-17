@@ -1,192 +1,134 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { 
-  Search, 
-  ExternalLink, 
-  Star, 
-  ShoppingBag, 
-  Truck, 
+import {
+  Search,
+  ExternalLink,
+  ShoppingBag,
+  Truck,
   Shield,
-  Filter,
   Grid,
   List
 } from 'lucide-react'
+
+interface Partner {
+  id: string
+  name: string
+  logo: string
+  link: string
+  description: string
+  category: string
+  isActive: boolean
+  order: number
+}
 
 export function PartnerStores() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [partners, setPartners] = useState<Partner[]>([])
+  const [loading, setLoading] = useState(true)
 
   const categories = [
     { id: 'all', name: 'Todas as Categorias' },
-    { id: 'electronics', name: 'Eletrônicos' },
-    { id: 'fashion', name: 'Moda' },
-    { id: 'home', name: 'Casa & Decoração' },
-    { id: 'sports', name: 'Esportes' },
-    { id: 'beauty', name: 'Beleza' },
-    { id: 'books', name: 'Livros' },
-    { id: 'automotive', name: 'Automotivo' }
+    { id: 'Electronics', name: 'Eletrônicos' },
+    { id: 'Fashion', name: 'Moda' },
+    { id: 'Retail', name: 'Varejo' },
+    { id: 'Marketplace', name: 'Marketplace' }
   ]
 
-  const stores = [
-    {
-      id: 1,
-      name: 'Amazon',
-      logo: '🛒',
-      category: 'electronics',
-      description: 'A maior loja online do mundo com milhões de produtos',
-      rating: 4.8,
-      reviews: 1250000,
-      shipping: 'Frete grátis acima de $25',
-      warranty: 'Garantia de 30 dias',
-      url: 'https://amazon.com',
-      featured: true,
-      discount: '5% de desconto'
-    },
-    {
-      id: 2,
-      name: 'eBay',
-      logo: '🏪',
-      category: 'electronics',
-      description: 'Leilões e compras diretas de produtos novos e usados',
-      rating: 4.6,
-      reviews: 890000,
-      shipping: 'Frete grátis em muitos itens',
-      warranty: 'Proteção do comprador',
-      url: 'https://ebay.com',
-      featured: true,
-      discount: '3% de desconto'
-    },
-    {
-      id: 3,
-      name: 'Walmart',
-      logo: '🏬',
-      category: 'home',
-      description: 'Supermercado e loja de departamentos com preços baixos',
-      rating: 4.5,
-      reviews: 750000,
-      shipping: 'Frete grátis acima de $35',
-      warranty: 'Política de devolução flexível',
-      url: 'https://walmart.com',
-      featured: false,
-      discount: '2% de desconto'
-    },
-    {
-      id: 4,
-      name: 'Target',
-      logo: '🎯',
-      category: 'fashion',
-      description: 'Moda, casa e produtos para toda a família',
-      rating: 4.4,
-      reviews: 420000,
-      shipping: 'Frete grátis acima de $35',
-      warranty: 'Garantia de satisfação',
-      url: 'https://target.com',
-      featured: false,
-      discount: '4% de desconto'
-    },
-    {
-      id: 5,
-      name: 'Best Buy',
-      logo: '💻',
-      category: 'electronics',
-      description: 'Especialista em eletrônicos e tecnologia',
-      rating: 4.3,
-      reviews: 380000,
-      shipping: 'Frete grátis acima de $35',
-      warranty: 'Proteção estendida disponível',
-      url: 'https://bestbuy.com',
-      featured: false,
-      discount: '3% de desconto'
-    },
-    {
-      id: 6,
-      name: 'Nike',
-      logo: '👟',
-      category: 'sports',
-      description: 'Calçados, roupas e equipamentos esportivos',
-      rating: 4.7,
-      reviews: 280000,
-      shipping: 'Frete grátis em pedidos acima de $50',
-      warranty: 'Garantia de qualidade Nike',
-      url: 'https://nike.com',
-      featured: true,
-      discount: '6% de desconto'
-    },
-    {
-      id: 7,
-      name: 'Sephora',
-      logo: '💄',
-      category: 'beauty',
-      description: 'Cosméticos, perfumes e produtos de beleza',
-      rating: 4.5,
-      reviews: 190000,
-      shipping: 'Frete grátis acima de $50',
-      warranty: 'Política de devolução de 60 dias',
-      url: 'https://sephora.com',
-      featured: false,
-      discount: '4% de desconto'
-    },
-    {
-      id: 8,
-      name: 'Barnes & Noble',
-      logo: '📚',
-      category: 'books',
-      description: 'Livros, e-books e produtos educacionais',
-      rating: 4.2,
-      reviews: 150000,
-      shipping: 'Frete grátis acima de $25',
-      warranty: 'Garantia de satisfação',
-      url: 'https://barnesandnoble.com',
-      featured: false,
-      discount: '2% de desconto'
+  const fetchPartners = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/admin/partners?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+      const data = await response.json()
+      if (data.success) {
+        setPartners(data.data.filter((partner: Partner) => partner.isActive))
+      }
+    } catch (error) {
+      console.error('Erro ao carregar parceiros:', error)
+    } finally {
+      setLoading(false)
     }
-  ]
+  }
 
-  const filteredStores = stores.filter(store => {
-    const matchesSearch = store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         store.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'all' || store.category === selectedCategory
+  useEffect(() => {
+    fetchPartners()
+  }, [])
+
+  // Recarregar dados quando a página ganha foco (quando o usuário volta do admin)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchPartners()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [])
+
+  const filteredStores = partners.filter((partner: Partner) => {
+    const matchesSearch = partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         partner.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === 'all' || partner.category === selectedCategory
     return matchesSearch && matchesCategory
   })
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+              <ShoppingBag className="h-5 w-5" />
+              <span className="text-sm font-medium">Lojas Parceiras</span>
+            </div>
+            <h1 className="text-5xl font-bold mb-6">
               Lojas Parceiras
             </h1>
-            <p className="text-xl text-gray-600 mb-4">
-              Compre nas melhores lojas com desconto exclusivo
+            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+              Compre nas melhores lojas americanas com descontos exclusivos e frete consolidado
             </p>
-            <Badge variant="secondary" className="text-lg px-4 py-2">
-              💰 Descontos Exclusivos
-            </Badge>
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">💰 Descontos Exclusivos</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">🚚 Frete Consolidado</span>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                <span className="text-sm font-medium">🛡️ Proteção Total</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
                 <Input
-                  placeholder="Buscar lojas..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Buscar lojas..."
                 />
               </div>
             </div>
@@ -195,9 +137,10 @@ export function PartnerStores() {
             <div className="lg:w-64">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value)}
+                className="w-full h-12 px-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               >
+                <option value="all">Todas as Categorias</option>
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -212,6 +155,7 @@ export function PartnerStores() {
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
+                className="h-12 px-4"
               >
                 <Grid className="h-4 w-4" />
               </Button>
@@ -219,6 +163,7 @@ export function PartnerStores() {
                 variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
+                className="h-12 px-4"
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -233,81 +178,83 @@ export function PartnerStores() {
           </p>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Carregando lojas parceiras...</p>
+          </div>
+        )}
+
         {/* Stores Grid/List */}
-        <div className={viewMode === 'grid' 
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-          : 'space-y-4'
-        }>
-          {filteredStores.map(store => (
-            <Card key={store.id} className={`hover:shadow-lg transition-shadow ${store.featured ? 'ring-2 ring-blue-500' : ''}`}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="text-3xl">{store.logo}</div>
-                    <div>
-                      <CardTitle className="text-lg">{store.name}</CardTitle>
-                      {store.featured && (
-                        <Badge className="mt-1 bg-blue-100 text-blue-800">
-                          <Star className="h-3 w-3 mr-1" />
-                          Destaque
-                        </Badge>
-                      )}
+        {!loading && (
+          <div className={viewMode === 'grid'
+            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+            : 'space-y-6'
+          }>
+            {filteredStores.map((partner: Partner) => (
+              <Card key={partner.id} className="group hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 overflow-hidden">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl flex items-center justify-center border border-gray-200 group-hover:shadow-lg transition-shadow">
+                        <Image
+                          src={partner.logo}
+                          alt={partner.name}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                          {partner.name}
+                        </CardTitle>
+                        <span className="inline-flex items-center mt-1 text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded px-2 py-0.5">
+                          {partner.category}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center text-white text-xs bg-gradient-to-r from-green-500 to-emerald-500 rounded px-2 py-0.5">
+                      Link de Afiliado
+                    </span>
+                  </div>
+                  <CardDescription className="text-gray-600 leading-relaxed">
+                    {partner.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  {/* Features */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Truck className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <span className="font-medium">Frete consolidado disponível</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Shield className="h-4 w-4 text-green-600" />
+                      </div>
+                      <span className="font-medium">Proteção total do pedido</span>
                     </div>
                   </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    {store.discount}
-                  </Badge>
-                </div>
-                <CardDescription className="mt-2">
-                  {store.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Rating */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(store.rating)
-                            ? 'text-yellow-400 fill-current'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {store.rating} ({store.reviews.toLocaleString()} avaliações)
-                  </span>
-                </div>
 
-                {/* Features */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Truck className="h-4 w-4" />
-                    <span>{store.shipping}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Shield className="h-4 w-4" />
-                    <span>{store.warranty}</span>
-                  </div>
-                </div>
+                  {/* Action Button */}
+                  <Button
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => window.open(partner.link, '_blank')}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Visitar Loja
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
-                {/* Action Button */}
-                <Button 
-                  className="w-full" 
-                  onClick={() => window.open(store.url, '_blank')}
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  Visitar Loja
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredStores.length === 0 && (
+        {!loading && filteredStores.length === 0 && (
           <div className="text-center py-12">
             <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">

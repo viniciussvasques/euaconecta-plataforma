@@ -28,12 +28,12 @@ export function CarrierList({ carriers }: CarrierListProps) {
 
   return (
     <div className="bg-white shadow rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
+      <div className="px-4 py-4 sm:p-6">
         <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
           Transportadoras Configuradas
         </h3>
-        <div className="overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="-mx-4 sm:mx-0 overflow-x-auto">
+          <table className="min-w-[900px] sm:min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -126,14 +126,14 @@ export function CarrierList({ carriers }: CarrierListProps) {
                     <TestConnectionButton carrier={carrier} />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <ConfigureCredentialsButton 
-                      carrier={carrier} 
-                      onCredentialsSaved={() => window.location.reload()} 
+                    <ConfigureCredentialsButton
+                      carrier={carrier}
+                      onCredentialsSaved={() => window.location.reload()}
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
-                      <ToggleActiveButton 
+                      <ToggleActiveButton
                         carrierId={carrier.id}
                         isActive={carrier.isActive}
                         onToggle={async (id, isActive) => {
