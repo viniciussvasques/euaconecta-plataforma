@@ -32,16 +32,9 @@ export function AnalyticsTracker({ children }: AnalyticsTrackerProps) {
     if (config.amplitudeApiKey) {
       loadAmplitude(config.amplitudeApiKey)
     }
-    config.customScripts.head.forEach(script => {
-      const scriptElement = document.createElement('script')
-      scriptElement.innerHTML = script
-      document.head.appendChild(scriptElement)
-    })
-    config.customScripts.body.forEach(script => {
-      const scriptElement = document.createElement('script')
-      scriptElement.innerHTML = script
-      document.body.appendChild(scriptElement)
-    })
+    // Removido: Uso inseguro de innerHTML para scripts customizados
+    // Scripts customizados devem ser adicionados via configuração segura
+    console.warn('Scripts customizados foram desabilitados por segurança')
   }, [])
 
   const fetchAnalyticsConfig = useCallback(async () => {
@@ -117,51 +110,61 @@ export function AnalyticsTracker({ children }: AnalyticsTrackerProps) {
   }
 
   const loadGoogleTagManager = (id: string) => {
+    // Carregar GTM de forma segura via src
     const script = document.createElement('script')
-    script.innerHTML = `
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-      })(window,document,'script','dataLayer','${id}');
-    `
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${id}`
+    script.async = true
     document.head.appendChild(script)
 
+    // Configurar dataLayer
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push({
+      'gtm.start': new Date().getTime(),
+      'event': 'gtm.js'
+    })
+
+    // Adicionar iframe de fallback de forma segura
     const noscript = document.createElement('noscript')
-    noscript.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=${id}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`
+    const iframe = document.createElement('iframe')
+    iframe.src = `https://www.googletagmanager.com/ns.html?id=${id}`
+    iframe.height = '0'
+    iframe.width = '0'
+    iframe.style.display = 'none'
+    iframe.style.visibility = 'hidden'
+    noscript.appendChild(iframe)
     document.body.insertBefore(noscript, document.body.firstChild)
   }
 
   const loadFacebookPixel = (id: string) => {
+    // Carregar Facebook Pixel de forma segura
     const script = document.createElement('script')
-    script.innerHTML = `
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '${id}');
-      fbq('track', 'PageView');
-    `
+    script.src = 'https://connect.facebook.net/en_US/fbevents.js'
+    script.async = true
+    script.defer = true
     document.head.appendChild(script)
+
+    // Configurar fbq após carregamento
+    script.onload = () => {
+      if (window.fbq) {
+        window.fbq('init', id)
+        window.fbq('track', 'PageView')
+      }
+    }
   }
 
   const loadHotjar = (id: string) => {
+    // Carregar Hotjar de forma segura
     const script = document.createElement('script')
-    script.innerHTML = `
-      (function(h,o,t,j,a,r){
-        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-        h._hjSettings={hjid:${id},hjsv:6};
-        a=o.getElementsByTagName('head')[0];
-        r=o.createElement('script');r.async=1;
-        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-        a.appendChild(r);
-      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-    `
+    script.src = `https://static.hotjar.com/c/hotjar-${id}.js?sv=6`
+    script.async = true
     document.head.appendChild(script)
+
+    // Configurar Hotjar após carregamento
+    script.onload = () => {
+      if ((window as any).hj) {
+        (window as any).hj('identify', id)
+      }
+    }
   }
 
   const loadMixpanel = (token: string) => {

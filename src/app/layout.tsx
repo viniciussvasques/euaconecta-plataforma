@@ -37,6 +37,9 @@ export const metadata: Metadata = {
   verification: {
     google: "google07d4158e2b89bd2b",
   },
+  other: {
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://static.hotjar.com https://cdn.mxpnl.com https://cdn.amplitude.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com; frame-src 'self' https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self';"
+  }
 };
 
 export const viewport = {

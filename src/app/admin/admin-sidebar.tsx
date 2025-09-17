@@ -401,6 +401,17 @@ export function AdminSidebar() {
           status: 'active'
         },
         {
+          name: 'Conteúdo Legal',
+          href: '/admin/legal',
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z" />
+            </svg>
+          ),
+          show: user?.canManageSettings || false,
+          status: 'active'
+        },
+        {
           name: 'Logs/Auditoria',
           href: '/admin/logs',
           icon: (

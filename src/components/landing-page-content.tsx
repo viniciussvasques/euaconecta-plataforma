@@ -524,10 +524,26 @@ export function LandingPageContent() {
               <div>
                 <h3 className="text-lg font-semibold mb-4">Empresa</h3>
                 <ul className="space-y-2 text-gray-400">
-                  <li>Sobre Nós</li>
-                  <li>Contato</li>
-                  <li>Termos de Uso</li>
-                  <li>Política de Privacidade</li>
+                  <li>
+                    <a href="/about" className="hover:text-white transition-colors">
+                      Sobre Nós
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/contact" className="hover:text-white transition-colors">
+                      Contato
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/terms" className="hover:text-white transition-colors">
+                      Termos de Uso
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/privacy" className="hover:text-white transition-colors">
+                      Política de Privacidade
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>

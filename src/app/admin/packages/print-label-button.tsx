@@ -100,14 +100,40 @@ export function PrintLabelButton({ packageId }: PrintLabelButtonProps) {
       const printWin = window.open('', '_blank')
       if (printWin) {
         printWin.document.open()
-        printWin.document.write(`<!doctype html><html><head><title>Etiqueta</title></head>
-          <body style="margin:0">
-            <embed id="pdf" src="${url}" type="application/pdf" style="width:100%;height:100vh" />
-            <script>
-              const tryPrint = () => { try { window.focus(); window.print(); } catch(e){} }
-              window.addEventListener('load', () => setTimeout(tryPrint, 500))
-            <\/script>
-          </body></html>`)
+        // Usar createElement em vez de document.write para segurança
+        const html = printWin.document.createElement('html')
+        const head = printWin.document.createElement('head')
+        const title = printWin.document.createElement('title')
+        title.textContent = 'Etiqueta'
+        head.appendChild(title)
+        
+        const body = printWin.document.createElement('body')
+        body.style.margin = '0'
+        
+        const embed = printWin.document.createElement('embed')
+        embed.id = 'pdf'
+        embed.src = url
+        embed.type = 'application/pdf'
+        embed.style.width = '100%'
+        embed.style.height = '100vh'
+        
+        body.appendChild(embed)
+        html.appendChild(head)
+        html.appendChild(body)
+        printWin.document.appendChild(html)
+        
+        // Adicionar script de impressão de forma segura
+        const script = printWin.document.createElement('script')
+        script.textContent = `
+          const tryPrint = () => { 
+            try { 
+              window.focus(); 
+              window.print(); 
+            } catch(e){} 
+          }
+          window.addEventListener('load', () => setTimeout(tryPrint, 500))
+        `
+        body.appendChild(script)
         printWin.document.close()
         const timer = setInterval(() => {
           if (printWin.closed) {

@@ -264,6 +264,20 @@ export function EuaconectaStore() {
                   <ExternalLink className="h-4 w-4" />
                   Lojas Parceiras
                 </a>
+                <a
+                  href="/terms"
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Termos de Uso
+                </a>
+                <a
+                  href="/privacy"
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Política de Privacidade
+                </a>
               </CardContent>
             </Card>
           </div>
