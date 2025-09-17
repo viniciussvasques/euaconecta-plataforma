@@ -161,8 +161,9 @@ export function AnalyticsTracker({ children }: AnalyticsTrackerProps) {
 
     // Configurar Hotjar após carregamento
     script.onload = () => {
-      if ((window as any).hj) {
-        (window as any).hj('identify', id)
+      if (typeof window !== 'undefined' && 'hj' in window) {
+        const hj = (window as { hj?: (action: string, id: string) => void }).hj
+        hj?.('identify', id)
       }
     }
   }

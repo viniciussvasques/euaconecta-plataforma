@@ -17,10 +17,10 @@ export default function TermsPage() {
             <h1 className="text-3xl font-bold text-white">Termos de Uso</h1>
             <p className="text-blue-100 mt-2">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
           </div>
-          
+
           <div className="px-6 py-8">
             <div className="prose prose-lg max-w-none">
-              
+
               {/* Seção 1 - Aceitação dos Termos */}
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center">
@@ -28,7 +28,7 @@ export default function TermsPage() {
                   Aceitação dos Termos
                 </h2>
                 <p className="text-gray-700 leading-relaxed">
-                  Ao acessar e utilizar a plataforma EuaConecta, você concorda em cumprir e estar vinculado aos presentes Termos de Uso. 
+                  Ao acessar e utilizar a plataforma EuaConecta, você concorda em cumprir e estar vinculado aos presentes Termos de Uso.
                   Se você não concordar com qualquer parte destes termos, não deve utilizar nossos serviços.
                 </p>
               </section>
@@ -201,8 +201,8 @@ export default function TermsPage() {
                   Modificações dos Termos
                 </h2>
                 <p className="text-gray-700 leading-relaxed">
-                  Reservamo-nos o direito de modificar estes termos a qualquer momento. 
-                  As alterações entrarão em vigor imediatamente após a publicação na plataforma. 
+                  Reservamo-nos o direito de modificar estes termos a qualquer momento.
+                  As alterações entrarão em vigor imediatamente após a publicação na plataforma.
                   O uso continuado dos serviços constitui aceitação das modificações.
                 </p>
               </section>
@@ -219,8 +219,8 @@ export default function TermsPage() {
                   </p>
                   <div className="space-y-2">
                     <p className="text-gray-700"><strong>Email:</strong> legal@euaconecta.com</p>
-                    <p className="text-gray-700"><strong>Telefone:</strong> +55 (11) 99999-9999</p>
-                    <p className="text-gray-700"><strong>Endereço:</strong> São Paulo, SP - Brasil</p>
+                    <p className="text-gray-700"><strong>Telefone:</strong> +1 (407)9538380) </p>
+                    <p className="text-gray-700"><strong>Endereço:</strong> orlando,  - United states</p>
                   </div>
                 </div>
               </section>

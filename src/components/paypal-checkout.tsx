@@ -192,8 +192,12 @@ export function PayPalCheckout({ amount, currency, description, onSuccess, onErr
         return
       }
 
-      // Limpar container anterior
-      paypalRef.current.innerHTML = ''
+      // Limpar container anterior de forma segura
+      if (paypalRef.current) {
+        while (paypalRef.current.firstChild) {
+          paypalRef.current.removeChild(paypalRef.current.firstChild)
+        }
+      }
 
       // Configurações dos botões
       const buttonConfig: PayPalButtonConfig = {

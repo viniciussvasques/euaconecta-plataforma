@@ -17,16 +17,16 @@ export default function PrivacyPage() {
             <h1 className="text-3xl font-bold text-white">Política de Privacidade</h1>
             <p className="text-green-100 mt-2">Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
           </div>
-          
+
           <div className="px-6 py-8">
             <div className="prose prose-lg max-w-none">
-              
+
               {/* Introdução */}
               <section className="mb-8">
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                   <h2 className="text-xl font-semibold text-blue-900 mb-3">Nossa Compromisso com sua Privacidade</h2>
                   <p className="text-blue-800">
-                    A EuaConecta valoriza sua privacidade e está comprometida em proteger seus dados pessoais. 
+                    A EuaConecta valoriza sua privacidade e está comprometida em proteger seus dados pessoais.
                     Esta política explica como coletamos, usamos, armazenamos e protegemos suas informações.
                   </p>
                 </div>
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">1</Badge>
                   Informações que Coletamos
                 </h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">2</Badge>
                   Como Usamos suas Informações
                 </h2>
-                
+
                 <div className="space-y-6">
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-3">Prestação de Serviços</h3>
@@ -120,26 +120,26 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">3</Badge>
                   Compartilhamento de Informações
                 </h2>
-                
+
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-yellow-800 mb-4">Compartilhamos seus dados apenas com:</h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <h4 className="font-medium text-yellow-800">Transportadoras</h4>
                       <p className="text-yellow-700">Para entrega dos seus pacotes (nome, endereço, telefone)</p>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium text-yellow-800">Processadores de Pagamento</h4>
                       <p className="text-yellow-700">Para processar transações financeiras (Stripe, PayPal)</p>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium text-yellow-800">Prestadores de Serviço</h4>
                       <p className="text-yellow-700">Para operação da plataforma (hospedagem, email, analytics)</p>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium text-yellow-800">Autoridades Legais</h4>
                       <p className="text-yellow-700">Quando exigido por lei ou ordem judicial</p>
@@ -154,7 +154,7 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">4</Badge>
                   Segurança dos Dados
                 </h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <Card className="border-green-200">
                     <CardHeader>
@@ -194,10 +194,10 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">5</Badge>
                   Seus Direitos (LGPD)
                 </h2>
-                
+
                 <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-green-800 mb-4">Você tem o direito de:</h3>
-                  
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <div className="flex items-start">
@@ -207,7 +207,7 @@ export default function PrivacyPage() {
                           <p className="text-green-700 text-sm">Solicitar informações sobre seus dados</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         <div>
@@ -215,7 +215,7 @@ export default function PrivacyPage() {
                           <p className="text-green-700 text-sm">Corrigir dados incorretos</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         <div>
@@ -224,7 +224,7 @@ export default function PrivacyPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-start">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
@@ -233,7 +233,7 @@ export default function PrivacyPage() {
                           <p className="text-green-700 text-sm">Transferir dados para outro serviço</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         <div>
@@ -241,7 +241,7 @@ export default function PrivacyPage() {
                           <p className="text-green-700 text-sm">Opor-se ao tratamento de dados</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                         <div>
@@ -260,7 +260,7 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">6</Badge>
                   Cookies e Tecnologias
                 </h2>
-                
+
                 <div className="space-y-4">
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-3">Tipos de Cookies</h3>
@@ -288,7 +288,7 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">7</Badge>
                   Retenção de Dados
                 </h2>
-                
+
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                   <p className="text-gray-700 mb-4">
                     Mantemos seus dados pessoais pelo tempo necessário para cumprir as finalidades descritas nesta política:
@@ -308,12 +308,12 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">8</Badge>
                   Menores de Idade
                 </h2>
-                
+
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6">
                   <p className="text-red-800 font-medium mb-2">⚠️ Importante</p>
                   <p className="text-red-700">
-                    Nossos serviços são destinados a pessoas maiores de 18 anos. 
-                    Não coletamos intencionalmente dados de menores de idade. 
+                    Nossos serviços são destinados a pessoas maiores de 18 anos.
+                    Não coletamos intencionalmente dados de menores de idade.
                     Se descobrirmos que coletamos dados de menores, os excluiremos imediatamente.
                   </p>
                 </div>
@@ -325,10 +325,10 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">9</Badge>
                   Alterações na Política
                 </h2>
-                
+
                 <p className="text-gray-700 leading-relaxed">
-                  Podemos atualizar esta política de privacidade periodicamente. 
-                  Quando houver mudanças significativas, notificaremos você por email ou através da plataforma. 
+                  Podemos atualizar esta política de privacidade periodicamente.
+                  Quando houver mudanças significativas, notificaremos você por email ou através da plataforma.
                   Recomendamos que revise esta política regularmente.
                 </p>
               </section>
@@ -339,7 +339,7 @@ export default function PrivacyPage() {
                   <Badge variant="outline" className="mr-3">10</Badge>
                   Contato e DPO
                 </h2>
-                
+
                 <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Para questões sobre privacidade:</h3>
                   <div className="grid md:grid-cols-2 gap-6">

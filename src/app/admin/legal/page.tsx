@@ -44,7 +44,7 @@ export default function LegalAdminPage() {
   const fetchLegalContent = async () => {
     try {
       setLoading(true)
-      
+
       // Simular busca de conteúdo legal
       // Em produção, isso viria de uma API
       const mockTerms: LegalContent = {
@@ -81,14 +81,14 @@ export default function LegalAdminPage() {
       setSaving(true)
       // Simular salvamento
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       setTermsContent(prev => prev ? {
         ...prev,
         title: termsForm.title,
         content: termsForm.content,
         lastUpdated: new Date().toISOString()
       } : null)
-      
+
       setEditingTerms(false)
     } catch (error) {
       console.error('Erro ao salvar termos:', error)
@@ -102,14 +102,14 @@ export default function LegalAdminPage() {
       setSaving(true)
       // Simular salvamento
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       setPrivacyContent(prev => prev ? {
         ...prev,
         title: privacyForm.title,
         content: privacyForm.content,
         lastUpdated: new Date().toISOString()
       } : null)
-      
+
       setEditingPrivacy(false)
     } catch (error) {
       console.error('Erro ao salvar política:', error)
