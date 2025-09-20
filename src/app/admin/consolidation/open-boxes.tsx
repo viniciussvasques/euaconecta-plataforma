@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { ConsolidationGroupData } from '@/lib/consolidation/consolidation'
-import { FreightCalculatorService } from '@/lib/freight/freight-calculator'
 
 interface OpenBoxesProps {
   consolidations: ConsolidationGroupData[]

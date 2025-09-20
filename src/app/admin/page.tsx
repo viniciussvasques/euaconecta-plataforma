@@ -2,6 +2,32 @@ import { prisma } from '@/lib/database/prisma'
 
 export const dynamic = 'force-dynamic'
 
+// Temporary interfaces for build compatibility (replace when Prisma client is generated)
+interface PackageWithOwner {
+  owner: { name: string; email: string }
+  description?: string
+  createdAt: Date
+}
+
+interface ShipmentWithUser {
+  user: { name: string; email: string }
+  trackingOut?: string
+  createdAt: Date
+}
+
+interface ConsolidationWithUser {
+  user: { name: string; email: string }
+  name?: string
+  createdAt: Date
+}
+
+interface UserInfo {
+  name: string
+  email: string
+  role: string
+  createdAt: Date
+}
+
 export default async function AdminPage() {
   // Buscar estatísticas básicas (tolerante a falhas em build/prerender)
   let userCount = 0
@@ -45,25 +71,25 @@ export default async function AdminPage() {
 
     // Combinar e ordenar atividade recente
     recentActivity = [
-      ...recentPackages.map((pkg): ActivityItem => ({
+      ...recentPackages.map((pkg: PackageWithOwner): ActivityItem => ({
         type: 'package',
         message: `Novo pacote de ${pkg.owner.name} - ${pkg.description || 'Sem descrição'}`,
         time: pkg.createdAt,
         icon: 'package'
       })),
-      ...recentShipments.map((shipment): ActivityItem => ({
+      ...recentShipments.map((shipment: ShipmentWithUser): ActivityItem => ({
         type: 'shipment',
         message: `Envio criado por ${shipment.user.name} - ${shipment.trackingOut || 'Sem rastreamento'}`,
         time: shipment.createdAt,
         icon: 'truck'
       })),
-      ...recentConsolidations.map((consolidation): ActivityItem => ({
+      ...recentConsolidations.map((consolidation: ConsolidationWithUser): ActivityItem => ({
         type: 'consolidation',
         message: `Consolidação criada por ${consolidation.user.name} - ${consolidation.name || 'Sem nome'}`,
         time: consolidation.createdAt,
         icon: 'box'
       })),
-      ...recentUsers.map((user): ActivityItem => ({
+      ...recentUsers.map((user: UserInfo): ActivityItem => ({
         type: 'user',
         message: `Novo usuário ${user.role}: ${user.name} (${user.email})`,
         time: user.createdAt,

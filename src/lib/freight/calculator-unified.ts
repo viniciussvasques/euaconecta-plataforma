@@ -63,8 +63,8 @@ export class FreightCalculatorService {
         throw new Error('Nenhuma transportadora ativa encontrada')
       }
 
-      // Calcular distância (simplificado)
-      const distance = this.calculateDistance(origin, destination)
+      // Calcular distância (simplificado) - future: use real distance API
+      const _distance = this.calculateDistance(origin, destination)
 
       // Taxa base por kg
       const baseRatePerKg = 0.15 // USD por kg

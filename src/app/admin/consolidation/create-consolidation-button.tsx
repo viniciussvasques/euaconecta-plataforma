@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { ConsolidationType, ProtectionType } from '@prisma/client'
+import { ConsolidationType, ProtectionType } from '@/types/prisma-temp'
 
 // Dinamic currency formatter
 const getFormatter = (currency: string) => new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : currency === 'EUR' ? 'de-DE' : 'en-US', { style: 'currency', currency })
@@ -58,7 +58,7 @@ export default function CreateConsolidationButton() {
   const [isOpen, setIsOpen] = useState(false)
   const [packages, setPackages] = useState<Package[]>([])
   const [selectedPackages, setSelectedPackages] = useState<string[]>([])
-  const [consolidationType, setConsolidationType] = useState<ConsolidationType>('SIMPLE')
+  const [consolidationType, setConsolidationType] = useState<ConsolidationType>(ConsolidationType.SIMPLE)
   const [extraProtection, setExtraProtection] = useState<ProtectionType[]>([])
   const [removeInvoice, setRemoveInvoice] = useState(false)
   const [customInstructions, setCustomInstructions] = useState('')
@@ -140,7 +140,7 @@ export default function CreateConsolidationButton() {
   const calculateFees = () => {
     const base = cfg?.consolidationBaseFeeUsdCents ?? 500
     const perPackage = cfg?.consolidationPerPackageUsdCents ?? 100
-    const multiplier = consolidationType === 'REPACK' ? (cfg?.repackMultiplier ?? 1.5) : 1
+    const multiplier = consolidationType === ConsolidationType.REPACK ? (cfg?.repackMultiplier ?? 1.5) : 1
 
     let consolidationFee = (base + (perPackage * selectedPackages.length)) * multiplier
 
@@ -196,7 +196,7 @@ export default function CreateConsolidationButton() {
         setIsOpen(false)
         // Resetar formulário
         setSelectedPackages([])
-        setConsolidationType('SIMPLE')
+        setConsolidationType(ConsolidationType.SIMPLE)
         setExtraProtection([])
         setRemoveInvoice(false)
         setCustomInstructions('')
@@ -294,8 +294,8 @@ export default function CreateConsolidationButton() {
                     <label className="flex items-center space-x-3">
                       <input
                         type="radio"
-                        value="SIMPLE"
-                        checked={consolidationType === 'SIMPLE'}
+                        value={ConsolidationType.SIMPLE}
+                        checked={consolidationType === ConsolidationType.SIMPLE}
                         onChange={(e) => setConsolidationType(e.target.value as ConsolidationType)}
                         className="text-blue-600"
                       />
@@ -307,8 +307,8 @@ export default function CreateConsolidationButton() {
                     <label className="flex items-center space-x-3">
                       <input
                         type="radio"
-                        value="REPACK"
-                        checked={consolidationType === 'REPACK'}
+                        value={ConsolidationType.REPACK}
+                        checked={consolidationType === ConsolidationType.REPACK}
                         onChange={(e) => setConsolidationType(e.target.value as ConsolidationType)}
                         className="text-blue-600"
                       />

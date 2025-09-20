@@ -105,7 +105,7 @@ export async function POST(
     }
 
     // Verificar se o pacote já está na caixa
-    const packageAlreadyInBox = consolidation.packages.some(pkg => pkg.id === packageId)
+    const packageAlreadyInBox = consolidation.packages.some((pkg: {id: string}) => pkg.id === packageId)
     if (packageAlreadyInBox) {
       return NextResponse.json(
         { success: false, error: 'Pacote já está nesta caixa' },
@@ -188,7 +188,7 @@ export async function DELETE(
     }
 
     // Verificar se o pacote está na caixa
-    const packageInBox = consolidation.packages.find(pkg => pkg.id === packageId)
+    const packageInBox = consolidation.packages.find((pkg: {id: string}) => pkg.id === packageId)
     if (!packageInBox) {
       return NextResponse.json(
         { success: false, error: 'Pacote não está nesta caixa' },

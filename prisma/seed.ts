@@ -1,5 +1,16 @@
-import { PrismaClient, UserRole } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+// import { UserRole } from '@prisma/client' // Temporarily commented due to Prisma client generation issues
 import bcrypt from 'bcryptjs'
+
+// Temporary enum definition until Prisma client is regenerated
+const UserRole = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  OPERATOR: 'OPERATOR',
+  MANAGER: 'MANAGER',
+  CLIENT: 'CLIENT',
+  SUPPORT: 'SUPPORT'
+} as const
 
 const prisma = new PrismaClient()
 
@@ -267,7 +278,10 @@ async function main() {
     },
   })
 
-  console.log('🛡️ Serviços de proteção criados')
+  console.log('🛡️ Serviços de proteção criados:')
+  console.log(`  - ${bubbleWrap.name} (${bubbleWrap.id})`)
+  console.log(`  - ${doubleBox.name} (${doubleBox.id})`)
+  console.log(`  - ${securityTape.name} (${securityTape.id})`)
 
   // Criar pacotes de exemplo
   const package1 = await prisma.package.create({

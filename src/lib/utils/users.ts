@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client'
+import { UserRole } from '@/types/prisma-temp'
 import bcrypt from 'bcryptjs'
 import { SuiteManager } from './suite-manager'
 import { prisma } from '../database/prisma'

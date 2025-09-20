@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/database/prisma'
 import { EmailService } from '@/lib/email/email'
 import { NotificationService } from '@/lib/email/notifications'
-import { NotificationType } from '@prisma/client'
+import { NotificationType } from '@/types/prisma-temp'
 
 export async function POST(request: NextRequest) {
   try {

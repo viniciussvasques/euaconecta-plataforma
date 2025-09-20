@@ -1,5 +1,5 @@
 import { prisma } from '../database/prisma'
-import type { ProtectionType } from '@prisma/client'
+import type { ProtectionType } from '@/types/prisma-temp'
 
 export interface ProtectionServiceData {
   id: string

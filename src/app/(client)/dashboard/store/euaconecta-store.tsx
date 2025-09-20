@@ -22,31 +22,10 @@ import {
 export function EuaconectaStore() {
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const [config, setConfig] = useState<{
-    storeName: string;
-    description: string;
-    features: string[];
-    pricing: {
-      basic: number;
-      premium: number;
-    };
-  } | null>(null)
 
   useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const response = await fetch('/api/platform-config')
-        const data = await response.json()
-        if (data.success) {
-          setConfig(data.data)
-        }
-      } catch (error) {
-        console.error('Erro ao carregar configurações:', error)
-      } finally {
-        // setLoading(false)
-      }
-    }
-    fetchConfig()
+    // Future: Load dynamic store configuration
+    // For now using static data
   }, [])
 
   const handleSubscribe = async () => {

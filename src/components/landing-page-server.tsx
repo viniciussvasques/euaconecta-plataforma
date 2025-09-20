@@ -40,8 +40,7 @@ const testimonials = [
 
 export function LandingPageServer({ customization, partners: initialPartners = [] }: LandingPageServerProps) {
   const { landingPage, contact, socialMedia } = customization
-  const [partners, setPartners] = useState<Partner[]>(initialPartners)
-  const [partnersLoading, setPartnersLoading] = useState(false)
+  const [partners] = useState<Partner[]>(initialPartners)
   const [blogPosts, setBlogPosts] = useState<BlogListItem[]>([])
   const [blogLoading, setBlogLoading] = useState(true)
 

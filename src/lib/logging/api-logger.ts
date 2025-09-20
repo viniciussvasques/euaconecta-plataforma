@@ -59,8 +59,8 @@ interface PerformanceMetrics {
   timestamp: string
 }
 
-// Interface para auditoria
-interface AuditEntry {
+// Interface para auditoria (future use)
+/* interface AuditEntry {
   action: string
   resource: string
   resourceId?: string
@@ -69,7 +69,7 @@ interface AuditEntry {
   userAgent?: string
   timestamp: string
   metadata?: Record<string, unknown>
-}
+} */
 
 // Classe principal do logger
 export class ApiLogger {
@@ -264,7 +264,7 @@ export class ApiLogger {
   }
 
   // Enviar para serviço externo (Sentry, Logtail, etc.)
-  private sendToExternalService(logEntry: LogEntry): void {
+  private sendToExternalService(_logEntry: LogEntry): void {
     // Implementar envio para serviço de logging
     // Por exemplo: Sentry, Logtail, CloudWatch, etc.
   }
@@ -376,7 +376,7 @@ export function withLogging<T extends unknown[], R>(
 
       return result
     } catch (error) {
-      const duration = Date.now() - startTime
+      const _duration = Date.now() - startTime
 
       // Log de erro
       if (error instanceof ApiError) {

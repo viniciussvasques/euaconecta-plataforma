@@ -11,7 +11,7 @@ interface SelectProps {
   children: React.ReactNode
 }
 
-const Select = ({ children, value, onValueChange }: SelectProps) => {
+const Select = ({ children, value: _value, onValueChange: _onValueChange }: SelectProps) => {
   return <div className="relative">{children}</div>
 }
 
@@ -79,7 +79,7 @@ const SelectItem = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement> & {
     value: string
   }
->(({ className, children, value, ...props }, ref) => (
+>(({ className, children, value: _value, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(

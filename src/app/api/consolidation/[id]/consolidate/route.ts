@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/database/prisma'
 import { NotificationService } from '@/lib/email/notifications'
-import { NotificationType } from '@prisma/client'
+import { NotificationType } from '@/types/prisma-temp'
 
 // POST /api/consolidation/[id]/consolidate - Consolidar caixa com itens adicionais
 export async function POST(

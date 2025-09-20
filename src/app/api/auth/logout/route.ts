@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/database/prisma'
 import bcrypt from 'bcryptjs'
 
+// Temporary interface for refresh token
+interface RefreshTokenInfo {
+  id: string
+  tokenHash: string
+  userId: string
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Obter userId da sessão atual para otimizar a busca
@@ -34,7 +41,7 @@ export async function POST(request: NextRequest) {
       })
 
       // Processar em paralelo para melhor performance
-      const revokePromises = userTokens.map(async (t) => {
+      const revokePromises = userTokens.map(async (t: RefreshTokenInfo) => {
         if (await bcrypt.compare(refresh, t.tokenHash)) {
           return prisma.refreshToken.update({
             where: { id: t.id },

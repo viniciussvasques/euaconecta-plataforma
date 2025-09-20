@@ -1,7 +1,7 @@
 import { PlatformConfig } from '../platform-config'
 
 // Mock do Prisma
-jest.mock('../prisma', () => ({
+jest.mock('../database/prisma', () => ({
   prisma: {
     platformConfig: {
       findFirst: jest.fn(),
@@ -173,10 +173,10 @@ describe('PlatformConfig', () => {
         // expect(result).toBe(false)
       })
 
-      it('should return true when amount meets minimum', () => {
+      it('should return true when amount meets minimum', async () => {
         // Temporarily enable insurance requirement
         const configWithInsurance = { ...mockConfig, insuranceRequired: true }
-        const { prisma } = await import('../prisma')
+        const { prisma } = await import('../database/prisma')
         prisma.platformConfig.findFirst.mockResolvedValue(configWithInsurance)
         
         const newConfig = PlatformConfig
@@ -193,9 +193,9 @@ describe('PlatformConfig', () => {
         // expect(result).toBe('123 Main Street, Suite #100, Orlando, FL 32801, US')
       })
 
-      it('should format address without line2', () => {
+      it('should format address without line2', async () => {
         const configWithoutLine2 = { ...mockConfig, addressLine2: null }
-        const { prisma } = await import('../prisma')
+        const { prisma } = await import('../database/prisma')
         prisma.platformConfig.findFirst.mockResolvedValue(configWithoutLine2)
         
         const newConfig = PlatformConfig

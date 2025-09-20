@@ -5,8 +5,7 @@
  * de forma consistente e eficiente.
  */
 
-import { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+// Note: NextRequest and NextResponse imported for future use
 
 // Interface para configuração de teste
 interface TestConfig {

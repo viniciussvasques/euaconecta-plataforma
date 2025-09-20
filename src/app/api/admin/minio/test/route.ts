@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { s3 } from '@/lib/storage/s3'
 
 export async function POST() {
   try {

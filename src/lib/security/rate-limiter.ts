@@ -179,7 +179,7 @@ export function applyRateLimit(
   request: NextRequest,
   config: RateLimitConfig
 ): void {
-  const { allowed, remaining, resetTime } = checkRateLimit(request, config)
+  const { allowed, remaining: _remaining, resetTime } = checkRateLimit(request, config)
 
   if (!allowed) {
     const resetTimeSeconds = Math.ceil((resetTime - Date.now()) / 1000)
