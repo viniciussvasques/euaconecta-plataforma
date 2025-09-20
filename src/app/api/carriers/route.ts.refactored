@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { carrierService } from '@/lib/freight/carriers'
+
+export const GET = withErrorHandler(async() {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const carriers = await carrierService.getAllActive()
+    
+    return NextResponse.json({
+      success: true,
+      data: carriers
+    })
+  } catch (error) {
+    console.error('Erro ao buscar transportadoras:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export const POST = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const data = await request.json()
+    
+    // Validar dados obrigatórios
+    if (!data.name || !data.code) {
+      return NextResponse.json(
+        { success: false, error: 'Nome e código são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    // Criar transportadora
+    const carrier = await carrierService.create(data)
+    
+    return NextResponse.json({
+      success: true,
+      data: carrier
+    }, { status: 201 })
+  } catch (error) {
+    console.error('Erro ao criar transportadora:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

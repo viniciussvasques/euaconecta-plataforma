@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ConsolidationGroupData } from '@/lib/consolidation'
-import { FreightCalculator } from '@/lib/freight-calculator'
+import { ConsolidationGroupData } from '@/lib/consolidation/consolidation'
+import { FreightCalculatorService } from '@/lib/freight/freight-calculator'
 
 interface OpenBoxesProps {
   consolidations: ConsolidationGroupData[]
@@ -20,7 +20,7 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
 
   useEffect(() => {
     // Mostrar todas as consolidações que não estão finalizadas
-    setOpenBoxes(consolidations.filter(c => 
+    setOpenBoxes(consolidations.filter(c =>
       ['OPEN', 'PENDING', 'IN_PROGRESS', 'READY_TO_SHIP'].includes(c.status)
     ))
   }, [consolidations])
@@ -30,7 +30,7 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
       const response = await fetch(`/api/consolidation/${consolidationId}/close`, {
         method: 'POST'
       })
-      
+
       if (response.ok) {
         // Atualizar lista local
         setOpenBoxes(prev => prev.filter(box => box.id !== consolidationId))
@@ -60,7 +60,7 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
         // Limpar formulário
         setNewPackageData({ packageId: '', weightGrams: 0, weightNotes: '' })
         setShowAddPackage(false)
-        
+
         // Recarregar dados
         window.location.reload()
       }
@@ -100,7 +100,10 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
   }
 
   const formatCurrency = (amount: number) => {
-    return FreightCalculator.formatCurrency(amount, 'USD')
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
   }
 
   return (
@@ -242,7 +245,7 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
                     <div>
                       <p className="text-sm font-medium text-blue-900">Status da Caixa</p>
                       <p className="text-xs text-blue-700">
-                        {selectedBox.packages.length === 0 
+                        {selectedBox.packages.length === 0
                           ? 'Vazia - Pronta para receber pacotes'
                           : selectedBox.packages.length >= selectedBox.maxItemsAllowed
                           ? 'Cheia - Pronta para fechamento'
@@ -251,7 +254,7 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
                       </p>
                     </div>
                     <div className={`w-3 h-3 rounded-full ${
-                      selectedBox.packages.length === 0 
+                      selectedBox.packages.length === 0
                         ? 'bg-gray-400'
                         : selectedBox.packages.length >= selectedBox.maxItemsAllowed
                         ? 'bg-red-500'
@@ -291,7 +294,7 @@ export function OpenBoxes({ consolidations }: OpenBoxesProps) {
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               Adicionar Pacote à Caixa
             </h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">

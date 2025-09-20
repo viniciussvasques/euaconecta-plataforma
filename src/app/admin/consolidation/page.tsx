@@ -1,4 +1,4 @@
-import { consolidationService } from '@/lib/consolidation'
+import { consolidationService } from '@/lib/consolidation/consolidation'
 import { ConsolidationManager } from './consolidation-manager'
 import CreateConsolidationButton from './create-consolidation-button'
 

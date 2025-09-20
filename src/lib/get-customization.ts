@@ -1,4 +1,4 @@
-import { SystemCustomization, defaultCustomization } from './system-customization'
+import { SystemCustomization, defaultCustomization } from './config/system-customization'
 
 export async function getCustomization(): Promise<SystemCustomization> {
   try {
@@ -10,3 +10,4 @@ export async function getCustomization(): Promise<SystemCustomization> {
     return defaultCustomization
   }
 }
+

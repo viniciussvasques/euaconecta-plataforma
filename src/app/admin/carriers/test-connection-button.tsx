@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Wifi, WifiOff } from 'lucide-react'
-import { CarrierData } from '@/lib/carriers'
+import { CarrierData } from '@/lib/freight/carriers'
 
 interface TestConnectionButtonProps {
   carrier: CarrierData

@@ -1,0 +1,49 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { PaymentProviderService } from '@/lib/payments/payment-providers'
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const { id } = await params
+    const paymentProviderService = new PaymentProviderService()
+    
+    // Buscar o provedor atual
+    const provider = await paymentProviderService.getById(id)
+    if (!provider) {
+      return NextResponse.json(
+        { success: false, error: 'Provedor de pagamento não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    // Alternar status
+    const updatedProvider = await paymentProviderService.update(id, {
+      isActive: !provider.isActive
+    })
+
+    return NextResponse.json({
+      success: true,
+      provider: updatedProvider
+    })
+  } catch (error) {
+    console.error('Erro ao alterar status do provedor:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

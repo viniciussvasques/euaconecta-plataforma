@@ -1,0 +1,39 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/database/prisma'
+
+export const GET = withErrorHandler(async() {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const shipments = await prisma.shipment.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        packages: {
+          select: {
+            id: true,
+            description: true,
+            status: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return NextResponse.json({ success: true, data: shipments })
+  } catch (error) {
+    console.error('Erro ao buscar envios:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}

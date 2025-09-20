@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendMail } from '@/lib/email'
+import { sendMail } from '@/lib/email/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +13,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }
+
+
+
+
 
 
 

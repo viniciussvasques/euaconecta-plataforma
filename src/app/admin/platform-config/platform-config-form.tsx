@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { PlatformConfigData } from '@/lib/platform-config'
+import { PlatformConfigData } from '@/lib/config/platform-config'
 
 interface PlatformConfigFormProps {
   initialConfig: PlatformConfigData

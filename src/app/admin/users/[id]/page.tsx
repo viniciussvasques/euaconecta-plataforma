@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { UserProfile } from './user-profile'
-import { UserService } from '@/lib/users'
+import { UserService } from '@/lib/auth/users'
 
 // Forçar renderização dinâmica
 export const dynamic = 'force-dynamic'

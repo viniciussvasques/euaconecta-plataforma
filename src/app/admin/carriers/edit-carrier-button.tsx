@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CarrierData, CreateCarrierData } from '@/lib/carriers'
+import { CarrierData, CreateCarrierData } from '@/lib/freight/carriers'
 
 interface EditCarrierButtonProps {
   carrier: CarrierData

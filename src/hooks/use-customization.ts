@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { SystemCustomization, defaultCustomization } from '@/lib/system-customization'
+import { SystemCustomization, defaultCustomization } from '@/lib/config/system-customization'
 
 export function useCustomization() {
   const [customization, setCustomization] = useState<SystemCustomization>(defaultCustomization)

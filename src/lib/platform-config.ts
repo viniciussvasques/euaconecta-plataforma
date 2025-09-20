@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { prisma } from './prisma'
+import { prisma } from './database/prisma'
 
 export interface PlatformConfigData {
   companyName: string
@@ -220,3 +220,4 @@ export const PlatformConfig = {
     return cachedConfig as PlatformConfigData
   },
 }
+

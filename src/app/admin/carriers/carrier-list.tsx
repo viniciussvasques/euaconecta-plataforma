@@ -1,6 +1,6 @@
 'use client'
 
-import { CarrierData } from '@/lib/carriers'
+import { CarrierData } from '@/lib/freight/carriers'
 import { EditCarrierButton } from './edit-carrier-button'
 import { DeleteCarrierButton } from './delete-carrier-button'
 import { ToggleActiveButton } from './toggle-active-button'

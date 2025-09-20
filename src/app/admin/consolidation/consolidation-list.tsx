@@ -1,6 +1,6 @@
 'use client'
 
-import { ConsolidationGroupData } from '@/lib/consolidation'
+import { ConsolidationGroupData } from '@/lib/consolidation/consolidation'
 import { UpdateConsolidationButton } from './update-consolidation-button'
 import { EditConsolidationButton } from './edit-consolidation-button'
 

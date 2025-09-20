@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/database/prisma'
 import { NotificationType, NotificationStatus, UserRole } from '@prisma/client'
 
 export type CreateNotificationInput = {
@@ -102,3 +102,4 @@ export class NotificationService {
     )
   }
 }
+

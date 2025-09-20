@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { X, Package, Weight, Camera, CheckCircle, AlertCircle, Printer } from 'lucide-react'
-import { LabelGenerator, PackageLabelData } from '@/lib/labels'
-import { ImageUtils } from '@/lib/image-utils'
+import { LabelGenerator, PackageLabelData } from '@/lib/consolidation/labels'
+import { ImageUtils } from '@/lib/storage/image-utils'
 
 interface Package {
   id: string

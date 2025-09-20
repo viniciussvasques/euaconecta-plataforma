@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { LabelGenerator, type PackageLabelData } from '@/lib/labels'
+import { LabelGenerator, type PackageLabelData } from '@/lib/consolidation/labels'
 
 interface FetchedUser {
   id?: string

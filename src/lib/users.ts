@@ -1,7 +1,7 @@
 import { UserRole } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { SuiteManager } from './suite-manager'
-import { prisma } from './prisma'
+import { SuiteManager } from './utils/suite-manager'
+import { prisma } from './database/prisma'
 
 export interface CreateUserData {
   email: string
@@ -379,3 +379,4 @@ export class UserService {
 }
 
 export { UserRole }
+

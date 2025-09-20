@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { AnalyticsConfig } from '@/lib/seo-analytics-types'
+import { AnalyticsConfig } from '@/lib/utils/seo-analytics-types'
 
 interface AnalyticsTrackerProps {
   children: React.ReactNode

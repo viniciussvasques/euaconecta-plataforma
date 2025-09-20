@@ -1,0 +1,43 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { SuiteManager } from '@/lib/utils/suite-manager'
+
+export const GET = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const { searchParams } = new URL(request.url)
+    const suiteNumber = searchParams.get('suiteNumber')
+
+    if (suiteNumber) {
+      // Buscar usuário por número de suite
+      const user = await SuiteManager.getUserBySuiteNumber(parseInt(suiteNumber))
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: 'Suite não encontrada' },
+          { status: 404 }
+        )
+      }
+      return NextResponse.json({ success: true, data: user })
+    }
+
+    // Listar todas as suites ocupadas
+    const occupiedSuites = await SuiteManager.getOccupiedSuites()
+    return NextResponse.json({ success: true, data: occupiedSuites })
+  } catch (error) {
+    console.error('Erro ao buscar suites:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

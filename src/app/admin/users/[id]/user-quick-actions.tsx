@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { UserWithPermissions } from '@/lib/users'
+import { UserWithPermissions } from '@/lib/auth/users'
 
 interface UserQuickActionsProps {
   user: UserWithPermissions

@@ -1,4 +1,4 @@
-import { prisma } from './prisma'
+import { prisma } from './database/prisma'
 
 export class SuiteManager {
   private static readonly STARTING_SUITE_NUMBER = 2350
@@ -40,7 +40,7 @@ export class SuiteManager {
   static async assignSuiteNumber(userId: string): Promise<number> {
     try {
       const nextSuiteNumber = await this.getNextSuiteNumber()
-      
+
       await prisma.user.update({
         where: { id: userId },
         data: { suiteNumber: nextSuiteNumber }

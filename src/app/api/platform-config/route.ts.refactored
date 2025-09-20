@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { PlatformConfig } from '@/lib/config/platform-config'
+
+export const PUT = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const data = await request.json()
+    // Atualização parcial: validar apenas tipos básicos quando enviados (validações adicionais podem ser aplicadas no form)
+
+    const updatedConfig = await PlatformConfig.update(data)
+    return NextResponse.json({ success: true, data: updatedConfig })
+  } catch (error) {
+    console.error('Erro ao atualizar configuração:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+  }
+}
+
+export const GET = withErrorHandler(async() {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const config = await PlatformConfig.load()
+    
+    return NextResponse.json({
+      success: true,
+      data: config
+    })
+  } catch (error) {
+    console.error('Erro ao carregar configuração:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

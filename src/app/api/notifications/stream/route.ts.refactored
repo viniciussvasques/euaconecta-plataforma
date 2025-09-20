@@ -1,0 +1,6 @@
+import { NextRequest } from 'next/server'
+import { handleSSEConnection } from '@/lib/email/notifications-sse'
+
+export const GET = withErrorHandler(async(request: NextRequest) {
+  return handleSSEConnection(request)
+}

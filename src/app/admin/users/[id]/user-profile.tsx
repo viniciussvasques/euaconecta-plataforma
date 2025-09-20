@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { UserWithPermissions } from '@/lib/users'
+import { UserWithPermissions } from '@/lib/auth/users'
 import { UserStats } from './user-stats'
 import { UserEvaluation } from './user-evaluation'
 import { UserObservations } from './user-observations'

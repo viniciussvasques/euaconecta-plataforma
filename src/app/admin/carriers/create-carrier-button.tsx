@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CreateCarrierData } from '@/lib/carriers'
+import { CreateCarrierData } from '@/lib/freight/carriers'
 
 export function CreateCarrierButton() {
   const [isOpen, setIsOpen] = useState(false)

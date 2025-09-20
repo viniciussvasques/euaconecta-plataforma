@@ -1,4 +1,4 @@
-import { prisma } from './prisma'
+import { prisma } from './database/prisma'
 
 export interface StoragePolicyData {
   id: string
@@ -44,9 +44,9 @@ export class StorageService {
     const policy = await prisma.storagePolicy.findFirst({
       where: { isActive: true }
     })
-    
+
     if (!policy) return null
-    
+
     return {
       ...policy,
       dailyRateSmall: Number(policy.dailyRateSmall),
@@ -63,7 +63,7 @@ export class StorageService {
     const policies = await prisma.storagePolicy.findMany({
       orderBy: { createdAt: 'desc' }
     })
-    
+
     return policies.map(policy => ({
       ...policy,
       dailyRateSmall: Number(policy.dailyRateSmall),
@@ -80,9 +80,9 @@ export class StorageService {
     const policy = await prisma.storagePolicy.findUnique({
       where: { id }
     })
-    
+
     if (!policy) return null
-    
+
     return {
       ...policy,
       dailyRateSmall: Number(policy.dailyRateSmall),
@@ -100,7 +100,7 @@ export class StorageService {
     await prisma.storagePolicy.updateMany({
       data: { isActive: false }
     })
-    
+
     const policy = await prisma.storagePolicy.create({
       data: {
         ...data,
@@ -111,7 +111,7 @@ export class StorageService {
         isActive: true,
       }
     })
-    
+
     return {
       ...policy,
       dailyRateSmall: Number(policy.dailyRateSmall),
@@ -129,7 +129,7 @@ export class StorageService {
       where: { id },
       data
     })
-    
+
     return {
       ...policy,
       dailyRateSmall: Number(policy.dailyRateSmall),
@@ -166,7 +166,7 @@ export class StorageService {
 
     // Respeitar limite máximo
     const clampedDays = Math.min(daysUsed, policy.maxDaysAllowed)
-    
+
     // Dias além do período gratuito
     const chargeableDays = Math.max(0, clampedDays - policy.freeDays)
     if (chargeableDays === 0) {
@@ -185,7 +185,7 @@ export class StorageService {
       const totalFee = baseFee
       return { totalFee, breakdown: { baseFee, itemFee, weekendFee, holidayFee, chargeableDays } }
     }
-    
+
     // Determinar taxa base baseada no peso
     let dailyRate = policy.dailyRateSmall // Padrão para pequeno
     if (weightKg > 5) {
@@ -193,29 +193,29 @@ export class StorageService {
     } else if (weightKg > 1) {
       dailyRate = policy.dailyRateMedium
     }
-    
+
     // Taxa base
     const baseFee = dailyRate * chargeableDays
-    
+
     // Taxa por item
     const itemFee = itemCount * policy.dailyRatePerItem * chargeableDays
-    
+
     // Taxas de fim de semana (se aplicável)
     let weekendFee = 0
     if (policy.weekendCharges && includeWeekends) {
       const weekendDays = Math.ceil(chargeableDays * (2/7))
       weekendFee = dailyRate * weekendDays * 0.5
     }
-    
+
     // Taxas de feriados (se aplicável)
     let holidayFee = 0
     if (policy.holidayCharges && includeHolidays) {
       const holidayDays = Math.ceil(chargeableDays * 0.1)
       holidayFee = dailyRate * holidayDays * 0.5
     }
-    
+
     const totalFee = baseFee + itemFee + weekendFee + holidayFee
-    
+
     return {
       totalFee: Math.max(0, totalFee),
       breakdown: { baseFee, itemFee, weekendFee, holidayFee, chargeableDays }
@@ -259,7 +259,7 @@ export class StorageService {
     await prisma.storagePolicy.updateMany({
       data: { isActive: false }
     })
-    
+
     // Ativar a política selecionada
     await prisma.storagePolicy.update({
       where: { id },

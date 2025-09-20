@@ -1,4 +1,4 @@
-import { prisma } from './prisma'
+import { prisma } from './database/prisma'
 
 export interface NotificationData {
   userId: string
@@ -62,7 +62,7 @@ export class NotificationService {
   // Marcar todas as notificações como lidas
   async markAllAsRead(userId: string) {
     return await prisma.notification.updateMany({
-      where: { 
+      where: {
         userId,
         status: 'PENDING'
       },

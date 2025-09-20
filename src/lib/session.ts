@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { cookies } from 'next/headers'
-import { verifyAccessToken } from './jwt'
+import { verifyAccessToken } from './auth/jwt'
 
 export interface Session {
   userId: string

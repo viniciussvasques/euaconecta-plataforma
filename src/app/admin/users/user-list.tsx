@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { UserWithPermissions, UserRole } from '@/lib/users'
+import { UserWithPermissions, UserRole } from '@/lib/auth/users'
 
 interface UserListProps {
   users: UserWithPermissions[]

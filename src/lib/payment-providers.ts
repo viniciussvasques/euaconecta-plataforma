@@ -1,4 +1,4 @@
-import { prisma } from './prisma'
+import { prisma } from './database/prisma'
 
 export interface PaymentProviderData {
   id: string
@@ -332,3 +332,4 @@ export class PaymentProviderService {
 }
 
 export const paymentProviderService = new PaymentProviderService()
+

@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { UserService } from '@/lib/auth/users'
+
+export const GET = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const { searchParams } = new URL(request.url)
+    const query = searchParams.get('q')
+    const role = searchParams.get('role') || 'CLIENT'
+    
+    if (!query || query.trim().length < 2) {
+      return NextResponse.json({
+        success: true,
+        data: []
+      })
+    }
+
+    // Buscar usuários por nome, email ou ID
+    const users = await UserService.searchUsers(query, role)
+    
+    return NextResponse.json({
+      success: true,
+      data: users
+    })
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error)
+    
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

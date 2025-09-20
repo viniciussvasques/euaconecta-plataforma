@@ -1,4 +1,4 @@
-import { UserService } from '@/lib/users'
+import { UserService } from '@/lib/auth/users'
 import { UserList } from './user-list'
 import { CreateUserButton } from './create-user-button'
 

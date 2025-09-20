@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
-import { NotificationService } from './notifications'
+import { NotificationService } from './email/notifications'
 import { NotificationType } from '@prisma/client'
 
 // Tipos de eventos do sistema
@@ -238,7 +238,7 @@ export class EventService {
 
       // Enviar via SSE se disponível
       try {
-        const { sendNotificationToUser } = await import('@/lib/notifications-sse')
+        const { sendNotificationToUser } = await import('@/lib/email/notifications-sse')
         sendNotificationToUser(data.userId, {
           ...notification,
           actionUrl: notification.actionUrl || undefined,
@@ -271,7 +271,7 @@ export class EventService {
   // Emitir evento para administradores
   static async emitToAdmins(event: SystemEvent, data: Omit<EventData, 'userId'>) {
     try {
-      const { prisma } = await import('@/lib/prisma')
+      const { prisma } = await import('@/lib/database/prisma')
       const admins = await prisma.user.findMany({
         where: {
           role: {
@@ -289,3 +289,4 @@ export class EventService {
     }
   }
 }
+

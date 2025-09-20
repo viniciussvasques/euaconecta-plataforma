@@ -1,0 +1,163 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { prisma } from '@/lib/database/prisma'
+import * as XLSX from 'xlsx'
+
+export const GET = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const { searchParams } = new URL(request.url)
+    const startDate = searchParams.get('startDate')
+    const endDate = searchParams.get('endDate')
+
+    if (!startDate || !endDate) {
+      return NextResponse.json(
+        { success: false, error: 'Data inicial e final são obrigatórias' },
+        { status: 400 }
+      )
+    }
+
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    end.setHours(23, 59, 59, 999)
+
+    // Fetch data for Excel
+    const consolidations = await prisma.consolidationGroup.findMany({
+      where: {
+        createdAt: {
+          gte: start,
+          lte: end
+        }
+      },
+      include: {
+        user: true,
+        packages: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    const packages = await prisma.package.findMany({
+      where: {
+        createdAt: {
+          gte: start,
+          lte: end
+        }
+      },
+      include: {
+        owner: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    const users = await prisma.user.findMany({
+      where: {
+        createdAt: {
+          gte: start,
+          lte: end
+        }
+      },
+      include: {
+        packages: true,
+        consolidationGroups: true,
+        payments: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    // Prepare data for Excel
+    const consolidationsData = consolidations.map(consolidation => {
+      const totalValue = Number(consolidation.consolidationFee) + Number(consolidation.storageFee)
+      
+      return {
+        'ID': consolidation.id,
+        'Cliente': consolidation.user.name || 'Sem nome',
+        'Email': consolidation.user.email,
+        'Status': consolidation.status,
+        'Quantidade de Pacotes': consolidation.packages.length,
+        'Peso Total': consolidation.finalWeightGrams || 0,
+        'Valor Total': totalValue,
+        'Data de Criação': consolidation.createdAt.toLocaleDateString('pt-BR'),
+        'Data de Atualização': consolidation.updatedAt.toLocaleDateString('pt-BR'),
+        'Código de Rastreamento': consolidation.trackingCode || 'N/A'
+      }
+    })
+
+    const packagesData = packages.map(pkg => ({
+      'ID': pkg.id,
+      'Cliente': pkg.owner.name || 'Sem nome',
+      'Email': pkg.owner.email,
+      'Descrição': pkg.description || 'N/A',
+      'Loja': pkg.store || 'N/A',
+      'Número do Pedido': pkg.orderNumber || 'N/A',
+      'Tipo': pkg.packageType || 'N/A',
+      'Peso': pkg.weightGrams || 0,
+      'Valor Declarado': pkg.declaredValue || 0,
+      'Status': pkg.status,
+      'Caixa de Consolidação': pkg.consolidationGroupId ? 'Consolidado' : 'N/A',
+      'Data de Criação': pkg.createdAt.toLocaleDateString('pt-BR')
+    }))
+
+    const usersData = users.map(user => {
+      const totalSpent = user.payments.reduce((sum, payment) => sum + (payment.amountCents || 0), 0) / 100
+      
+      return {
+        'ID': user.id,
+        'Nome': user.name || 'Sem nome',
+        'Email': user.email,
+        'CPF': user.cpf || 'N/A',
+        'Telefone': user.phone || 'N/A',
+        'Total de Pacotes': user.packages.length,
+        'Total de Consolidações': user.consolidationGroups.length,
+        'Total Gasto': totalSpent,
+        'Data de Criação': user.createdAt.toLocaleDateString('pt-BR'),
+        'Ativo': user.isActive ? 'Sim' : 'Não'
+      }
+    })
+
+    // Create workbook
+    const workbook = XLSX.utils.book_new()
+
+    // Add sheets
+    const consolidationsSheet = XLSX.utils.json_to_sheet(consolidationsData)
+    XLSX.utils.book_append_sheet(workbook, consolidationsSheet, 'Consolidações')
+
+    const packagesSheet = XLSX.utils.json_to_sheet(packagesData)
+    XLSX.utils.book_append_sheet(workbook, packagesSheet, 'Pacotes')
+
+    const usersSheet = XLSX.utils.json_to_sheet(usersData)
+    XLSX.utils.book_append_sheet(workbook, usersSheet, 'Usuários')
+
+    // Generate Excel buffer
+    const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' })
+
+    return new NextResponse(excelBuffer, {
+      headers: {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="relatorio-${startDate}-${endDate}.xlsx"`
+      }
+    })
+
+  } catch (error) {
+    console.error('Erro ao gerar Excel:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

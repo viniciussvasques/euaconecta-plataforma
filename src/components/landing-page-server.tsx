@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Package, CheckCircle, Star, Phone, Mail, MapPin, FileText, TrendingUp, Calendar, Eye, Heart } from 'lucide-react'
-import { SystemCustomization } from '@/lib/system-customization'
+import { SystemCustomization } from '@/lib/config/system-customization'
 
 interface LandingPageServerProps {
   customization: SystemCustomization

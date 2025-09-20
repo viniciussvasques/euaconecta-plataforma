@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import { SEOConfig } from '@/lib/seo-analytics-types'
+import { SEOConfig } from '@/lib/utils/seo-analytics-types'
 
 interface SEOHeadProps {
   title?: string

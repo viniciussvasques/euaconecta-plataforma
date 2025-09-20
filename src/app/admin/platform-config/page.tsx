@@ -1,4 +1,4 @@
-import { PlatformConfig } from '@/lib/platform-config'
+import { PlatformConfig } from '@/lib/config/platform-config'
 import { PlatformConfigForm } from './platform-config-form'
 
 // Forçar renderização dinâmica para evitar cache

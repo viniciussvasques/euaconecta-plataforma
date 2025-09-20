@@ -1,0 +1,106 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { prisma } from '@/lib/database/prisma'
+
+export const GET = withErrorHandler(async(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const { id } = await params
+
+    // Buscar estatísticas de pacotes
+    const packageStats = await prisma.package.groupBy({
+      by: ['status'],
+      where: { ownerId: id },
+      _count: { status: true }
+    })
+
+    // Buscar estatísticas de consolidação
+    const consolidationStats = await prisma.consolidationGroup.findMany({
+      where: { userId: id },
+      select: {
+        status: true,
+        packages: {
+          select: { id: true }
+        }
+      }
+    })
+
+    // Buscar estatísticas de pagamentos
+    const paymentStats = await prisma.payment.findMany({
+      where: { userId: id },
+      select: {
+        amountCents: true,
+        status: true
+      }
+    })
+
+    // Buscar último pacote
+    const lastPackage = await prisma.package.findFirst({
+      where: { ownerId: id },
+      orderBy: { createdAt: 'desc' },
+      select: { createdAt: true }
+    })
+
+    // Buscar última consolidação
+    const lastConsolidation = await prisma.consolidationGroup.findFirst({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      select: { createdAt: true }
+    })
+
+    // Processar estatísticas
+    const totalPackages = packageStats.reduce((sum, stat) => sum + stat._count.status, 0)
+    const receivedPackages = packageStats.find(s => s.status === 'RECEIVED')?._count.status || 0
+    const readyPackages = packageStats.find(s => s.status === 'READY_TO_SHIP')?._count.status || 0
+    const shippedPackages = packageStats.find(s => s.status === 'SHIPPED')?._count.status || 0
+
+    const totalConsolidations = consolidationStats.length
+    const openBoxes = consolidationStats.filter(c => c.status === 'OPEN').length
+    const completedConsolidations = consolidationStats.filter(c => c.status === 'SHIPPED').length
+
+    const totalPayments = paymentStats.length
+    const pendingPayments = paymentStats.filter(p => p.status === 'pending').length
+    const totalAmount = paymentStats
+      .filter(p => p.status === 'succeeded')
+      .reduce((sum, p) => sum + (p.amountCents / 100), 0)
+
+    const averagePackageValue = totalPackages > 0 ? totalAmount / totalPackages : 0
+
+    const stats = {
+      totalPackages,
+      receivedPackages,
+      readyPackages,
+      shippedPackages,
+      totalConsolidations,
+      activeBoxes: openBoxes,
+      shippedBoxes: completedConsolidations,
+      totalPayments,
+      pendingPayments,
+      totalSpent: totalAmount,
+      averagePackageValue,
+      lastPackageDate: lastPackage?.createdAt || null,
+      lastConsolidationDate: lastConsolidation?.createdAt || null
+    }
+
+    return NextResponse.json({ success: true, data: stats })
+  } catch (error) {
+    console.error('Erro ao buscar estatísticas do usuário:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

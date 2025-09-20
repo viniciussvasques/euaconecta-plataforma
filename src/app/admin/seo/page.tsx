@@ -17,7 +17,7 @@ import {
   Save,
   Eye
 } from 'lucide-react'
-import { SEOConfig, AnalyticsConfig, LeadCaptureForm, SitemapConfig, RobotsConfig } from '@/lib/seo-analytics-types'
+import { SEOConfig, AnalyticsConfig, LeadCaptureForm, SitemapConfig, RobotsConfig } from '@/lib/utils/seo-analytics-types'
 
 export default function SEOAdminPage() {
   const [seoConfig, setSeoConfig] = useState<SEOConfig | null>(null)

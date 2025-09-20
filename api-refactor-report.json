@@ -1,0 +1,2231 @@
+{
+  "total": 101,
+  "withValidation": 1,
+  "withErrorHandling": 0,
+  "withRateLimiting": 0,
+  "withLogging": 0,
+  "withDocumentation": 0,
+  "totalIssues": 504,
+  "analyses": [
+    {
+      "file": "src/app/api/warehouses/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/warehouses/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/warehouses/[id]/default/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/search/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/me/generate-suite/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/[id]/stats/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/[id]/observations/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/[id]/history/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/[id]/generate-suite/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/users/[id]/evaluation/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/upload/photo/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/support/tickets/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/support/tickets/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/support/messages/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/suites/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/suites/[userId]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/stripe/webhook/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/stripe/create-checkout-session/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/stripe/check-session/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/storage/route.ts",
+      "hasValidation": true,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/storage/free-days/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/shipments/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/shipments/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/reports/generate-pdf/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/reports/generate-excel/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/reports/dashboard/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/protection-services/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/platform-config/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/paypal/webhook/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/paypal/create-order/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/paypal/capture-order/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payments/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payments/create-intent/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payments/confirm/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payment-providers/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payment-providers/active/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payment-providers/[id]/toggle-active/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/payment-providers/[id]/credentials/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/packages/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/packages/stats/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/packages/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/packages/[id]/confirm/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/notifications/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/notifications/unread/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/notifications/stream/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/notifications/[id]/read/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/health/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/freight-calculator/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/freight/calculate/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/email-templates/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/customization/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/customization/styles/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/customization/preview/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/status/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/remove-package/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/packages/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/consolidate/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/close/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/consolidation/[id]/add-package/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/carriers/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/carriers/active/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/carriers/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/carriers/[id]/toggle-active/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/carriers/[id]/test-connection/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/carriers/[id]/credentials/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/blog/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/blog/[slug]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/blog/[slug]/like/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/reset-password/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/resend-activation/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/register/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/refresh/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/me/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/logout/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/login/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/forgot-password/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/activate/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/tutorials/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/tutorials/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/testimonials/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/testimonials/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/test-notification/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/sitemap/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/shipments/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/shipments/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/seo/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/robots/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/partners/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/partners/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/minio/test/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/lead-forms/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/email/verify/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/email/test-send/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/admin/analytics/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/addresses/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/addresses/[id]/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    },
+    {
+      "file": "src/app/api/addresses/[id]/default/route.ts",
+      "hasValidation": false,
+      "hasErrorHandling": false,
+      "hasRateLimiting": false,
+      "hasLogging": false,
+      "hasDocumentation": false,
+      "issues": [
+        "Falta validação de entrada",
+        "Falta tratamento de erros centralizado",
+        "Falta rate limiting",
+        "Falta logging estruturado",
+        "Falta documentação"
+      ],
+      "suggestions": [
+        "Implementar validação com Zod",
+        "Implementar withErrorHandler",
+        "Implementar rate limiting",
+        "Implementar sistema de logging",
+        "Adicionar documentação JSDoc"
+      ]
+    }
+  ]
+}

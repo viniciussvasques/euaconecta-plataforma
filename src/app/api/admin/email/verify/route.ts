@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getTransporter } from '@/lib/email'
+import { getTransporter } from '@/lib/email/email'
 
 export async function GET() {
   try {
@@ -11,6 +11,10 @@ export async function GET() {
     return NextResponse.json({ success: false, error: message }, { status: 500 })
   }
 }
+
+
+
+
 
 
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ConsolidationTabs } from './consolidation-tabs'
-import { ConsolidationGroupData } from '@/lib/consolidation'
+import { ConsolidationGroupData } from '@/lib/consolidation/consolidation'
 
 interface ConsolidationManagerProps {
   initialOpenConsolidations: ConsolidationGroupData[]

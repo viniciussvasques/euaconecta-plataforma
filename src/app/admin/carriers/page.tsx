@@ -1,4 +1,4 @@
-import { carrierService } from '@/lib/carriers'
+import { carrierService } from '@/lib/freight/carriers'
 import { CarrierList } from './carrier-list'
 import { CreateCarrierButton } from './create-carrier-button'
 

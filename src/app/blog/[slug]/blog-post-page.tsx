@@ -17,7 +17,7 @@ import {
   User,
   Clock
 } from 'lucide-react'
-import { BlogPost, BLOG_CATEGORIES } from '@/lib/blog-types'
+import { BlogPost, BLOG_CATEGORIES } from '@/lib/blog/blog-types'
 
 export function BlogPostPage() {
   const params = useParams()

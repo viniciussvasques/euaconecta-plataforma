@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ConsolidationGroupData } from '@/lib/consolidation'
+import { ConsolidationGroupData } from '@/lib/consolidation/consolidation'
 
 interface UpdateConsolidationButtonProps {
   consolidation: ConsolidationGroupData

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ConsolidationList } from './consolidation-list'
-import { ConsolidationGroupData } from '@/lib/consolidation-new'
+import { ConsolidationGroupData } from '@/lib/consolidation/consolidation'
 
 interface ConsolidationGroup {
   id: string

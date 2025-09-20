@@ -1,4 +1,4 @@
-import { storageService } from '@/lib/storage'
+import { storageService } from '@/lib/storage/storage'
 import StoragePolicyForm from './storage-policy-form'
 
 // Forçar renderização dinâmica

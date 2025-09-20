@@ -1,0 +1,182 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { PaymentProviderService } from '@/lib/payments/payment-providers'
+import { prisma } from '@/lib/database/prisma'
+import { EmailService } from '@/lib/email/email'
+
+export const POST = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    // Verificar autenticação via cookie de sessão
+    const sessionCookie = request.cookies.get('session')
+    if (!sessionCookie) {
+      return NextResponse.json(
+        { success: false, error: 'Não autorizado' },
+        { status: 401 }
+      )
+    }
+    let userId: string | null = null
+    let email: string | null = null
+    try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+      const payload = await (await import('@/lib/auth/jwt')).verifyAccessToken(sessionCookie.value)
+      userId = String(payload.sub || '')
+      email = String((payload as unknown as { email?: string }).email || '')
+    } catch {
+      try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+        const legacy = JSON.parse(sessionCookie.value) as { userId?: string; email?: string }
+        userId = legacy.userId || null
+        email = legacy.email || null
+      } catch {}
+    }
+    if (!userId || !email) {
+      return NextResponse.json(
+        { success: false, error: 'Sessão inválida' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { orderId } = body
+
+    if (!orderId) {
+      return NextResponse.json(
+        { success: false, error: 'ID da ordem não fornecido' },
+        { status: 400 }
+      )
+    }
+
+    // Capturar pagamento no PayPal
+    const response = await fetch(`https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${await getPayPalAccessToken()}`,
+      },
+    })
+
+    const captureData = await response.json()
+
+    if (captureData.status !== 'COMPLETED') {
+      throw new Error('Pagamento não foi completado')
+    }
+
+    // Buscar o pagamento no banco e atualizar status
+    const payment = await prisma.payment.findFirst({
+      where: {
+        intentId: orderId,
+        providerCode: 'PAYPAL'
+      },
+      include: {
+        user: true
+      }
+    })
+
+    if (payment) {
+      // Atualizar status do pagamento
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: {
+          status: 'succeeded',
+          receiptUrl: captureData.links?.find((link: { rel: string; href: string }) => link.rel === 'self')?.href
+        }
+      })
+
+      // Enviar email de confirmação
+      if (payment.user) {
+        await EmailService.sendMail({
+          to: payment.user.email,
+          subject: '✅ Pagamento Confirmado - Euaconecta',
+          html: EmailService.paymentConfirmationEmail(
+            payment.user.name,
+            Number(payment.amountCents) / 100,
+            'PayPal',
+            payment.id
+          )
+        })
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      captureId: captureData.id,
+      status: captureData.status,
+    })
+
+  } catch (error) {
+    console.error('Erro ao capturar pagamento PayPal:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+async function getPayPalAccessToken(): Promise<string> {
+  const paymentProviderService = new PaymentProviderService()
+  const paypalProvider = await paymentProviderService.getByCode('PAYPAL')
+
+  if (!paypalProvider || !paypalProvider.isActive) {
+    throw new Error('PayPal não está ativo no painel administrativo')
+  }
+
+  if (!paypalProvider.apiKey || !paypalProvider.apiSecret) {
+    throw new Error('Credenciais do PayPal não configuradas no painel administrativo')
+  }
+
+  const clientId = paypalProvider.apiKey
+  const clientSecret = paypalProvider.apiSecret
+
+  // Verificar se as credenciais são válidas (não são placeholders)
+  if (clientId === clientSecret || clientId.includes('xxx') || clientSecret.includes('xxx')) {
+    throw new Error('Credenciais do PayPal não configuradas corretamente. Configure as credenciais reais no painel administrativo.')
+  }
+
+  const response = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Accept-Language': 'en_US',
+      'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+    },
+    body: 'grant_type=client_credentials',
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    console.error('PayPal API Error:', data)
+    throw new Error(`Erro de autenticação PayPal: ${data.error_description || data.error || 'Credenciais inválidas'}`)
+  }
+
+  if (!data.access_token) {
+    throw new Error(`Erro ao obter access token: ${data.error_description || data.error || 'Erro desconhecido'}`)
+  }
+
+  return data.access_token
+}

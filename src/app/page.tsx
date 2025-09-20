@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { LandingPageServer } from '@/components/landing-page-server'
-import { getCustomization } from '@/lib/get-customization'
+import { getCustomization } from '@/lib/config/get-customization'
 
 async function getPartners() {
   try {

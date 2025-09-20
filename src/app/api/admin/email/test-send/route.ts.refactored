@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { validateRequest, createSuccessResponse, createErrorResponse } from '@/lib/validation/api-validators'
+import { withErrorHandler } from '@/lib/errors/api-error-handler'
+import { createGeneralRateLimit } from '@/lib/security/rate-limiter'
+import { logger } from '@/lib/logging/api-logger'
+import { sendMail } from '@/lib/email/email'
+
+export const POST = withErrorHandler(async(request: NextRequest) {
+  try {
+    const startTime = Date.now()
+    const requestId = Math.random().toString(36).substring(7)
+
+    // Log da request
+    logger.logRequest(request, requestId)
+    // Aplicar rate limiting
+    const rateLimit = createGeneralRateLimit()
+    rateLimit(request)
+    const { to } = await request.json()
+    if (!to) return NextResponse.json({ success: false, error: 'Destinatário obrigatório' }, { status: 400 })
+
+    await sendMail(to, 'Teste de SMTP - EuaConecta', '<p>Teste de envio de email via SMTP configurado.</p>')
+    return NextResponse.json({ success: true })
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Falha no envio'
+    return NextResponse.json({ success: false, error: message }, { status: 500 })
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

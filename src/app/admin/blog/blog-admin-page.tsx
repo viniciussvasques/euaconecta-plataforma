@@ -19,7 +19,7 @@ import {
   Save,
   X
 } from 'lucide-react'
-import { BlogPost, BLOG_CATEGORIES } from '@/lib/blog-types'
+import { BlogPost, BLOG_CATEGORIES } from '@/lib/blog/blog-types'
 
 export function BlogAdminPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
