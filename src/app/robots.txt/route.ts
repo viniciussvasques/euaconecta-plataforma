@@ -4,10 +4,16 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com'
+    let siteUrl = baseUrl
 
-    // Buscar configurações SEO
-    const seo = await prisma.systemCustomization.findUnique({ where: { key: 'seo_config' } })
-    const siteUrl = (seo?.value as { siteUrl?: string })?.siteUrl || baseUrl
+    // Buscar configurações SEO apenas se o banco estiver disponível
+    try {
+      const seo = await prisma.systemCustomization.findUnique({ where: { key: 'seo_config' } })
+      siteUrl = (seo?.value as { siteUrl?: string })?.siteUrl || baseUrl
+    } catch {
+      // Se o banco não estiver disponível, usar URL padrão
+      console.log('Usando URL padrão para robots.txt (banco não disponível)')
+    }
 
     // Gerar robots.txt
     const robotsTxt = `User-agent: *

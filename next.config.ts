@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
   // Configuração para permitir cross-origin requests em desenvolvimento
   allowedDevOrigins: [
     'app.euaconecta.com',
+    'dev.euaconecta.com',
     'euaconecta.com',
     'www.euaconecta.com'
   ],

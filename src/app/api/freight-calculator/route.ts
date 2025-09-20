@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { FreightCalculatorService } from '@/lib/services/freight-calculator'
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { productValue, weight, origin, destination, markup } = body
+
+    // Validações
+    if (!productValue || productValue <= 0) {
+      return NextResponse.json(
+        { error: 'Valor do produto deve ser maior que zero' },
+        { status: 400 }
+      )
+    }
+
+    if (!weight || weight <= 0) {
+      return NextResponse.json(
+        { error: 'Peso deve ser maior que zero' },
+        { status: 400 }
+      )
+    }
+
+    if (!origin || !destination) {
+      return NextResponse.json(
+        { error: 'Origem e destino são obrigatórios' },
+        { status: 400 }
+      )
+    }
+
+    if (origin === destination) {
+      return NextResponse.json(
+        { error: 'Origem e destino devem ser diferentes' },
+        { status: 400 }
+      )
+    }
+
+    // Calcular frete e impostos
+    const result = await FreightCalculatorService.calculateFreightAndTaxes(
+      productValue,
+      weight,
+      origin,
+      destination,
+      markup || 0.20
+    )
+
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('Erro no cálculo de frete e impostos:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET() {
+  try {
+    // Retornar configurações atuais
+    const markup = await FreightCalculatorService.getMarkupConfig()
+
+    return NextResponse.json({
+      markup,
+      currency: 'BRL',
+      availableStates: [
+        'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+        'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+        'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+      ]
+    })
+  } catch (error) {
+    console.error('Erro ao buscar configurações:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

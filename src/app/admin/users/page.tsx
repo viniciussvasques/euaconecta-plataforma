@@ -2,9 +2,12 @@ import { UserService } from '@/lib/users'
 import { UserList } from './user-list'
 import { CreateUserButton } from './create-user-button'
 
+// Forçar renderização dinâmica
+export const dynamic = 'force-dynamic'
+
 export default async function UsersPage() {
   const users = await UserService.getAllUsers()
-  
+
   return (
     <div className="space-y-6">
       {/* Page Header */}

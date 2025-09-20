@@ -1,10 +1,13 @@
 import { PlatformConfig } from '@/lib/platform-config'
 import { PlatformConfigForm } from './platform-config-form'
 
+// Forçar renderização dinâmica para evitar cache
+export const dynamic = 'force-dynamic'
+
 export default async function PlatformConfigPage() {
   try {
     const config = await PlatformConfig.load()
-    
+
     return (
       <div className="space-y-6">
         {/* Page Header */}
@@ -21,7 +24,7 @@ export default async function PlatformConfigPage() {
     )
   } catch (error) {
     console.error('Erro ao carregar configuração:', error)
-    
+
     return (
       <div className="space-y-6">
         {/* Page Header */}
@@ -37,7 +40,7 @@ export default async function PlatformConfigPage() {
           <div className="text-red-800">
             <h3 className="text-sm font-medium">Erro ao carregar configuração</h3>
             <div className="mt-2 text-sm">
-              Não foi possível carregar a configuração da plataforma. 
+              Não foi possível carregar a configuração da plataforma.
               Verifique se o banco de dados está funcionando e tente novamente.
             </div>
           </div>

@@ -17,7 +17,7 @@ export interface AccessTokenPayload extends JWTPayload {
   name?: string
 }
 
-export async function signAccessToken(payload: AccessTokenPayload, expiresIn: string = process.env.JWT_EXPIRES_IN || '15m'): Promise<string> {
+export async function signAccessToken(payload: AccessTokenPayload, expiresIn: string = process.env.JWT_EXPIRES_IN || '7d'): Promise<string> {
   const secret = getJwtSecret()
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })

@@ -24,6 +24,8 @@ export function BlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([])
+  const [liked, setLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(0)
 
   useEffect(() => {
     if (params.slug) {
@@ -44,6 +46,7 @@ export function BlogPostPage() {
       const data = await response.json()
       if (data.success) {
         setPost(data.data)
+        setLikesCount(data.data.likes)
         fetchRelatedPosts(data.data.category, data.data.id)
       }
     } catch (error) {
@@ -81,6 +84,48 @@ export function BlogPostPage() {
   const getCategoryName = (categoryId: string) => {
     const category = BLOG_CATEGORIES.find(c => c.id === categoryId)
     return category?.name || categoryId
+  }
+
+  const handleLike = async () => {
+    if (!post) return
+
+    try {
+      const response = await fetch(`/api/blog/${post.slug}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        setLiked(!liked)
+        setLikesCount(prev => liked ? prev - 1 : prev + 1)
+      }
+    } catch (error) {
+      console.error('Erro ao curtir post:', error)
+    }
+  }
+
+  const handleShare = async () => {
+    if (!post) return
+
+    const shareData = {
+      title: post.title,
+      text: post.excerpt,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else {
+        // Fallback: copiar para clipboard
+        await navigator.clipboard.writeText(window.location.href)
+        alert('Link copiado para a área de transferência!')
+      }
+    } catch (error) {
+      console.error('Erro ao compartilhar:', error)
+    }
   }
 
   const formatContent = (content: string) => {
@@ -175,14 +220,14 @@ export function BlogPostPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <Card className="shadow-xl border-0">
-              <CardContent className="p-8">
+            <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm rounded-2xl">
+              <CardContent className="p-16">
                 <div
-                  className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-700 prose-p:leading-relaxed prose-strong:text-gray-900 prose-ul:text-gray-700 prose-li:text-gray-700 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
+                  className="prose prose-xl max-w-none prose-headings:text-gray-900 prose-headings:font-bold prose-h1:text-4xl prose-h1:mb-8 prose-h2:text-3xl prose-h2:mb-6 prose-h2:mt-12 prose-h3:text-2xl prose-h3:mb-4 prose-h3:mt-8 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:text-lg prose-p:mb-6 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-li:text-gray-700 prose-li:text-lg prose-li:mb-2 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50 prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg"
                   dangerouslySetInnerHTML={{
                     __html: formatContent(post.content)
                   }}
@@ -192,17 +237,17 @@ export function BlogPostPage() {
 
             {/* Tags */}
             {post.tags.length > 0 && (
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+              <Card className="mt-8 shadow-lg border-0 rounded-xl">
+                <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-xl">
+                  <CardTitle className="flex items-center gap-2 text-gray-800">
                     <Tag className="h-5 w-5" />
                     Tags
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
+                <CardContent className="p-6">
+                  <div className="flex flex-wrap gap-3">
                     {post.tags.map(tag => (
-                      <Badge key={tag} variant="outline">
+                      <Badge key={tag} variant="outline" className="px-3 py-1 text-sm bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100">
                         {tag}
                       </Badge>
                     ))}
@@ -212,19 +257,26 @@ export function BlogPostPage() {
             )}
 
             {/* Share */}
-            <Card className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 border-0">
-              <CardContent className="p-6">
+            <Card className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 border-0 shadow-lg rounded-xl">
+              <CardContent className="p-8">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Gostou do artigo?</h3>
-                  <p className="text-gray-600 mb-6">Compartilhe com seus amigos e ajude outros a economizarem também!</p>
-                  <div className="flex justify-center gap-4">
-                    <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                      <Share2 className="h-4 w-4 mr-2" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Gostou do artigo?</h3>
+                  <p className="text-gray-600 mb-8 text-lg">Compartilhe com seus amigos e ajude outros a economizarem também!</p>
+                  <div className="flex justify-center gap-6">
+                    <Button
+                      onClick={handleShare}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <Share2 className="h-5 w-5 mr-2" />
                       Compartilhar
                     </Button>
-                    <Button variant="outline" className="border-pink-300 text-pink-600 hover:bg-pink-50">
-                      <Heart className="h-4 w-4 mr-2" />
-                      Curtir ({post.likes})
+                    <Button
+                      onClick={handleLike}
+                      variant="outline"
+                      className={`border-pink-300 hover:bg-pink-50 px-8 py-3 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ${liked ? 'text-pink-600 bg-pink-50 border-pink-400' : 'text-pink-600'}`}
+                    >
+                      <Heart className={`h-5 w-5 mr-2 ${liked ? 'fill-current' : ''}`} />
+                      Curtir ({likesCount})
                     </Button>
                   </div>
                 </div>

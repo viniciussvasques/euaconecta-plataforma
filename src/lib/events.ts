@@ -55,77 +55,77 @@ const EVENT_CONFIGS = {
     title: 'Pacote registrado',
     message: (data: EventData) => `Seu pacote "${data.metadata?.description || 'Novo pacote'}" foi registrado e aguarda confirmação.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/packages/${data.entityId}` : '/dashboard/packages'
+    actionUrl: (data: EventData) => '/dashboard/packages'
   },
 
   [SystemEvent.PACKAGE_RECEIVED]: {
     title: 'Pacote confirmado',
     message: (data: EventData) => `Seu pacote foi confirmado e pesado (${data.metadata?.weight || 'N/A'}g).`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/packages/${data.entityId}` : '/dashboard/packages'
+    actionUrl: (data: EventData) => '/dashboard/packages'
   },
 
   [SystemEvent.PACKAGE_WEIGHED]: {
     title: 'Pacote pesado',
     message: (data: EventData) => `Seu pacote foi pesado: ${data.metadata?.weight || 'N/A'}g.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/packages/${data.entityId}` : '/dashboard/packages'
+    actionUrl: (data: EventData) => '/dashboard/packages'
   },
 
   [SystemEvent.PACKAGE_READY_TO_SHIP]: {
     title: 'Pacote pronto para envio',
     message: (data: EventData) => `Seu pacote está pronto para envio. Você pode consolidá-lo ou enviá-lo individualmente.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/packages/${data.entityId}` : '/dashboard/packages'
+    actionUrl: (data: EventData) => '/dashboard/packages'
   },
 
   [SystemEvent.PACKAGE_SHIPPED]: {
     title: 'Pacote enviado',
     message: (data: EventData) => `Seu pacote foi enviado! Código de rastreamento: ${data.metadata?.trackingCode || 'N/A'}`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/packages/${data.entityId}` : '/dashboard/packages'
+    actionUrl: (data: EventData) => '/dashboard/packages'
   },
 
   [SystemEvent.CONSOLIDATION_CREATED]: {
     title: 'Caixa de consolidação criada',
     message: (data: EventData) => `Uma nova caixa de consolidação foi criada para seus pacotes.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/consolidations/${data.entityId}` : '/dashboard/consolidations'
+    actionUrl: (data: EventData) => '/dashboard/boxes'
   },
 
   [SystemEvent.CONSOLIDATION_OPENED]: {
     title: 'Caixa aberta',
     message: (data: EventData) => `Sua caixa de consolidação foi aberta e está recebendo pacotes.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/consolidations/${data.entityId}` : '/dashboard/consolidations'
+    actionUrl: (data: EventData) => '/dashboard/boxes'
   },
 
   [SystemEvent.CONSOLIDATION_IN_PROGRESS]: {
     title: 'Consolidação em andamento',
     message: (data: EventData) => `Sua caixa está sendo consolidada. Em breve estará pronta para envio.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/consolidations/${data.entityId}` : '/dashboard/consolidations'
+    actionUrl: (data: EventData) => '/dashboard/boxes'
   },
 
   [SystemEvent.CONSOLIDATION_READY_TO_SHIP]: {
     title: 'Caixa pronta para envio',
     message: (data: EventData) => `Sua caixa consolidada está pronta para envio!`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/consolidations/${data.entityId}` : '/dashboard/consolidations'
+    actionUrl: (data: EventData) => '/dashboard/boxes'
   },
 
   [SystemEvent.CONSOLIDATION_SHIPPED]: {
     title: 'Caixa enviada',
     message: (data: EventData) => `Sua caixa consolidada foi enviada! Código de rastreamento: ${data.metadata?.trackingCode || 'N/A'}`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/consolidations/${data.entityId}` : '/dashboard/consolidations'
+    actionUrl: (data: EventData) => '/dashboard/boxes'
   },
 
   [SystemEvent.CONSOLIDATION_CANCELLED]: {
     title: 'Consolidação cancelada',
     message: (data: EventData) => `Sua caixa de consolidação foi cancelada.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/consolidations/${data.entityId}` : '/dashboard/consolidations'
+    actionUrl: (data: EventData) => '/dashboard/boxes'
   },
 
   [SystemEvent.PAYMENT_CREATED]: {
@@ -176,21 +176,21 @@ const EVENT_CONFIGS = {
     title: 'Ticket de suporte criado',
     message: (data: EventData) => `Seu ticket de suporte "${data.metadata?.title || 'Novo ticket'}" foi criado.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/support/${data.entityId}` : '/dashboard/support'
+    actionUrl: (data: EventData) => '/dashboard/support'
   },
 
   [SystemEvent.SUPPORT_TICKET_UPDATED]: {
     title: 'Ticket atualizado',
     message: (data: EventData) => `Seu ticket de suporte foi atualizado: ${data.metadata?.status || 'Status alterado'}.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/support/${data.entityId}` : '/dashboard/support'
+    actionUrl: (data: EventData) => '/dashboard/support'
   },
 
   [SystemEvent.SUPPORT_TICKET_RESOLVED]: {
     title: 'Ticket resolvido',
     message: (data: EventData) => `Seu ticket de suporte foi resolvido.`,
     type: NotificationType.IN_APP,
-    actionUrl: (data: EventData) => data.entityId ? `/dashboard/support/${data.entityId}` : '/dashboard/support'
+    actionUrl: (data: EventData) => '/dashboard/support'
   },
   SYSTEM_MAINTENANCE: {
     title: 'Manutenção do Sistema',

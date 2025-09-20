@@ -2,16 +2,19 @@ import { notFound } from 'next/navigation'
 import { UserProfile } from './user-profile'
 import { UserService } from '@/lib/users'
 
+// Forçar renderização dinâmica
+export const dynamic = 'force-dynamic'
+
 interface UserProfilePageProps {
   params: Promise<{ id: string }>
 }
 
 export default async function UserProfilePage({ params }: UserProfilePageProps) {
   const { id } = await params
-  
+
   try {
     const user = await UserService.getUserById(id)
-    
+
     if (!user) {
       notFound()
     }

@@ -7,6 +7,7 @@ import { FeaturedBlog } from './components/featured-blog'
 import { CollapsiblePackages } from './components/collapsible-packages'
 import { CollapsibleBoxes } from './components/collapsible-boxes'
 import { CompleteProfileModal } from './components/complete-profile-modal'
+// import { FreightCalculatorWidget } from '@/components/freight-calculator-widget'
 
 interface User {
   id: string
@@ -200,6 +201,24 @@ export function ClientDashboard() {
 
         {/* Estatísticas */}
         <ClientStats userId={user.id} />
+
+        {/* Calculadora de Frete */}
+        <div className="mt-8">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              🧮 Calculadora de Frete e Impostos
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Calcule o frete + markup e os impostos para seus produtos no Brasil
+            </p>
+            <a
+              href="/dashboard/freight-calculator"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              🧮 Abrir Calculadora
+            </a>
+          </div>
+        </div>
 
         {/* Grid Principal */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -21,12 +22,52 @@ import {
 export function EuaconectaStore() {
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [config, setConfig] = useState<{
+    storeName: string;
+    description: string;
+    features: string[];
+    pricing: {
+      basic: number;
+      premium: number;
+    };
+  } | null>(null)
 
-  const handleSubscribe = () => {
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('/api/platform-config')
+        const data = await response.json()
+        if (data.success) {
+          setConfig(data.data)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar configurações:', error)
+      } finally {
+        // setLoading(false)
+      }
+    }
+    fetchConfig()
+  }, [])
+
+  const handleSubscribe = async () => {
     if (email) {
-      setIsSubscribed(true)
-      setEmail('')
-      setTimeout(() => setIsSubscribed(false), 3000)
+      try {
+        const response = await fetch('/api/notifications/subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, type: 'store_launch' }),
+        })
+
+        if (response.ok) {
+          setIsSubscribed(true)
+          setEmail('')
+          setTimeout(() => setIsSubscribed(false), 3000)
+        }
+      } catch (error) {
+        console.error('Erro ao se inscrever:', error)
+      }
     }
   }
 
@@ -217,7 +258,7 @@ export function EuaconectaStore() {
                   <Mail className="h-5 w-5 text-blue-600" />
                   <div>
                     <p className="font-medium">E-mail</p>
-                    <p className="text-sm text-gray-600">loja@euaconecta.com</p>
+                    <p className="text-sm text-gray-600">contato@euaconecta.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -250,13 +291,13 @@ export function EuaconectaStore() {
                   <ExternalLink className="h-4 w-4" />
                   Central de Ajuda
                 </a>
-                <a
+                <Link
                   href="/dashboard/tutorials"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Tutoriais
-                </a>
+                </Link>
                 <a
                   href="/dashboard/stores"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"

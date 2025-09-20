@@ -30,6 +30,7 @@ export function ClientSidebar({ user, isOpen, onClose }: ClientSidebarProps) {
   ]
 
   const servicesNavigation = [
+    { name: 'Calculadora de Frete', href: '/dashboard/freight-calculator', icon: '🧮' },
     { name: 'Loja Euaconecta', href: '/dashboard/store', icon: '🛍️', badge: 'Em breve' },
     { name: 'Lojas Parceiras', href: '/dashboard/stores', icon: '🏪' },
     { name: 'Tutoriais', href: '/dashboard/tutorials', icon: '📚' },

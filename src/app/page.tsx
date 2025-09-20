@@ -1,5 +1,26 @@
 import { Metadata } from 'next'
-import { LandingPageContent } from '@/components/landing-page-content'
+import { LandingPageServer } from '@/components/landing-page-server'
+import { getCustomization } from '@/lib/get-customization'
+
+async function getPartners() {
+  try {
+    // Em desenvolvimento, vamos usar dados mockados
+    const mockPartners = [
+      { id: 'nike', name: 'Nike', logo: '/brands/nike.svg', link: 'https://www.nike.com/', isActive: true },
+      { id: 'adidas', name: 'Adidas', logo: '/brands/adidas.svg', link: 'https://www.adidas.com/', isActive: true },
+      { id: 'amazon', name: 'Amazon', logo: '/brands/amazon.svg', link: 'https://www.amazon.com/', isActive: true },
+      { id: 'apple', name: 'Apple', logo: '/brands/apple.svg', link: 'https://www.apple.com/', isActive: true },
+      { id: 'bestbuy', name: 'Best Buy', logo: '/brands/bestbuy.svg', link: 'https://www.bestbuy.com/', isActive: true },
+      { id: 'target', name: 'Target', logo: '/brands/target.svg', link: 'https://www.target.com/', isActive: true },
+      { id: 'walmart', name: 'Walmart', logo: '/brands/walmart.svg', link: 'https://www.walmart.com/', isActive: true },
+      { id: 'samsung', name: 'Samsung', logo: '/brands/samsung.svg', link: 'https://www.samsung.com/', isActive: true },
+    ]
+    return mockPartners
+  } catch (error) {
+    console.error('Erro ao buscar parceiros:', error)
+    return []
+  }
+}
 
 export const metadata: Metadata = {
   title: 'EuaConecta - Compre nos EUA e Receba no Brasil | Frete Internacional',
@@ -55,6 +76,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function LandingPage() {
-  return <LandingPageContent />
+export default async function LandingPage() {
+  const customization = await getCustomization()
+  const partners = await getPartners()
+  return <LandingPageServer customization={customization} partners={partners} />
 }

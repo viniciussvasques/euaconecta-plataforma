@@ -332,17 +332,17 @@ export function TutorialsPage() {
                 {/* Action Button */}
                 <Button
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={() => window.open(tutorial.url, '_blank')}
+                  onClick={() => window.location.href = `/dashboard/tutorials/${tutorial.id}`}
                 >
                   {tutorial.type === 'video' ? (
                     <>
                       <Play className="h-4 w-4 mr-2" />
-                      Assistir Tutorial
+                      Ver Tutorial
                     </>
                   ) : (
                     <>
                       <BookOpen className="h-4 w-4 mr-2" />
-                      Ler Artigo
+                      Ler Tutorial
                     </>
                   )}
                 </Button>

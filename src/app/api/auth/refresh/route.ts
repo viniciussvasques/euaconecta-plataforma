@@ -58,11 +58,11 @@ export async function POST(request: NextRequest) {
     const access = await new SignJWT({ sub: user.id, email: user.email, role: user.role, name: user.name })
       .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
       .setIssuedAt()
-      .setExpirationTime(process.env.JWT_EXPIRES_IN || '15m')
+      .setExpirationTime(process.env.JWT_EXPIRES_IN || '7d')
       .sign(encoder.encode(process.env.JWT_SECRET || ''))
 
     const res = NextResponse.json({ success: true, data: { message: 'Refreshed' } })
-    res.cookies.set('session', access, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 60 * 15 })
+    res.cookies.set('session', access, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 60 * 60 * 24 * 7 })
     res.cookies.set('refresh_token', newRefresh, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: expiresInDays * 24 * 60 * 60 })
     return res
   } catch {

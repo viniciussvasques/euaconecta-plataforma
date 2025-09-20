@@ -2,9 +2,12 @@ import { carrierService } from '@/lib/carriers'
 import { CarrierList } from './carrier-list'
 import { CreateCarrierButton } from './create-carrier-button'
 
+// Forçar renderização dinâmica
+export const dynamic = 'force-dynamic'
+
 export default async function CarriersPage() {
   const carriers = await carrierService.getAll()
-  
+
   return (
     <div className="space-y-6">
       {/* Page Header */}

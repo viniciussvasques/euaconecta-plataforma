@@ -19,24 +19,27 @@ export default async function AdminPage() {
       prisma.consolidationGroup.count(),
     ])
 
-    // Buscar atividade recente
+    // Buscar atividade recente com mais detalhes
     const [recentPackages, recentShipments, recentConsolidations, recentUsers] = await Promise.all([
       prisma.package.findMany({
         take: 5,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: { owner: { select: { name: true, email: true } } }
       }),
       prisma.shipment.findMany({
         take: 5,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { name: true, email: true } } }
       }),
       prisma.consolidationGroup.findMany({
         take: 5,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { name: true, email: true } } }
       }),
       prisma.user.findMany({
         take: 5,
         orderBy: { createdAt: 'desc' },
-        select: { name: true, email: true, createdAt: true }
+        select: { id: true, name: true, email: true, createdAt: true, role: true }
       })
     ])
 
@@ -44,25 +47,25 @@ export default async function AdminPage() {
     recentActivity = [
       ...recentPackages.map((pkg): ActivityItem => ({
         type: 'package',
-        message: `Novo pacote recebido`,
+        message: `Novo pacote de ${pkg.owner.name} - ${pkg.description || 'Sem descrição'}`,
         time: pkg.createdAt,
         icon: 'package'
       })),
       ...recentShipments.map((shipment): ActivityItem => ({
         type: 'shipment',
-        message: `Envio criado`,
+        message: `Envio criado por ${shipment.user.name} - ${shipment.trackingOut || 'Sem rastreamento'}`,
         time: shipment.createdAt,
         icon: 'truck'
       })),
       ...recentConsolidations.map((consolidation): ActivityItem => ({
         type: 'consolidation',
-        message: `Consolidação criada`,
+        message: `Consolidação criada por ${consolidation.user.name} - ${consolidation.name || 'Sem nome'}`,
         time: consolidation.createdAt,
         icon: 'box'
       })),
       ...recentUsers.map((user): ActivityItem => ({
         type: 'user',
-        message: `Novo usuário registrado: ${user.name}`,
+        message: `Novo usuário ${user.role}: ${user.name} (${user.email})`,
         time: user.createdAt,
         icon: 'user'
       }))

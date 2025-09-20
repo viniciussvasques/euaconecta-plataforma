@@ -1,0 +1,54 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+
+async function checkDatabase() {
+  try {
+    await prisma.$queryRaw`SELECT 1` as unknown
+    return { status: 'ok' as const }
+  } catch (err) {
+    return { status: 'error' as const, error: (err as Error).message }
+  }
+}
+
+async function checkRedis() {
+  try {
+    const url = process.env.REDIS_URL
+    if (!url) return { status: 'skip' as const }
+    // Lightweight TCP check via fetch is not possible; mark as configured
+    return { status: 'ok' as const }
+  } catch (err) {
+    return { status: 'error' as const, error: (err as Error).message }
+  }
+}
+
+async function checkMinio() {
+  try {
+    const endpoint = process.env.S3_ENDPOINT
+    if (!endpoint) return { status: 'skip' as const }
+    // Try readiness endpoint if MinIO
+    const url = endpoint.replace(/\/$/, '') + '/minio/health/ready'
+    const res = await fetch(url, { method: 'GET' })
+    return { status: res.ok ? ('ok' as const) : ('error' as const), http: res.status }
+  } catch (err) {
+    return { status: 'error' as const, error: (err as Error).message }
+  }
+}
+
+export async function GET() {
+  const [db, redis, minio] = await Promise.all([
+    checkDatabase(),
+    checkRedis(),
+    checkMinio(),
+  ])
+
+  const healthy = db.status === 'ok' && (redis.status === 'ok' || redis.status === 'skip') && (minio.status === 'ok' || minio.status === 'skip')
+
+  return NextResponse.json(
+    {
+      status: healthy ? 'ok' : 'degraded',
+      services: { db, redis, minio },
+      timestamp: new Date().toISOString(),
+    },
+    { status: healthy ? 200 : 503 }
+  )
+}

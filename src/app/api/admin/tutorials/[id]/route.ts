@@ -9,6 +9,43 @@ interface TutorialRecord {
   [key: string]: unknown
 }
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+
+    if (!fs.existsSync(TUTORIALS_FILE)) {
+      return NextResponse.json(
+        { success: false, error: 'Arquivo de tutoriais não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    const tutorials: TutorialRecord[] = JSON.parse(fs.readFileSync(TUTORIALS_FILE, 'utf8'))
+    const tutorial = tutorials.find((t: TutorialRecord) => t.id === id)
+
+    if (!tutorial) {
+      return NextResponse.json(
+        { success: false, error: 'Tutorial não encontrado' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: tutorial
+    })
+  } catch (error) {
+    console.error('Erro ao buscar tutorial:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

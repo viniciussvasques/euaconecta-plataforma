@@ -1,6 +1,9 @@
 import { storageService } from '@/lib/storage'
 import StoragePolicyForm from './storage-policy-form'
 
+// Forçar renderização dinâmica
+export const dynamic = 'force-dynamic'
+
 export default async function StoragePage() {
   const policies = await storageService.getAllPolicies()
   const active = policies.find(p => p.isActive)?.id
@@ -58,4 +61,3 @@ export default async function StoragePage() {
     </div>
   )
 }
-

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Play, BookOpen, ExternalLink, Star, Clock, Eye } from 'lucide-react'
 
 interface Tutorial {
@@ -106,13 +107,13 @@ export function QuickGuide() {
           <p className="text-gray-500 text-sm mb-3">
             Nenhum tutorial ativo no momento
           </p>
-          <a
+          <Link
             href="/dashboard/tutorials"
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-500 font-medium text-sm"
           >
             Ver todos os tutoriais
             <ExternalLink className="h-4 w-4" />
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -131,12 +132,12 @@ export function QuickGuide() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <a
+          <Link
             href="/dashboard/tutorials"
             className="text-sm text-blue-600 hover:text-blue-500 font-medium"
           >
             Ver todos
-          </a>
+          </Link>
         </div>
       </div>
 

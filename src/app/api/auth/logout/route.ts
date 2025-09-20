@@ -4,16 +4,47 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
-    // Revogar refresh token se existir
-    const refresh = request.cookies.get('refresh_token')?.value
-    if (refresh) {
-      const tokens = await prisma.refreshToken.findMany({ where: { revokedAt: null } })
-      for (const t of tokens) {
-        if (await bcrypt.compare(refresh, t.tokenHash)) {
-          await prisma.refreshToken.update({ where: { id: t.id }, data: { revokedAt: new Date() } })
-          break
-        }
+    // Obter userId da sessão atual para otimizar a busca
+    let userId: string | null = null
+    const sessionCookie = request.cookies.get('session')?.value
+
+    if (sessionCookie) {
+      try {
+        const { verifyAccessToken } = await import('@/lib/jwt')
+        const payload = await verifyAccessToken(sessionCookie)
+        userId = String(payload.sub || '')
+      } catch {
+        // Fallback para cookie legado
+        try {
+          const legacy = JSON.parse(sessionCookie)
+          userId = legacy?.userId || null
+        } catch {}
       }
+    }
+
+    // Revogar refresh token se existir (otimizado com userId)
+    const refresh = request.cookies.get('refresh_token')?.value
+    if (refresh && userId) {
+      // Buscar apenas tokens do usuário atual
+      const userTokens = await prisma.refreshToken.findMany({
+        where: {
+          userId: userId,
+          revokedAt: null
+        }
+      })
+
+      // Processar em paralelo para melhor performance
+      const revokePromises = userTokens.map(async (t) => {
+        if (await bcrypt.compare(refresh, t.tokenHash)) {
+          return prisma.refreshToken.update({
+            where: { id: t.id },
+            data: { revokedAt: new Date() }
+          })
+        }
+        return null
+      })
+
+      await Promise.all(revokePromises)
     }
 
     const response = NextResponse.json({

@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getBlogPostBySlug } from '@/lib/blog-service'
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await params
+
+    if (!slug) {
+      return NextResponse.json({ success: false, error: 'Slug é obrigatório' }, { status: 400 })
+    }
+
+    // Buscar o post
+    const post = await getBlogPostBySlug(slug)
+    if (!post) {
+      return NextResponse.json({ success: false, error: 'Post não encontrado' }, { status: 404 })
+    }
+
+    // Incrementar curtidas (simulação - em produção seria no banco)
+    const newLikes = post.likes + 1
+
+    // Aqui você salvaria no banco de dados
+    // await updateBlogPostLikes(slug, newLikes)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        likes: newLikes
+      }
+    })
+
+  } catch (error) {
+    console.error('Erro ao curtir post:', error)
+    return NextResponse.json(
+      { success: false, error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
+}

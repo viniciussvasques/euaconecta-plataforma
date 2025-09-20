@@ -91,8 +91,8 @@ export function AnalyticsTracker({ children }: AnalyticsTrackerProps) {
     }
   }, [trackPageView, analyticsConfig])
 
-  
-  
+
+
 
   const loadGoogleAnalytics = (id: string) => {
     const script = document.createElement('script')
@@ -186,7 +186,7 @@ export function AnalyticsTracker({ children }: AnalyticsTrackerProps) {
     document.head.appendChild(script)
   }
 
-  
+
 
   const trackEvent = useCallback((eventName: string, properties?: Record<string, unknown>) => {
     if (!analyticsConfig) return

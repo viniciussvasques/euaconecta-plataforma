@@ -2,6 +2,9 @@ import { consolidationService } from '@/lib/consolidation'
 import { ConsolidationManager } from './consolidation-manager'
 import CreateConsolidationButton from './create-consolidation-button'
 
+// Forçar renderização dinâmica
+export const dynamic = 'force-dynamic'
+
 // interface ConsolidationGroup {
 //   id: string
 //   name?: string

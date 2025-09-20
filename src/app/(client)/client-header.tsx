@@ -23,6 +23,14 @@ export function ClientHeader({ user, onMenuClick }: ClientHeaderProps) {
 
   const handleLogout = async () => {
     try {
+      // Mostrar feedback visual
+      const logoutButton = document.querySelector('[data-logout-button]') as HTMLButtonElement
+      if (logoutButton) {
+        logoutButton.disabled = true
+        const span = logoutButton.querySelector('span')
+        if (span) span.textContent = 'Saindo...'
+      }
+
       await fetch('/api/auth/logout', { method: 'POST' })
       router.push('/auth/login')
     } catch (error) {
@@ -104,9 +112,10 @@ export function ClientHeader({ user, onMenuClick }: ClientHeaderProps) {
                   </a>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    data-logout-button
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Sair
+                    <span>Sair</span>
                   </button>
                 </div>
               )}

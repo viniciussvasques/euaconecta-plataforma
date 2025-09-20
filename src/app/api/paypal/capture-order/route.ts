@@ -113,12 +113,21 @@ async function getPayPalAccessToken(): Promise<string> {
   const paymentProviderService = new PaymentProviderService()
   const paypalProvider = await paymentProviderService.getByCode('PAYPAL')
 
-  if (!paypalProvider || !paypalProvider.apiKey || !paypalProvider.apiSecret) {
+  if (!paypalProvider || !paypalProvider.isActive) {
+    throw new Error('PayPal não está ativo no painel administrativo')
+  }
+
+  if (!paypalProvider.apiKey || !paypalProvider.apiSecret) {
     throw new Error('Credenciais do PayPal não configuradas no painel administrativo')
   }
 
   const clientId = paypalProvider.apiKey
   const clientSecret = paypalProvider.apiSecret
+
+  // Verificar se as credenciais são válidas (não são placeholders)
+  if (clientId === clientSecret || clientId.includes('xxx') || clientSecret.includes('xxx')) {
+    throw new Error('Credenciais do PayPal não configuradas corretamente. Configure as credenciais reais no painel administrativo.')
+  }
 
   const response = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
     method: 'POST',
@@ -131,5 +140,15 @@ async function getPayPalAccessToken(): Promise<string> {
   })
 
   const data = await response.json()
+
+  if (!response.ok) {
+    console.error('PayPal API Error:', data)
+    throw new Error(`Erro de autenticação PayPal: ${data.error_description || data.error || 'Credenciais inválidas'}`)
+  }
+
+  if (!data.access_token) {
+    throw new Error(`Erro ao obter access token: ${data.error_description || data.error || 'Erro desconhecido'}`)
+  }
+
   return data.access_token
 }

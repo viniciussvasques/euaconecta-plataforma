@@ -604,7 +604,7 @@ function AnalyticsConfigForm({ config, onSave, saving }: {
 }
 
 // Lead Capture Manager
-function LeadCaptureManager({}: { 
+function LeadCaptureManager({}: {
   forms: LeadCaptureForm[],
   onUpdate: () => void
 }) {
@@ -630,7 +630,7 @@ function LeadCaptureManager({}: {
 }
 
 // Sitemap Configuration
-function SitemapConfigForm({}: { 
+function SitemapConfigForm({}: {
   config: SitemapConfig | null,
   onSave: (config: SitemapConfig) => void,
   saving: boolean
@@ -661,7 +661,7 @@ function SitemapConfigForm({}: {
 }
 
 // Robots Configuration
-function RobotsConfigForm({}: { 
+function RobotsConfigForm({}: {
   config: RobotsConfig | null,
   onSave: (config: RobotsConfig) => void,
   saving: boolean

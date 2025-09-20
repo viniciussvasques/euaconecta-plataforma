@@ -57,6 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
+      // Mostrar feedback visual
+      const logoutButton = document.querySelector('[data-logout-button]') as HTMLButtonElement
+      if (logoutButton) {
+        logoutButton.disabled = true
+        logoutButton.textContent = 'Saindo...'
+      }
+
       await fetch('/api/auth/logout', { method: 'POST' })
     } catch (error) {
       console.error('Erro ao fazer logout:', error)

@@ -44,9 +44,9 @@ export default function SystemCustomizationPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(customization)
       })
-
+      
       const data = await response.json()
-
+      
       if (data.success) {
         setSaved(true)
         setTimeout(() => setSaved(false), 3000)
@@ -83,14 +83,14 @@ export default function SystemCustomizationPage() {
       </div>
 
       <div className="flex items-center gap-3 mb-6">
-        <Button
-          onClick={handleSave}
-          disabled={saving || loading}
+          <Button 
+            onClick={handleSave} 
+            disabled={saving || loading}
           className={`flex items-center ${saved ? 'bg-green-600 hover:bg-green-700' : ''}`}
-        >
-          <Save className="w-4 h-4 mr-2" />
+          >
+              <Save className="w-4 h-4 mr-2" />
           {saving ? 'Salvando...' : saved ? '✓ Salvo!' : 'Salvar'}
-        </Button>
+          </Button>
         <Button variant="outline" onClick={handlePreview} disabled={loading} className="flex items-center">
             <Eye className="w-4 h-4 mr-2" />
           Ver Landing Page Atual

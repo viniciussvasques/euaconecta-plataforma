@@ -11,9 +11,8 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 ENV NODE_ENV=production
-# Use real DATABASE_URL for build
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+# Use dummy DATABASE_URL for build to avoid Prisma errors during static generation
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 # Dummy Stripe envs to avoid build errors
 ENV STRIPE_SECRET_KEY=sk_test_dummy
 ENV STRIPE_WEBHOOK_SECRET=whsec_dummy
@@ -36,6 +35,11 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/data ./data
+
+# Regenerate Prisma client with real database URL at runtime
+RUN npx prisma generate
 
 EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD wget -qO- http://127.0.0.1:3000/api/health | grep '"status":"ok"' || exit 1
 CMD ["npm", "run", "start"]
