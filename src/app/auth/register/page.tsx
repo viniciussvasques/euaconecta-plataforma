@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { RegisterForm } from './register-form'
+import { RegisterForm } from '@/app/auth/register/register-form'
 import { Package, ArrowLeft, CheckCircle } from 'lucide-react'
 
 export default function RegisterPage() {

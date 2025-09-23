@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyAccessToken } from '@/lib/auth/jwt'
 import { NotificationService } from '@/lib/email/notifications'
 import { sendNotificationToUser } from '@/lib/email/notifications-sse'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 function hasIsUrgent(n: unknown): n is { isUrgent?: boolean } {
   return typeof n === 'object' && n !== null && 'isUrgent' in (n as Record<string, unknown>)

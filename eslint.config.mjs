@@ -10,7 +10,10 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends(
+    "next/core-web-vitals", 
+    "next/typescript"
+  ),
   {
     ignores: [
       "node_modules/**",
@@ -19,6 +22,27 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+  },
+  // Regras específicas para TypeScript
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      // Proíbe explicitamente o uso de any
+      "@typescript-eslint/no-explicit-any": "error",
+      
+      // Evita variáveis não utilizadas
+      "@typescript-eslint/no-unused-vars": ["error", { 
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_" 
+      }],
+    },
+  },
+  // Regras relaxadas para arquivos de teste
+  {
+    files: ["**/__tests__/**/*", "**/*.{test,spec}.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
   },
 ];
 

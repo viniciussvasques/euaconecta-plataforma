@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PaymentProviderService } from '@/lib/payments/payment-providers'
-import { prisma } from '@/lib/database/prisma'
+import { withDb } from '@/lib/database/prisma-client'
+import { withDatabaseConnection } from '@/lib/database/middleware'
 import { verifyAccessToken } from '@/lib/auth/jwt'
 type MinimalSession = { userId: string; email?: string }
 
-export async function POST(request: NextRequest) {
+export const POST = withDatabaseConnection(async (request: NextRequest) => {
   try {
     // Verificar autenticação via cookie de sessão
     const sessionCookie = request.cookies.get('session')
@@ -14,6 +15,7 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
+    
     let session: MinimalSession | null = null
     try {
       const payload = await verifyAccessToken(sessionCookie.value)
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
     } catch {
       try { session = JSON.parse(sessionCookie.value) as MinimalSession } catch { session = null }
     }
+    
     if (!session?.userId) {
       return NextResponse.json(
         { success: false, error: 'Sessão inválida' },
@@ -67,57 +70,60 @@ export async function POST(request: NextRequest) {
     const percentageFee = (amount * provider.fees.percentage) / 100
     const finalAmount = amount + fixedFee + percentageFee
 
-    // Criar registro de pagamento
+    // Gerar ID único para o pagamento
     const paymentIntentId = `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    const payment = await prisma.payment.create({
-      data: {
-        userId: session.userId,
-        providerId,
-        providerCode: provider.code,
-        intentId: paymentIntentId,
-        currency: currency || 'USD',
-        amountCents: Math.round(finalAmount * 100), // Converter para centavos
-        status: 'pending'
-      }
-    })
-
-    // Gerar client secret baseado no provedor
-    let clientSecret = ''
-
-    if (provider.code === 'STRIPE') {
-      // Implementar Stripe Payment Intent
-      clientSecret = `pi_${payment.intentId}_secret_${Math.random().toString(36).substr(2, 9)}`
-    } else if (provider.code === 'PAYPAL') {
-      // Implementar PayPal Order
-      clientSecret = `paypal_${payment.intentId}_${Math.random().toString(36).substr(2, 9)}`
-    } else if (provider.code === 'PIX') {
-      // Implementar PIX
-      clientSecret = `pix_${payment.intentId}_${Math.random().toString(36).substr(2, 9)}`
-    } else if (provider.code === 'BOLETO') {
-      // Implementar Boleto
-      clientSecret = `boleto_${payment.intentId}_${Math.random().toString(36).substr(2, 9)}`
-    }
-
-    return NextResponse.json({
-      success: true,
-      paymentIntent: {
-        id: payment.intentId,
-        amount: finalAmount,
-        currency: currency || 'USD',
-        status: 'requires_payment_method'
-      },
-      clientSecret,
-      payment: {
-        id: payment.id,
-        amount: finalAmount,
-        provider: provider.name,
-        fees: {
-          fixed: fixedFee,
-          percentage: percentageFee
+    
+    return withDb(async (prisma) => {
+      // Criar registro de pagamento
+      const payment = await prisma.payment.create({
+        data: {
+          userId: session.userId,
+          providerId,
+          providerCode: provider.code,
+          intentId: paymentIntentId,
+          currency: currency || 'USD',
+          amountCents: Math.round(finalAmount * 100), // Converter para centavos
+          status: 'pending'
         }
-      }
-    })
+      })
 
+      // Gerar client secret baseado no provedor
+      let clientSecret = ''
+
+      if (provider.code === 'STRIPE') {
+        // Implementar Stripe Payment Intent
+        clientSecret = `pi_${payment.intentId}_secret_${Math.random().toString(36).substr(2, 9)}`
+      } else if (provider.code === 'PAYPAL') {
+        // Implementar PayPal Order
+        clientSecret = `paypal_${payment.intentId}_${Math.random().toString(36).substr(2, 9)}`
+      } else if (provider.code === 'PIX') {
+        // Implementar PIX
+        clientSecret = `pix_${payment.intentId}_${Math.random().toString(36).substr(2, 9)}`
+      } else if (provider.code === 'BOLETO') {
+        // Implementar Boleto
+        clientSecret = `boleto_${payment.intentId}_${Math.random().toString(36).substr(2, 9)}`
+      }
+
+      return NextResponse.json({
+        success: true,
+        paymentIntent: {
+          id: payment.intentId,
+          amount: finalAmount,
+          currency: currency || 'USD',
+          status: 'requires_payment_method'
+        },
+        clientSecret,
+        payment: {
+          id: payment.id,
+          amount: finalAmount,
+          provider: provider.name,
+          fees: {
+            fixed: fixedFee,
+            percentage: percentageFee
+          }
+        }
+      })
+    })
   } catch (error) {
     console.error('Erro ao criar intenção de pagamento:', error)
     return NextResponse.json(
@@ -125,4 +131,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

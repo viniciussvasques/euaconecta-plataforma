@@ -2,11 +2,13 @@
 
 > **Plataforma completa de consolidação e envio de pacotes dos EUA para o Brasil**
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-5-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.1.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.15.0-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-316192?style=for-the-badge&logo=postgresql)](https://postgresql.org/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)](https://docker.com/)
 
 ## 📋 Índice
 
@@ -16,8 +18,10 @@
 - [🚀 Instalação](#-instalação)
 - [📊 Estrutura do Projeto](#-estrutura-do-projeto)
 - [🔧 Configuração](#-configuração)
-- [📚 Documentação da API](#-documentação-da-api)
+- [� Diretrizes de Desenvolvimento](#-diretrizes-de-desenvolvimento)
+- [�📚 Documentação da API](#-documentação-da-api)
 - [🐳 Deploy com Docker](#-deploy-com-docker)
+- [✅ Status do Projeto](#-status-do-projeto)
 - [👥 Contribuição](#-contribuição)
 - [📄 Licença](#-licença)
 
@@ -98,37 +102,40 @@ A **Euaconecta Platform** é uma solução completa para empresas que oferecem s
 ## 🛠️ Stack Tecnológica
 
 ### **Frontend**
-- **Next.js 14** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **TailwindCSS** - Framework CSS utilitário
-- **ShadCN/UI** - Componentes de interface
-- **React Hook Form** - Gerenciamento de formulários
+- **Next.js 15.5.2** - Framework React com App Router e Turbopack
+- **React 19.1.0** - Biblioteca de interface com recursos de concorrência
+- **TypeScript 5.9.2** - Tipagem estática avançada
+- **Tailwind CSS 4** - Framework CSS utilitário moderno
+- **Lucide React** - Biblioteca de ícones
+- **React Hook Form** - Gerenciamento de formulários otimizado
 
 ### **Backend**
-- **Next.js API Routes** - API serverless
-- **NextAuth.js** - Autenticação
-- **Prisma ORM** - Mapeamento objeto-relacional
-- **PostgreSQL** - Banco de dados principal
+- **Next.js API Routes** - 210+ endpoints API serverless
+- **NextAuth.js 4.24.11** - Sistema de autenticação completo
+- **Prisma ORM 6.15.0** - 40+ modelos de dados otimizados
+- **PostgreSQL 15** - Banco de dados principal com índices
 
-### **Integrações**
-- **Stripe** - Processamento de pagamentos
-- **PayPal** - Gateway de pagamento
-- **AWS S3** - Armazenamento de arquivos
-- **Nodemailer** - Envio de emails
-- **ShipStation API** - Integração com transportadoras
+### **Pagamentos & Integrações**
+- **Stripe** - Processamento de cartões e PIX
+- **PayPal** - Gateway alternativo de pagamentos
+- **MinIO S3** - Armazenamento compatível com AWS S3
+- **Redis/IORedis** - Cache e sessões
+- **Nodemailer** - Sistema de emails transacionais
 
-### **DevOps**
-- **Docker** - Containerização
-- **GitHub Actions** - CI/CD
-- **Vercel** - Deploy automático
-- **Railway/Neon** - Hosting de banco de dados
+### **DevOps & Infraestrutura**
+- **Docker Multi-stage** - Containerização otimizada
+- **Nginx** - Proxy reverso com SSL
+- **Winston Logging** - Sistema de logs estruturado
+- **Jest** - Framework de testes unitários
+- **ESLint** - Análise estática de código
 
 ## 🚀 Instalação
 
 ### **Pré-requisitos**
-- Node.js 18+ 
+- Node.js 18+ (recomendado: 20+)
 - PostgreSQL 15+
-- npm ou yarn
+- Redis (opcional, para cache)
+- Docker & Docker Compose (opcional)
 
 ### **1. Clone o repositório**
 ```bash
@@ -270,7 +277,24 @@ O sistema utiliza PostgreSQL com Prisma ORM. O schema inclui:
 - **Boleto** para pagamentos tradicionais
 - **Webhooks** para confirmação automática
 
-## 📚 Documentação da API
+## � Diretrizes de Desenvolvimento
+
+O projeto segue um conjunto rigoroso de diretrizes para garantir qualidade e consistência no código:
+
+- **[DIRETRIZES_DESENVOLVIMENTO.md](/docs/DIRETRIZES_DESENVOLVIMENTO.md)** - Práticas gerais de desenvolvimento
+- **[TYPESCRIPT_TIPOS.md](/docs/TYPESCRIPT_TIPOS.md)** - Guia para uso correto de tipos TypeScript
+- **[ESLINT_CONFIG_TYPESCRIPT.md](/docs/ESLINT_CONFIG_TYPESCRIPT.md)** - Configuração ESLint recomendada
+- **[EXEMPLO_REFATORACAO_TYPES.md](/docs/EXEMPLO_REFATORACAO_TYPES.md)** - Exemplos práticos de refatoração
+
+### Princípios Principais
+
+1. **Type Safety** - Nunca use `any` em código novo; prefira tipos explícitos
+2. **Componentização** - Componentes pequenos e reutilizáveis
+3. **Testabilidade** - Código facilmente testável com alta cobertura
+4. **Documentação** - Código autodocumentado com JSDoc quando necessário
+5. **Performance** - Otimização desde o início do desenvolvimento
+
+## �📚 Documentação da API
 
 A API completa está documentada em:
 - **`docs/api/API_DOCUMENTATION.md`** - Documentação completa
@@ -314,7 +338,31 @@ POST   /api/stripe/create-checkout-session
 POST   /api/paypal/create-order
 ```
 
-## 🐳 Deploy com Docker
+## � Status do Projeto
+
+> **Status:** ✅ **95% Funcional** - Core features implementadas e funcionais
+
+### **Funcionalidades Implementadas**
+- ✅ **Autenticação completa** - Login, registro, recuperação de senha
+- ✅ **Gestão de pacotes** - Recebimento, fotos, rastreamento
+- ✅ **Sistema de consolidação** - Criação, gerenciamento de caixas
+- ✅ **Processamento de pagamentos** - Stripe, PayPal com webhooks
+- ✅ **Dashboard administrativo** - Relatórios, métricas, usuários
+- ✅ **API completa** - 210+ endpoints implementados
+- ✅ **Sistema de endereços** - Múltiplos endereços por usuário
+- ✅ **Notificações** - Email, in-app, webhooks
+
+### **Documentação Técnica**
+📋 **[Análise Completa do Projeto](docs/analysis/ANALISE_COMPLETA_PROJETO.md)** - Review técnico detalhado
+🗺️ **[Plano Estratégico](docs/analysis/PLANO_ACAO_ESTRATEGICO.md)** - Roadmap de implementação
+📚 **[Documentação da API](docs/api/API_DOCUMENTATION.md)** - Endpoints e exemplos
+
+### **Próximos Passos (Sprint 1)**
+🔧 **Correções críticas** - API 404s, CSP, erros JavaScript
+⚡ **Otimizações** - Performance, build, cache
+🎨 **Refinamentos UI/UX** - Responsividade, acessibilidade
+
+## �🐳 Deploy com Docker
 
 ### **1. Build da imagem**
 ```bash

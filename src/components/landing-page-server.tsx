@@ -208,6 +208,75 @@ export function LandingPageServer({ customization, partners: initialPartners = [
           </div>
         </section>
 
+        {/* Dashboard Section */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="order-2 lg:order-1">
+                <div className="mb-6">
+                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                    {landingPage?.dashboard?.title || "Dashboard Completo e Intuitivo"}
+                  </h2>
+                  <p className="text-xl text-blue-600 font-semibold mb-6">
+                    {landingPage?.dashboard?.subtitle || "Acompanhe seus envios de forma simples e eficiente"}
+                  </p>
+                  <p className="text-gray-600 mb-8">
+                    {landingPage?.dashboard?.description || 
+                    "Nossa plataforma oferece uma experiência completa de gerenciamento de importações, com todos os recursos para acompanhar seus pacotes desde a compra até a entrega final no Brasil."}
+                  </p>
+                </div>
+                
+                <div className="space-y-4">
+                  {(landingPage?.dashboard?.features || [
+                    'Rastreamento em tempo real',
+                    'Relatórios detalhados',
+                    'Cálculos de impostos automáticos',
+                    'Histórico completo de envios',
+                    'Notificações personalizadas'
+                  ]).map((feature, index) => (
+                    <div key={index} className="flex items-start">
+                      <div className="flex-shrink-0 mt-1">
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                      </div>
+                      <p className="ml-3 text-gray-700">{feature}</p>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-10">
+                  <Link
+                    href="/auth/register"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Experimente Agora
+                    <ArrowRight className="ml-2 -mr-1 h-5 w-5" />
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="order-1 lg:order-2 relative">
+                <div className="aspect-[16/9] rounded-2xl shadow-2xl overflow-hidden relative">
+                  <Image 
+                    src={landingPage?.dashboard?.imageUrl || "/dashboard-preview.jpg"} 
+                    alt="Dashboard EuaConecta" 
+                    width={800} 
+                    height={450} 
+                    className="w-full h-full object-cover"
+                    style={{
+                      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                      borderRadius: "12px"
+                    }}
+                  />
+                </div>
+                
+                {/* Elementos decorativos */}
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-600 rounded-full opacity-10"></div>
+                <div className="absolute -top-6 -left-6 w-24 h-24 bg-purple-600 rounded-full opacity-10"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Brands Section */}
         <section id="marcas" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-7xl mx-auto">

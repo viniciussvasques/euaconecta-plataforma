@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { PaymentProviderService } from '@/lib/payments/payment-providers'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 let stripe: Stripe | null = null
 

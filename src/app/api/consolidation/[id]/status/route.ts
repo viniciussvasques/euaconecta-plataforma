@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { consolidationService } from '@/lib/consolidation/consolidation'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 import { EventService, SystemEvent } from '@/lib/utils/events'
 
 export async function PUT(

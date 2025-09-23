@@ -1,32 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { defaultCustomization } from '@/lib/config/system-customization'
-import fs from 'fs'
-import path from 'path'
+import { PrismaClient } from '@prisma/client'
 
-const CONFIG_FILE = path.join(process.cwd(), 'data', 'customization.json')
+const prisma = new PrismaClient()
 
-// Garantir que o diretório existe
-const ensureDataDir = () => {
-  const dataDir = path.join(process.cwd(), 'data')
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true })
-  }
-}
+// Chave usada para armazenar a configuração no banco de dados
+const CONFIG_KEY = 'system_customization'
 
 export async function GET() {
   try {
-    ensureDataDir()
-
     let config = defaultCustomization
 
-    // Tentar carregar configuração salva
-    if (fs.existsSync(CONFIG_FILE)) {
-      try {
-        const savedConfig = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'))
-        config = { ...defaultCustomization, ...savedConfig }
-      } catch (error) {
-        console.error('Erro ao ler arquivo de configuração:', error)
+    // Buscar configuração do banco de dados
+    try {
+      const record = await prisma.systemCustomization.findUnique({
+        where: { key: CONFIG_KEY }
+      })
+      
+      if (record && record.value) {
+        // Converter o valor do banco de dados para o tipo correto
+        const dbValue = record.value as Record<string, unknown>
+        config = { ...defaultCustomization, ...dbValue }
       }
+    } catch (error) {
+      console.error('Erro ao buscar configuração do banco de dados:', error)
     }
 
     return NextResponse.json({
@@ -46,15 +43,47 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    ensureDataDir()
-
-    // Salvar configuração no arquivo
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(body, null, 2))
-
-    return NextResponse.json({
-      success: true,
-      message: 'Configurações salvas com sucesso'
-    })
+    try {
+      // Verificar se já existe registro com a chave definida
+      const existingRecord = await prisma.systemCustomization.findUnique({
+        where: { key: CONFIG_KEY }
+      })
+      
+      if (existingRecord) {
+        // Atualizar registro existente
+        await prisma.systemCustomization.update({
+          where: { key: CONFIG_KEY },
+          data: {
+            value: body,
+            updatedAt: new Date()
+          }
+        })
+      } else {
+        // Criar novo registro
+        await prisma.systemCustomization.create({
+          data: {
+            key: CONFIG_KEY,
+            value: body,
+            description: 'Configurações padrão do sistema',
+            isActive: true,
+            version: 1
+          }
+        })
+      }
+      
+      console.log('Configurações salvas com sucesso no banco de dados')
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Configurações salvas com sucesso'
+      })
+    } catch (error) {
+      console.error('Erro ao salvar configuração no banco de dados:', error)
+      return NextResponse.json(
+        { success: false, error: 'Erro ao salvar no banco de dados' },
+        { status: 500 }
+      )
+    }
   } catch (error) {
     console.error('Erro ao salvar configurações de personalização:', error)
     return NextResponse.json(

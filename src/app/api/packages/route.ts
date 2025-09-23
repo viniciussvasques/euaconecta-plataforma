@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 import { EventService, SystemEvent } from '@/lib/utils/events'
 
 // GET /api/packages - Listar pacotes

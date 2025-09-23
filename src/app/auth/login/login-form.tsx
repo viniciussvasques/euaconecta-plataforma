@@ -28,25 +28,20 @@ export function LoginForm() {
       })
 
       const data = await response.json()
-      console.log('Login response:', { response: response.status, data })
+      // Usuário autenticado, processando resposta
 
       if (response.ok && data.success) {
         // Redirecionar baseado no role do usuário
         const user = data.data?.user || data.user
-        console.log('User data:', user)
         if (user?.role === 'CLIENT') {
-          console.log('Redirecting to dashboard')
           router.push('/dashboard')
         } else {
-          console.log('Redirecting to admin')
           router.push('/admin')
         }
       } else {
-        console.log('Login failed:', data.error)
         setError(data.error || 'Erro ao fazer login')
       }
     } catch (error) {
-      console.error('Login error:', error)
       setError('Erro de conexão. Tente novamente.')
     } finally {
       setLoading(false)

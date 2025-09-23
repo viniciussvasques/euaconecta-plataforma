@@ -13,13 +13,33 @@ type Body = {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as Body
+    // Validar se o request tem body JSON válido
+    let body: Body
+    try {
+      body = await request.json()
+    } catch (error) {
+      return NextResponse.json({ success: false, error: 'Corpo da requisição inválido' }, { status: 400 })
+    }
+
     const weightGrams = Number(body?.weightGrams || 0)
     const serviceType = (body?.serviceType || 'STANDARD') as AbcPacketService
     const carrierId = body?.carrierId
     
+    // Validações mais específicas
+    if (!body.weightGrams) {
+      return NextResponse.json({ success: false, error: 'Peso é obrigatório' }, { status: 400 })
+    }
+    
     if (!Number.isFinite(weightGrams) || weightGrams <= 0) {
-      return NextResponse.json({ success: false, error: 'Peso inválido' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'Peso deve ser um número positivo' }, { status: 400 })
+    }
+
+    if (weightGrams < 500) { // mínimo 0.5kg
+      return NextResponse.json({ success: false, error: 'Peso mínimo é 500g (0.5kg)' }, { status: 400 })
+    }
+
+    if (weightGrams > 30000) { // máximo 30kg
+      return NextResponse.json({ success: false, error: 'Peso máximo é 30kg' }, { status: 400 })
     }
 
     let baseUSD: number | null = null
@@ -103,7 +123,8 @@ export async function POST(request: NextRequest) {
         pricing
       } 
     })
-    } catch {
-    return NextResponse.json({ success: false, error: 'Erro ao calcular frete' }, { status: 500 })
+    } catch (error) {
+    console.error('Erro ao calcular frete:', error)
+    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
   }
 }

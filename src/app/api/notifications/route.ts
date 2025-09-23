@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { NotificationService } from '@/lib/email/notifications'
 import { verifyAccessToken } from '@/lib/auth/jwt'
+import { withDatabaseConnection } from '@/lib/database/middleware'
+
 type MinimalSession = { userId: string; role: string }
 
-export async function GET(request: NextRequest) {
+export const GET = withDatabaseConnection(async (request: NextRequest) => {
   try {
     const sessionCookie = request.cookies.get('session')
     if (!sessionCookie) return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
@@ -20,9 +22,9 @@ export async function GET(request: NextRequest) {
     } catch {
     return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: NextRequest) {
+export const POST = withDatabaseConnection(async (request: NextRequest) => {
   try {
     const sessionCookie = request.cookies.get('session')
     if (!sessionCookie) return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
@@ -40,4 +42,4 @@ export async function POST(request: NextRequest) {
     } catch {
     return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
   }
-}
+})

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyAccessToken } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/database/prisma'
+import { withDb } from '@/lib/database/prisma-client'
+import { withDatabaseConnection } from '@/lib/database/middleware'
 
-export async function GET(request: NextRequest) {
+export const GET = withDatabaseConnection(async (request: NextRequest) => {
   try {
     const sessionCookie = request.cookies.get('session')?.value
     if (!sessionCookie) return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 })
@@ -22,7 +23,10 @@ export async function GET(request: NextRequest) {
 
     if (!userId) return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 })
 
-    const user = await prisma.user.findUnique({ where: { id: userId } })
+    const user = await withDb(
+      client => client.user.findUnique({ where: { id: userId } }),
+      { operationName: 'verificar usuário logado' }
+    )
 
     if (!user) {
       return NextResponse.json(
@@ -61,4 +65,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

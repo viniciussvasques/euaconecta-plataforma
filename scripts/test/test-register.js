@@ -7,9 +7,11 @@ async function testRegister() {
   try {
     console.log('Testando registro...')
     
-    const name = 'Teste Usuario'
-    const email = 'teste@exemplo.com'
-    const password = '123456'
+    const name = process.env.TEST_USER_NAME || 'Teste Usuario'
+    const email = process.env.TEST_USER_EMAIL || 'teste@exemplo.com'
+    const password = process.env.TEST_USER_PASSWORD || crypto.randomBytes(8).toString('hex')
+    
+    console.log(`Usando senha gerada: ${password}`)
     
     // Verificar se email já existe
     const existingUser = await prisma.user.findUnique({

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { UserService } from '@/lib/auth/users'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 import crypto from 'crypto'
 import { EmailService } from '@/lib/email/email'
 

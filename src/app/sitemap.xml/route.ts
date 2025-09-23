@@ -1,18 +1,21 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/prisma'
+import { withDb } from '@/lib/database/prisma-client'
+import { withDatabaseConnection } from '@/lib/database/middleware'
 
-export async function GET() {
+export const GET = withDatabaseConnection(async () => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com'
     let siteUrl = baseUrl
 
     // Buscar configurações SEO apenas se o banco estiver disponível
     try {
-      const seo = await prisma.systemCustomization.findUnique({ where: { key: 'seo_config' } })
+      const seo = await withDb(async (prisma) => {
+        return prisma.systemCustomization.findUnique({ where: { key: 'seo_config' } })
+      })
       siteUrl = (seo?.value as { siteUrl?: string })?.siteUrl || baseUrl
     } catch {
       // Se o banco não estiver disponível, usar URL padrão
-      console.log('Usando URL padrão para sitemap (banco não disponível)')
+      // Usar URL padrão quando banco de dados não estiver disponível
     }
 
     // Páginas estáticas
@@ -64,7 +67,7 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Erro ao gerar sitemap:', error)
+    // Erro ao gerar sitemap, retornar sitemap padrão
     return new NextResponse('Erro ao gerar sitemap', { status: 500 })
   }
-}
+})

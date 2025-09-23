@@ -1,41 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function GET() {
   try {
     let record = await prisma.systemCustomization.findUnique({ where: { key: 'seo_config' } })
 
-    if (!record) {
-      const defaultValue = {
-        siteName: 'Euaconecta',
-        siteDescription: 'Plataforma de redirecionamento de encomendas internacionais',
-        siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com',
-        defaultTitle: 'Euaconecta - Redirecionamento de Encomendas',
-        defaultDescription: 'Economize até 80% no frete internacional com nossa plataforma de redirecionamento',
-        defaultKeywords: ['redirecionamento', 'encomendas', 'frete', 'importação', 'economia'],
-        ogImage: '/og-image.jpg',
-        twitterHandle: '@euaconecta',
-        facebookAppId: '',
-        googleSiteVerification: '',
-        bingSiteVerification: '',
-        yandexSiteVerification: '',
-        structuredData: {
-          organization: {
-            name: 'Euaconecta',
-            url: process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com',
-            logo: '/logo.png',
-            contactPoint: { telephone: '+55 (11) 99999-9999', contactType: 'customer service' },
-            sameAs: ['https://facebook.com/euaconecta', 'https://instagram.com/euaconecta', 'https://twitter.com/euaconecta']
-          },
-          website: {
-            name: 'Euaconecta',
-            url: process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com',
-            description: 'Plataforma de redirecionamento de encomendas internacionais'
+      if (!record) {
+        const defaultValue = {
+          siteName: 'Euaconecta',
+          siteDescription: 'Plataforma de redirecionamento de encomendas internacionais',
+          siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com',
+          defaultTitle: 'Euaconecta - Redirecionamento de Encomendas',
+          defaultDescription: 'Economize até 80% no frete internacional com nossa plataforma de redirecionamento',
+          defaultKeywords: ['redirecionamento', 'encomendas', 'frete', 'importação', 'economia'],
+          ogImage: '/og-image.jpg',
+          twitterHandle: '@euaconecta',
+          facebookAppId: '',
+          googleSiteVerification: '',
+          bingSiteVerification: '',
+          yandexSiteVerification: '',
+          structuredData: {
+            organization: {
+              name: 'Euaconecta',
+              url: process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com',
+              logo: '/logo.png',
+              contactPoint: { telephone: '+55 (11) 99999-9999', contactType: 'customer service' },
+              sameAs: ['https://facebook.com/euaconecta', 'https://instagram.com/euaconecta', 'https://twitter.com/euaconecta']
+            },
+            website: {
+              name: 'Euaconecta',
+              url: process.env.NEXT_PUBLIC_APP_URL || 'https://euaconecta.com',
+              description: 'Plataforma de redirecionamento de encomendas internacionais'
+            }
           }
         }
+        record = await prisma.systemCustomization.create({ data: { key: 'seo_config', value: defaultValue, description: 'SEO settings' } })
       }
-      record = await prisma.systemCustomization.create({ data: { key: 'seo_config', value: defaultValue, description: 'SEO settings' } })
-    }
 
     return NextResponse.json({ success: true, data: record.value })
   } catch (error) {
@@ -46,15 +48,15 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json()
-    const saved = await prisma.systemCustomization.upsert({
-      where: { key: 'seo_config' },
-      update: { value: body },
-      create: { key: 'seo_config', value: body, description: 'SEO settings' }
-    })
-    return NextResponse.json({ success: true, data: saved.value })
-  } catch (error) {
-    console.error('Erro ao salvar configuração SEO:', error)
-    return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
-  }
+      const body = await request.json()
+      const saved = await prisma.systemCustomization.upsert({
+        where: { key: 'seo_config' },
+        update: { value: body },
+        create: { key: 'seo_config', value: body, description: 'SEO settings' }
+      })
+      return NextResponse.json({ success: true, data: saved.value })
+    } catch (error) {
+      console.error('Erro ao salvar configuração SEO:', error)
+      return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
+    }
 }

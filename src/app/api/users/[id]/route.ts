@@ -34,12 +34,25 @@ export async function PUT(
       })
     }
 
-    // Para atualizações administrativas, validar dados obrigatórios
-    if (!name || !role) {
-      return NextResponse.json(
-        { success: false, error: 'Nome e role são obrigatórios' },
-        { status: 400 }
-      )
+    // Para alteração de status (ativar/desativar), apenas isActive é necessário
+    if (isActive !== undefined && Object.keys(body).length === 1) {
+      const updatedUser = await UserService.updateUser(id, { isActive })
+      
+      return NextResponse.json({
+        success: true,
+        data: updatedUser,
+        message: `Usuário ${isActive ? 'ativado' : 'desativado'} com sucesso`
+      })
+    }
+
+    // Para atualizações administrativas completas, validar dados obrigatórios
+    if (name || role) {
+      if (!name || !role) {
+        return NextResponse.json(
+          { success: false, error: 'Nome e role são obrigatórios para atualização completa' },
+          { status: 400 }
+        )
+      }
     }
 
     const updatedUser = await UserService.updateUser(id, {

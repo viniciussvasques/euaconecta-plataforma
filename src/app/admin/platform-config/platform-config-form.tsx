@@ -12,8 +12,37 @@ export function PlatformConfigForm({ initialConfig }: PlatformConfigFormProps) {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
+  const validateForm = () => {
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(config.email)) {
+      setMessage({ type: 'error', text: 'Email inválido' })
+      return false
+    }
+
+    // Validar telefone (aceita formato (XX) XXXXX-XXXX ou números)
+    const phoneRegex = /^(\(\d{2}\)\s?)?\d{4,5}-?\d{4}$/
+    if (!phoneRegex.test(config.phone.replace(/\D/g, ''))) {
+      setMessage({ type: 'error', text: 'Telefone inválido. Use o formato (XX) XXXXX-XXXX' })
+      return false
+    }
+
+    // Validar campos obrigatórios
+    if (!config.companyName.trim()) {
+      setMessage({ type: 'error', text: 'Nome da empresa é obrigatório' })
+      return false
+    }
+
+    return true
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      return
+    }
+    
     setSaving(true)
     setMessage(null)
 
@@ -92,7 +121,15 @@ export function PlatformConfigForm({ initialConfig }: PlatformConfigFormProps) {
                 <input
                   type="text"
                   value={config.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  onChange={(e) => {
+                    let value = e.target.value.replace(/\D/g, '')
+                    if (value.length <= 11) {
+                      // Aplicar máscara (XX) XXXXX-XXXX
+                      value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3')
+                    }
+                    handleInputChange('phone', value)
+                  }}
+                  placeholder="(XX) XXXXX-XXXX"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
                 />
               </div>

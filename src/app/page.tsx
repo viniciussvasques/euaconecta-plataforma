@@ -1,10 +1,34 @@
 import { Metadata } from 'next'
 import { LandingPageServer } from '@/components/landing-page-server'
 import { getCustomization } from '@/lib/config/get-customization'
+import { withDb } from '@/lib/database/prisma-client'
 
 async function getPartners() {
   try {
-    // Em desenvolvimento, vamos usar dados mockados
+    // Buscar parceiros do banco de dados
+    const partners = await withDb(async (prisma) => {
+      return prisma.partner.findMany({
+        where: { isActive: true },
+        select: {
+          id: true,
+          name: true,
+          logo: true,
+          url: true,
+          isActive: true
+        },
+        orderBy: { name: 'asc' }
+      })
+    })
+    
+    if (partners.length > 0) {
+      // Mapear url para link para compatibilidade com o componente
+      return partners.map((partner: { id: string; name: string; logo: string; url: string; isActive: boolean }) => ({
+        ...partner,
+        link: partner.url
+      }))
+    }
+    
+    // Fallback: usar dados mockados se não há parceiros no banco
     const mockPartners = [
       { id: 'nike', name: 'Nike', logo: '/brands/nike.svg', link: 'https://www.nike.com/', isActive: true },
       { id: 'adidas', name: 'Adidas', logo: '/brands/adidas.svg', link: 'https://www.adidas.com/', isActive: true },
@@ -18,7 +42,14 @@ async function getPartners() {
     return mockPartners
   } catch (error) {
     console.error('Erro ao buscar parceiros:', error)
-    return []
+    // Em caso de erro, usar dados mockados
+    const mockPartners = [
+      { id: 'nike', name: 'Nike', logo: '/brands/nike.svg', link: 'https://www.nike.com/', isActive: true },
+      { id: 'adidas', name: 'Adidas', logo: '/brands/adidas.svg', link: 'https://www.adidas.com/', isActive: true },
+      { id: 'amazon', name: 'Amazon', logo: '/brands/amazon.svg', link: 'https://www.amazon.com/', isActive: true },
+      { id: 'apple', name: 'Apple', logo: '/brands/apple.svg', link: 'https://www.apple.com/', isActive: true },
+    ]
+    return mockPartners
   }
 }
 
@@ -75,6 +106,10 @@ export const metadata: Metadata = {
     google: 'your-google-verification-code',
   },
 }
+
+// Desativar o cache para esta rota
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function LandingPage() {
   const customization = await getCustomization()

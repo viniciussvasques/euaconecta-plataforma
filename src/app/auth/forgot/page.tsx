@@ -21,7 +21,7 @@ export default function ForgotPasswordPage() {
       s.async = true
       s.defer = true
       s.onerror = () => {
-        console.warn('Turnstile não carregou - formulário funcionará sem proteção')
+        // Turnstile não carregou, formulário funcionará sem proteção
       }
       document.body.appendChild(s)
       return () => { s.remove() }

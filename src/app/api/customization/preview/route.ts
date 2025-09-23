@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Gerar CSS customizado usando o serviço
-    const customCSS = configService.generateCustomCSS(customization)
+    const customCSS = configService.generateCustomCSS()
 
     // Gerar dados de pré-visualização
     const previewData = generatePreviewData(customization)

@@ -1,0 +1,7 @@
+FROM nginx:1.25-alpine
+
+# Instalar certbot e suas dependências
+RUN apk add --no-cache certbot certbot-nginx
+
+# Criar diretório para certbot
+RUN mkdir -p /var/www/certbot

@@ -26,6 +26,28 @@ const customJestConfig = {
       statements: 80,
     },
   },
+  // Configurações adicionais para testes de API
+  testMatch: [
+    "**/__tests__/**/*.test.[jt]s?(x)"
+  ],
+  verbose: true,
+  // Configuração para suporte a TypeScript
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }]
+  },
+  // Configuração para testes de API que precisam de Node.js
+  projects: [
+    {
+      displayName: 'client',
+      testEnvironment: 'jsdom',
+      testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '!**/__tests__/app/api/**/*.test.[jt]s?(x)']
+    },
+    {
+      displayName: 'server',
+      testEnvironment: 'node',
+      testMatch: ['**/__tests__/app/api/**/*.test.[jt]s?(x)']
+    }
+  ]
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -12,9 +12,13 @@ datasource db {
 }
 
 // Enums
-enum Role {
-  CUSTOMER
+enum UserRole {
+  SUPER_ADMIN
   ADMIN
+  OPERATOR
+  MANAGER
+  CLIENT
+  SUPPORT
 }
 
 enum PackageStatus {
@@ -229,16 +233,6 @@ model WarehouseAddress {
   updatedAt   DateTime @updatedAt
 
   @@map("warehouse_addresses")
-}
-
-
-enum UserRole {
-  SUPER_ADMIN    // Acesso total ao sistema
-  ADMIN          // Administrador geral
-  OPERATOR       // Operador (pesa pacotes, fecha caixas)
-  MANAGER        // Gerente (vê relatórios, gerencia equipe)
-  CLIENT         // Cliente final
-  SUPPORT        // Atendimento ao cliente
 }
 
 model Address {

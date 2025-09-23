@@ -1,10 +1,11 @@
+import { withRateLimit, RATE_LIMIT_CONFIGS } from "@/shared/middlewares/rate-limit"
 import { NextRequest, NextResponse } from 'next/server'
 import { UserService } from '@/lib/auth/users'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/database/prisma'
 import { signAccessToken } from '@/lib/auth/jwt'
 
-export async function POST(request: NextRequest) {
+export const POST = withRateLimit(async (request: NextRequest) {
   try {
     const body = await request.json()
     const { email, password } = body
@@ -134,4 +135,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+}, RATE_LIMIT_CONFIGS.auth)

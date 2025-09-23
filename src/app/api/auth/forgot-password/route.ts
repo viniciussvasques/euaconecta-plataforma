@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 import { EmailService } from '@/lib/email/email'
 import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
@@ -50,6 +52,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, message: 'Se existir, enviaremos um e‑mail' })
   }
 }
-
-
 

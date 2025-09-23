@@ -46,7 +46,7 @@ export function ClientHeader({ user, onMenuClick }: ClientHeaderProps) {
           <div className="flex items-center lg:hidden">
             <button
               type="button"
-              className="bg-white p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="bg-white p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 border border-gray-200"
               onClick={onMenuClick}
             >
               <span className="sr-only">Abrir menu</span>

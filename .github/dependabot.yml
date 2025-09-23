@@ -1,0 +1,46 @@
+# Configuração do Dependabot para verificação automática de vulnerabilidades
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Verificar atualizações para npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    # Agrupar todas as dependências de desenvolvimento em um único PR
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+    # Limitar para 5 PRs abertos simultaneamente
+    open-pull-requests-limit: 5
+    # Atribuir a um time específico
+    assignees:
+      - "security-team"
+    # Labels para PRs
+    labels:
+      - "dependencies"
+      - "security"
+    # Configurações de segurança
+    security-updates-only: false # Habilitar todos os updates, não apenas de segurança
+    ignore:
+      # Ignorar atualizações menores para packages específicos
+      - dependency-name: "@types/*"
+        update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+
+  # Verificar atualizações para GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+    labels:
+      - "ci-cd"
+      - "security"
+    assignees:
+      - "security-team"

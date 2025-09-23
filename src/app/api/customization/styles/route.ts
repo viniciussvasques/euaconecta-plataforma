@@ -3,8 +3,7 @@ import { configService } from '@/lib/config/config-service'
 
 export async function GET() {
   try {
-    const config = await configService.getSystemConfig()
-    const customCSS = configService.generateCustomCSS(config)
+    const customCSS = configService.generateCustomCSS()
 
     return new NextResponse(customCSS, {
       headers: {

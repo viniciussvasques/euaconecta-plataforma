@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient, NotificationType } from '@prisma/client'
 import { EmailService } from '@/lib/email/email'
 import { NotificationService } from '@/lib/email/notifications'
-import { NotificationType } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {
@@ -139,7 +140,6 @@ export async function POST(request: NextRequest) {
         status: 'IN_PROGRESS'
       }
     })
-
   } catch (error) {
     console.error('Erro ao confirmar pagamento:', error)
     return NextResponse.json(

@@ -68,10 +68,10 @@ export function ConfirmPackageModal({ package: pkg, onClose, onSuccess }: Confir
         // Mostrar informações de compressão
         const originalSize = Math.round(file.size / 1024)
         const compressedSize = ImageUtils.getFileSizeKB(compressedImage)
-        console.log(`Imagem comprimida: ${originalSize}KB → ${compressedSize}KB`)
+        // Removido console.log de debug
       } catch (error) {
-        console.error('Erro ao comprimir imagem:', error)
-        alert('Erro ao processar imagem')
+        // Tratamento de erro melhorado
+        alert(`Erro ao processar imagem: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       }
     }
   }

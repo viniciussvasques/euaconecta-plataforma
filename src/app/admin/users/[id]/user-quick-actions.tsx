@@ -60,11 +60,12 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
     setMessage(null)
 
     try {
-      const response = await fetch(`/api/users/${user.id}/generate-suite`, {
+      const response = await fetch(`/api/admin/users/${user.id}/actions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ action: 'generate-suite' }),
       })
 
       const data = await response.json()
@@ -72,11 +73,11 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
       if (response.ok && data.success) {
         onUserUpdate(data.data)
         setSuiteNumber(data.data.suiteNumber?.toString() || '')
-        setMessage({ type: 'success', text: `Suite #${data.data.suiteNumber} gerada com sucesso!` })
+        setMessage({ type: 'success', text: data.message })
       } else {
         setMessage({ type: 'error', text: data.error || 'Erro ao gerar suite' })
       }
-      } catch {
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão' })
     } finally {
       setLoading(false)
@@ -119,7 +120,67 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
       } else {
         setMessage({ type: 'error', text: data.error || 'Erro ao alterar status' })
       }
-      } catch {
+    } catch {
+      setMessage({ type: 'error', text: 'Erro de conexão' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async () => {
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const response = await fetch(`/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user.email }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        setMessage({
+          type: 'success',
+          text: 'Email de redefinição de senha enviado com sucesso!'
+        })
+      } else {
+        setMessage({ type: 'success', text: 'Email de redefinição enviado (se a conta existir)' })
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Erro de conexão' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendActivation = async () => {
+    setLoading(true)
+    setMessage(null)
+
+    try {
+      const response = await fetch(`/api/auth/resend-activation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user.email }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        setMessage({
+          type: 'success',
+          text: 'Email de ativação reenviado com sucesso!'
+        })
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Erro ao reenviar ativação' })
+      }
+    } catch {
       setMessage({ type: 'error', text: 'Erro de conexão' })
     } finally {
       setLoading(false)
@@ -256,10 +317,30 @@ export function UserQuickActions({ user, onUserUpdate }: UserQuickActionsProps) 
                 <p className="font-medium text-gray-900">Redefinir Senha</p>
                 <p className="text-sm text-gray-500">Enviar email de redefinição</p>
               </div>
-              <button className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Enviar
+              <button
+                onClick={handleResetPassword}
+                disabled={loading}
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              >
+                {loading ? 'Enviando...' : 'Enviar'}
               </button>
             </div>
+
+            {!user.isActive && (
+              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div>
+                  <p className="font-medium text-yellow-800">Reenviar Ativação</p>
+                  <p className="text-sm text-yellow-600">Conta ainda não foi ativada</p>
+                </div>
+                <button
+                  onClick={handleResendActivation}
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50"
+                >
+                  {loading ? 'Enviando...' : 'Reenviar'}
+                </button>
+              </div>
+            )}
 
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div>

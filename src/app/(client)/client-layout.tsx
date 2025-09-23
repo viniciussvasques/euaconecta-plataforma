@@ -72,7 +72,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
           className="fixed inset-0 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         >
-          <div className="absolute inset-0 bg-gray-600 opacity-75"></div>
+          <div className="absolute inset-0 bg-gray-500/30 backdrop-blur-sm"></div>
         </div>
       )}
 

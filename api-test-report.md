@@ -1,11 +1,18 @@
 # Relatório de Testes de API
 
-## Estatísticas Gerais
-- Total de testes: 5
-- Aprovados: 2
-- Falharam: 3
-- Taxa de sucesso: 40.00%
-- Duração média: 579.40ms
+## Estatísticas Gerais (Atualização mais recente)
+- Total de testes: 11
+- Aprovados: 6
+- Falharam: 5 (incluindo 2 suites com falha)
+- Taxa de sucesso: 54.55%
+- Duração média: ~250ms
+
+## Resumo das Melhorias
+- ✅ Implementado transporte de logs para S3/MinIO
+- ✅ Implementado cliente S3 para armazenamento de arquivos
+- ✅ Testes básicos de logger e storage implementados
+- ✅ API de teste para MinIO para administradores
+- ⚠️ Alguns testes do Next.js ainda precisam de ajustes
 
 ## Detalhes dos Testes
 

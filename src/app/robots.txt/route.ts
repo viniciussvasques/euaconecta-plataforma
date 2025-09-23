@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/database/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function GET() {
   try {
@@ -12,7 +14,7 @@ export async function GET() {
       siteUrl = (seo?.value as { siteUrl?: string })?.siteUrl || baseUrl
     } catch {
       // Se o banco não estiver disponível, usar URL padrão
-      console.log('Usando URL padrão para robots.txt (banco não disponível)')
+      // Usar URL padrão quando banco de dados não estiver disponível
     }
 
     // Gerar robots.txt
@@ -43,7 +45,7 @@ Allow: /auth/register`
       }
     })
   } catch (error) {
-    console.error('Erro ao gerar robots.txt:', error)
+    // Erro ao gerar robots.txt, retornar robots.txt padrão
     return new NextResponse('Erro ao gerar robots.txt', { status: 500 })
   }
 }

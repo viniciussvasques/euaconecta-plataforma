@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { NotificationService } from '@/lib/email/notifications'
-import { verifyAccessToken } from '@/lib/auth/jwt'
+import { NotificationService, verifyAccessToken } from './services/helper'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!userId) return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     const count = await NotificationService.countUnread(userId)
     return NextResponse.json({ success: true, data: { count } })
-    } catch {
+  } catch {
     return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
   }
 }
@@ -35,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!userId) return NextResponse.json({ success: false, error: 'Não autorizado' }, { status: 401 })
     await NotificationService.markAllAsRead(userId)
     return NextResponse.json({ success: true })
-    } catch {
+  } catch {
     return NextResponse.json({ success: false, error: 'Erro interno do servidor' }, { status: 500 })
   }
 }

@@ -233,7 +233,7 @@ export function AdminSidebar() {
             </svg>
           ),
           show: true,
-          status: 'construction'
+          status: 'active'
         }
       ]
     },

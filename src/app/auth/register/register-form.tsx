@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import React from 'react'
 // import { useRouter } from 'next/navigation' // Removido - não usado
 
-export function RegisterForm() {
+export function RegisterForm(): React.ReactNode {
   const [formData, setFormData] = useState({
     name: '',
     email: '',

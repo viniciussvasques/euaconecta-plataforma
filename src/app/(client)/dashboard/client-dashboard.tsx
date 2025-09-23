@@ -7,6 +7,8 @@ import { FeaturedBlog } from './components/featured-blog'
 import { CollapsiblePackages } from './components/collapsible-packages'
 import { CollapsibleBoxes } from './components/collapsible-boxes'
 import { CompleteProfileModal } from './components/complete-profile-modal'
+import { IntroductionSection } from './components/introduction-section'
+import { DashboardBanner } from './components/dashboard-banner'
 // import { FreightCalculatorWidget } from '@/components/freight-calculator-widget'
 
 interface User {
@@ -156,6 +158,12 @@ export function ClientDashboard() {
             </div>
           )}
         </div>
+        
+        {/* Banner do Dashboard */}
+        <DashboardBanner />
+        
+        {/* Seção de Introdução */}
+        <IntroductionSection />
 
         {/* Cards superiores */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
