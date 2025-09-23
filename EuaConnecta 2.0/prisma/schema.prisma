@@ -1,0 +1,386 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp")]
+}
+
+// Enums
+enum UserRole {
+  CLIENT
+  ADMIN
+  SUPER_ADMIN
+  OPERATOR
+  MANAGER
+  SUPPORT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum PackageStatus {
+  PENDING
+  RECEIVED
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  RETURNED
+  CANCELLED
+  LOST
+}
+
+enum ShipmentStatus {
+  DRAFT
+  LABEL_CREATED
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  RETURNED
+  CANCELLED
+  EXCEPTION
+}
+
+enum ConsolidationStatus {
+  OPEN
+  PENDING
+  IN_PROGRESS
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  BANK_TRANSFER
+  PIX
+  BOLETO
+}
+
+enum Currency {
+  BRL
+  USD
+  EUR
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  PERMISSION_CHANGE
+}
+
+// Core Models
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+
+  // Profile
+  cpf       String?  @unique
+  phone     String?
+  avatar    String?
+
+  // Business Logic
+  role      UserRole @default(CLIENT)
+  status    UserStatus @default(PENDING_VERIFICATION)
+  suiteNumber Int?   @unique
+
+  // Security
+  emailVerified    Boolean @default(false)
+  phoneVerified    Boolean @default(false)
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+
+  // Permissions
+  permissions String[]
+
+  // Tracking
+  lastLogin         DateTime?
+  lastActivity      DateTime?
+  loginAttempts     Int @default(0)
+  lockedUntil       DateTime?
+  passwordChangedAt DateTime?
+
+  // Relations
+  addresses       Address[]
+  packages        Package[]
+  shipments       Shipment[]
+  payments        Payment[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  sessions        UserSession[]
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@map("users")
+}
+
+model UserSession {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  refreshToken String?  @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model Address {
+  id          String  @id @default(uuid())
+  userId      String
+  type        String // HOME, WORK, WAREHOUSE
+  name        String
+  street      String
+  number      String
+  complement  String?
+  neighborhood String?
+  city        String
+  state       String
+  zipCode     String
+  country     String  @default("BR")
+  isDefault   Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Package {
+  id            String   @id @default(uuid())
+  userId        String
+  trackingNumber String  @unique
+  description   String
+  weight        Float
+  dimensions    Json? // { length, width, height, unit }
+  value         Float
+  currency      Currency @default(BRL)
+  status        PackageStatus @default(PENDING)
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id])
+  consolidation Consolidation? @relation(fields: [consolidationId], references: [id])
+  consolidationId String?
+
+  // Tracking
+  receivedAt    DateTime?
+  shippedAt     DateTime?
+  deliveredAt   DateTime?
+
+  // Metadata
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("packages")
+}
+
+model Consolidation {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  status      ConsolidationStatus @default(OPEN)
+  totalWeight Float    @default(0)
+  totalValue  Float    @default(0)
+  currency    Currency @default(BRL)
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id])
+  packages Package[]
+
+  // Shipping
+  shipment   Shipment? @relation(fields: [shipmentId], references: [id])
+  shipmentId String?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("consolidations")
+}
+
+model Shipment {
+  id              String   @id @default(uuid())
+  userId          String
+  trackingNumber  String   @unique
+  carrierId       String
+  status          ShipmentStatus @default(DRAFT)
+
+  // Relations
+  user            User            @relation(fields: [userId], references: [id])
+  carrier         Carrier         @relation(fields: [carrierId], references: [id])
+  consolidation   Consolidation?  @relation(fields: [consolidationId], references: [id])
+  consolidationId String?
+
+  // Shipping Details
+  serviceType     String
+  weight          Float
+  dimensions      Json?
+  declaredValue   Float
+  currency        Currency @default(BRL)
+
+  // Costs
+  shippingCost    Float
+  insuranceCost   Float?
+  totalCost       Float
+
+  // Tracking
+  labelUrl        String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  estimatedDelivery DateTime?
+
+  // Metadata
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("shipments")
+}
+
+model Carrier {
+  id          String @id @default(uuid())
+  name        String @unique
+  code        String @unique
+  logo        String?
+  website     String?
+  isActive    Boolean @default(true)
+
+  // Services
+  services    CarrierService[]
+
+  // Relations
+  shipments   Shipment[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("carriers")
+}
+
+model CarrierService {
+  id          String @id @default(uuid())
+  carrierId   String
+  name        String
+  code        String
+  description String?
+  isActive    Boolean @default(true)
+
+  carrier Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+
+  @@unique([carrierId, code])
+  @@map("carrier_services")
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  userId        String
+  amount        Float
+  currency      Currency @default(BRL)
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod
+
+  // External References
+  externalId    String?  // Stripe payment intent ID, PayPal order ID, etc.
+  provider      String   // stripe, paypal, etc.
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id])
+
+  // Metadata
+  metadata      Json?
+  processedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  data      Json?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    AuditAction
+  entity    String   // user, package, shipment, etc.
+  entityId  String
+  changes   Json?    // Before/after data
+  ipAddress String?
+  userAgent String?
+
+  user      User?    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// Indexes for performance
+model _prisma_migrations {
+  id                String   @id @default(cuid())
+  checksum          String
+  finished_at       DateTime?
+  migration_name    String
+  logs              String?
+  rolled_back_at    DateTime?
+  started_at        DateTime  @default(now())
+  applied_steps_count Int     @default(0)
+
+  @@map("_prisma_migrations")
+}

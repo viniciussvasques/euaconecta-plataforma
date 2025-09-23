@@ -1,0 +1,38 @@
+# EuaConnecta 2.0 - CodeQL Configuration
+# =========================================
+# This file configures CodeQL analysis for security vulnerabilities
+
+name: "CodeQL Configuration"
+
+disable-default-queries: false
+
+queries:
+  - uses: security-and-quality
+  - uses: security-experimental
+
+paths-ignore:
+  - node_modules
+  - .next
+  - out
+  - build
+  - dist
+  - coverage
+  - .nyc_output
+  - logs
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/__tests__/**"
+  - "**/__mocks__/**"
+  - "docs/"
+  - ".github/"
+  - "scripts/"
+  - "docker/"
+
+paths:
+  - src/
+  - prisma/
+  - next.config.ts
+  - tailwind.config.js
+  - postcss.config.js

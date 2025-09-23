@@ -1,0 +1,584 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output
+
+# nyc test coverage
+.nyc_output
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next/
+out/
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Vuepress build output
+.vuepress/dist
+
+# Vuepress v2.x temp and cache directory
+.temp
+.cache
+
+# Docusaurus cache and generated files
+.docusaurus
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS)
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Prisma
+# Keep environment variables out of version control
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Prisma Client Python
+__pycache__/
+
+# Logs
+logs
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Local Prisma studio
+.prisma/
+
+# Vercel
+.vercel
+
+# Sentry Config File
+.sentryclirc
+
+# Testing
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Docker
+.dockerignore
+
+# Temporary folders
+tmp/
+temp/
+
+# Build artifacts
+build/
+dist/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local development
+.local
+.dev
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# MinIO data (if running locally)
+minio-data/
+
+# Redis dumps
+dump.rdb
+
+# PM2
+ecosystem.config.js
+.pm2/
+
+# Kubernetes
+kubeconfig
+
+# Helm
+helm/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Ansible
+ansible/
+
+# CI/CD
+.github/workflows/cache/
+.github/workflows/artifacts/
+
+# Documentation builds
+docs/build/
+docs/.vuepress/dist/
+
+# API documentation
+api-docs/
+
+# Performance monitoring
+lighthouse/
+
+# Security scans
+security-scan-results/
+
+# Migration files (keep in version control, but not generated ones)
+# Uncomment if you want to ignore migration files
+# prisma/migrations/
+
+# Test coverage reports
+coverage/
+.nyc_output/
+
+# Jest cache
+.jest/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Storybook build
+storybook-static/
+
+# Local SSL certificates
+ssl/
+certs/
+
+# Backup configurations
+*.backup
+*.bak
+
+# Temporary development files
+scratch/
+notes/
+
+# API keys and secrets (double check)
+config/secrets.*
+config/keys.*
+
+# Local database files
+*.db
+*.sqlite*
+
+# Cache directories
+.cache/
+.tmp/
+.temp/
+
+# Log files
+logs/
+*.log
+
+# Runtime configuration
+config/local.*
+config/development.*
+
+# User-specific files
+.user
+.personal
+
+# Debug files
+debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Application specific
+# Add any application-specific ignore patterns here
+
+# Next.js
+.next/
+out/
+
+# Production builds
+build/
+dist/
+
+# Environment files
+.env*
+!.env.example
+
+# Database
+postgres-data/
+redis-data/
+
+# Docker volumes
+volumes/
+
+# Local development overrides
+docker-compose.override.yml
+
+# Backup files
+*.orig
+*.rej
+
+# Patch files
+*.patch
+*.diff
+
+# Lock files (keep in version control for consistency)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variable files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler cache (https://parceljs.org/)
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Prisma
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Local Prisma studio
+.prisma/
+
+# Vercel
+.vercel
+
+# Sentry
+.sentryclirc
+
+# Testing
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Docker
+.dockerignore
+
+# Temporary
+tmp/
+temp/
+
+# Build
+build/
+dist/
+
+# Certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# MinIO
+minio-data/
+
+# Redis
+dump.rdb
+
+# PM2
+ecosystem.config.js
+.pm2/
+
+# Kubernetes
+kubeconfig
+
+# Helm
+helm/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Ansible
+ansible/
+
+# CI/CD
+.github/workflows/cache/
+.github/workflows/artifacts/
+
+# Documentation
+docs/build/
+docs/.vuepress/dist/
+
+# API docs
+api-docs/
+
+# Performance
+lighthouse/
+
+# Security
+security-scan-results/
+
+# Migrations (uncomment if needed)
+# prisma/migrations/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Jest
+.jest/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Storybook
+storybook-static/
+
+# SSL
+ssl/
+certs/
+
+# Backups
+*.backup
+*.bak
+
+# Scratch
+scratch/
+notes/
+
+# Secrets
+config/secrets.*
+config/keys.*
+
+# Local DB
+*.db
+*.sqlite*
+
+# Cache
+.cache/
+.tmp/
+.temp/
+
+# Logs
+logs/
+*.log
+
+# Runtime config
+config/local.*
+config/development.*
+
+# User files
+.user
+.personal
+
+# Debug
+debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Application specific
+# Add your app-specific ignores here

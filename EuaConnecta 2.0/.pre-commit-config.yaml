@@ -1,0 +1,102 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^.*\.(md|json)$
+      - id: end-of-file-fixer
+        exclude: ^.*\.(md|json)$
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-symlinks
+      - id: check-shebang-scripts-are-executable
+      - id: check-executables-have-shebangs
+      - id: check-case-conflict
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      - id: requirements-txt-fixer
+      - id: fix-byte-order-marker
+      - id: fix-encoding-pragma
+        args: ['--remove']
+
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3
+        exclude: ^.*\.(js|ts|jsx|tsx)$
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.55.0
+    hooks:
+      - id: eslint
+        files: \.(js|ts|jsx|tsx)$
+        types: [file]
+        additional_dependencies:
+          - eslint@^8.0.0
+          - '@typescript-eslint/parser'
+          - '@typescript-eslint/eslint-plugin'
+          - eslint-config-next
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        exclude: ^.*\.(md|json|yml|yaml)$
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: ^.*\.(md|json|yml|yaml|lock)$
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - id: forbid-crlf
+      - id: remove-crlf
+      - id: forbid-tabs
+      - id: remove-tabs
+
+  - repo: local
+    hooks:
+      - id: type-check
+        name: TypeScript type check
+        entry: npx tsc --noEmit
+        language: system
+        files: \.(ts|tsx)$
+        pass_filenames: false
+
+      - id: test
+        name: Run tests
+        entry: npm run test:unit
+        language: system
+        files: \.(ts|tsx|js|jsx)$
+        pass_filenames: false
+        stages: [push]
+
+      - id: prisma-check
+        name: Prisma format and validate
+        entry: npx prisma format && npx prisma validate
+        language: system
+        files: schema\.prisma$
+        pass_filenames: false
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

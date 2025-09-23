@@ -1,0 +1,117 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Generated files
+*.tsbuildinfo
+coverage/
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env*
+!.env.example
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+Dockerfile*
+
+# Documentation builds
+docs/build/
+
+# Prisma
+prisma/migrations/
+
+# Test results
+test-results/
+playwright-report/
+
+# Cache
+.cache/
+.tmp/
+.temp/
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Backup files
+*.bak
+*.backup
+
+# MinIO data
+minio-data/
+
+# Redis dumps
+dump.rdb
+
+# PM2
+ecosystem.config.js
+.pm2/
+
+# Helm
+helm/
+
+# Terraform
+.terraform/
+
+# Ansible
+ansible/
+
+# CI/CD
+.github/
+
+# Storybook
+storybook-static/
+
+# SSL certificates
+ssl/
+certs/
+
+# Temporary files
+scratch/
+notes/
+
+# API documentation
+api-docs/
+
+# Performance reports
+lighthouse/
+
+# Security scans
+security-scan-results/
+
+# Jest
+.jest/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
