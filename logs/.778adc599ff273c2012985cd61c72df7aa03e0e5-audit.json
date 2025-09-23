@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/opt/Plataforma-euaconecta/logs/.778adc599ff273c2012985cd61c72df7aa03e0e5-audit.json",
+    "files": [
+        {
+            "date": 1758636856060,
+            "name": "/opt/Plataforma-euaconecta/logs/2025-09-23-app.log",
+            "hash": "af855653ed23c5ea7dcc5f3c5107b86291e44d39f24f7db8b275b5d6e22d38eb"
+        }
+    ],
+    "hashType": "sha256"
+}

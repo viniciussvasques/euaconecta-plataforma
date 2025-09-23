@@ -1,0 +1,845 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id         String   @id
+  userId     String
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String   @default("BR")
+  createdAt  DateTime @default(now())
+  isDefault  Boolean  @default(false)
+  name       String
+  updatedAt  DateTime
+  User       User     @relation(fields: [userId], references: [id])
+}
+
+model Package {
+  id                   String                @id
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime
+  ownerId              String
+  purchaseDate         DateTime?
+  expectedDeliveryDate DateTime?
+  actualDeliveryDate   DateTime?
+  store                String?
+  orderNumber          String?
+  purchasePrice        Decimal?              @db.Decimal(10, 2)
+  carrier              String?
+  trackingIn           String?
+  trackingPhoto        String?
+  deliveryConfirmation Boolean               @default(false)
+  description          String?
+  declaredValue        Decimal?              @db.Decimal(10, 2)
+  weightGrams          Int?
+  lengthCm             Int?
+  widthCm              Int?
+  heightCm             Int?
+  status               PackageStatus         @default(PENDING)
+  packageCondition     String?
+  notes                String?
+  shipmentId           String?
+  consolidationStatus  ConsolidationStatus   @default(PENDING)
+  consolidationGroupId String?
+  dimensionsId         String?
+  protectionApplied    ProtectionType[]
+  repackedAt           DateTime?
+  repackedBy           String?
+  weighedAt            DateTime?
+  weighedBy            String?
+  weightNotes          String?
+  confirmationPhoto    String?
+  confirmedAt          DateTime?
+  confirmedBy          String?
+  confirmedWeightGrams Int?
+  packageType          String?
+  consolidation_groups consolidation_groups? @relation(fields: [consolidationGroupId], references: [id])
+  package_dimensions   package_dimensions?   @relation(fields: [dimensionsId], references: [id])
+  User                 User                  @relation(fields: [ownerId], references: [id])
+  Shipment             Shipment?             @relation(fields: [shipmentId], references: [id])
+}
+
+model PlatformConfig {
+  id                              String   @id
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime
+  companyName                     String
+  addressLine1                    String
+  addressLine2                    String?
+  city                            String
+  state                           String
+  postalCode                      String
+  country                         String   @default("US")
+  phone                           String
+  email                           String
+  taxRate                         Decimal  @default(0) @db.Decimal(5, 4)
+  handlingFee                     Decimal  @default(0) @db.Decimal(10, 2)
+  storageFeePerDay                Decimal  @default(0) @db.Decimal(10, 2)
+  maxStorageDays                  Int      @default(30)
+  consolidationBaseFeeUsdCents    Int      @default(500)
+  consolidationPerPackageUsdCents Int      @default(100)
+  repackMultiplier                Float    @default(1.5)
+  currency                        String   @default("USD")
+  defaultCarrier                  String   @default("USPS")
+  defaultService                  String   @default("Priority")
+  insuranceRequired               Boolean  @default(false)
+  minInsuranceAmount              Decimal  @default(0) @db.Decimal(10, 2)
+  stripeEnabled                   Boolean  @default(false)
+  paypalEnabled                   Boolean  @default(false)
+  autoInvoice                     Boolean  @default(true)
+  emailNotifications              Boolean  @default(true)
+  smsNotifications                Boolean  @default(false)
+  webhookUrl                      String?
+  shipstationEnabled              Boolean  @default(false)
+  shipstationApiKey               String?
+  shipstationApiSecret            String?
+  s3Enabled                       Boolean  @default(false)
+  s3BucketName                    String?
+  s3Region                        String?
+  maxFileSize                     Int      @default(10485760)
+  maxLoginAttempts                Int      @default(5)
+  sessionTimeout                  Int      @default(3600)
+  require2FA                      Boolean  @default(false)
+  supportEmail                    String?
+  supportPhone                    String?
+  businessHours                   String?
+  timezone                        String   @default("America/New_York")
+  freightMarkupMaxAmount          Int      @default(5000)
+  freightMarkupMinAmount          Int      @default(200)
+  freightMarkupPercentage         Float    @default(0.15)
+  processingFeeUsdCents           Int      @default(300)
+}
+
+model Shipment {
+  id               String         @id
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+  status           ShipmentStatus @default(DRAFT)
+  outboundCarrier  String?
+  outboundService  String?
+  outboundLabel    String?
+  trackingOut      String?
+  totalWeightGrams Int?
+  insuranceUsd     Decimal?       @db.Decimal(10, 2)
+  carrierId        String?
+  toName           String?
+  toLine1          String?
+  toLine2          String?
+  toCity           String?
+  toState          String?
+  toPostalCode     String?
+  toCountry        String?
+  toPhone          String?
+  toEmail          String?
+  paymentProvider  String?
+  paymentStatus    String?
+  paymentAmount    Decimal?       @db.Decimal(10, 2)
+  userId           String
+  Package          Package[]
+  carriers         carriers?      @relation(fields: [carrierId], references: [id])
+  User             User           @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id                                               String                      @id
+  createdAt                                        DateTime                    @default(now())
+  updatedAt                                        DateTime
+  email                                            String                      @unique
+  name                                             String
+  phone                                            String?
+  password                                         String
+  activationToken                                  String?                     @unique
+  activationTokenExpires                           DateTime?
+  canManageCarriers                                Boolean                     @default(false)
+  canManageConsolidations                          Boolean                     @default(false)
+  canManagePackages                                Boolean                     @default(false)
+  canManageSettings                                Boolean                     @default(false)
+  canManageUsers                                   Boolean                     @default(false)
+  canViewFinancials                                Boolean                     @default(false)
+  cpf                                              String?
+  isActive                                         Boolean                     @default(false)
+  lastLogin                                        DateTime?
+  permissions                                      String[]
+  suiteNumber                                      Int?                        @unique
+  role                                             UserRole                    @default(CLIENT)
+  Address                                          Address[]
+  Package                                          Package[]
+  Shipment                                         Shipment[]
+  audit_logs                                       audit_logs[]
+  consolidation_groups                             consolidation_groups[]
+  invoices                                         invoices[]
+  notifications                                    notifications[]
+  password_reset_tokens                            password_reset_tokens[]
+  payment_methods                                  payment_methods[]
+  payments                                         payments[]
+  refresh_tokens                                   refresh_tokens[]
+  reports                                          reports[]
+  support_messages                                 support_messages[]
+  support_tickets_support_tickets_assignedToToUser support_tickets[]           @relation("support_tickets_assignedToToUser")
+  support_tickets_support_tickets_userIdToUser     support_tickets[]           @relation("support_tickets_userIdToUser")
+  user_evaluations                                 user_evaluations[]
+  user_notification_settings                       user_notification_settings?
+  user_observations                                user_observations[]
+}
+
+
+
+model analytics_config {
+  id                 String   @id
+  googleAnalyticsId  String?
+  googleTagManagerId String?
+  facebookPixelId    String?
+  hotjarId           String?
+  mixpanelToken      String?
+  amplitudeApiKey    String?
+  customScripts      Json
+  trackingEvents     Json
+  conversionGoals    Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
+}
+
+model audit_logs {
+  id         String   @id
+  userId     String?
+  action     String
+  entityType String
+  entityId   String
+  oldValues  String?
+  newValues  String?
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime @default(now())
+  User       User?    @relation(fields: [userId], references: [id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model blog_posts {
+  id             String    @id @db.VarChar(255)
+  title          String    @db.VarChar(255)
+  slug           String    @unique @db.VarChar(255)
+  excerpt        String?
+  content        String
+  author         String    @db.VarChar(255)
+  category       String?   @db.VarChar(255)
+  tags           String[]
+  featured_image String?   @db.VarChar(255)
+  status         String?   @default("published") @db.VarChar(50)
+  is_featured    Boolean?  @default(false)
+  views          Int?      @default(0)
+  likes          Int?      @default(0)
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  updated_at     DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([category], map: "idx_blog_posts_category")
+  @@index([created_at], map: "idx_blog_posts_created_at")
+  @@index([is_featured], map: "idx_blog_posts_is_featured")
+  @@index([slug], map: "idx_blog_posts_slug")
+  @@index([status], map: "idx_blog_posts_status")
+}
+
+model carrier_pricing_tables {
+  id          String   @id
+  name        String
+  serviceCode String
+  minWeight   Decimal  @default(0)
+  maxWeight   Decimal  @default(0)
+  price       Decimal  @default(0)
+  carrierId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  carriers    carriers @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+}
+
+model carrier_services {
+  id            String   @id
+  name          String
+  code          String
+  baseRate      Decimal  @default(0)
+  ratePerKg     Decimal  @default(0)
+  ratePerKm     Decimal  @default(0)
+  estimatedDays Int      @default(3)
+  isActive      Boolean  @default(true)
+  carrierId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  carriers      carriers @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+}
+
+model carrier_zones {
+  id            String   @id
+  name          String
+  baseRate      Decimal  @default(0)
+  ratePerKg     Decimal  @default(0)
+  estimatedDays Int      @default(3)
+  carrierId     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  carriers      carriers @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+}
+
+model carriers {
+  id                     String                   @id
+  name                   String
+  code                   String                   @unique
+  description            String?
+  hasApi                 Boolean                  @default(false)
+  apiKey                 String?
+  apiSecret              String?
+  apiUrl                 String?
+  baseRate               Decimal                  @default(0)
+  ratePerKg              Decimal                  @default(0)
+  ratePerKm              Decimal                  @default(0)
+  insuranceAvailable     Boolean                  @default(false)
+  insuranceRate          Decimal                  @default(0)
+  minInsuranceValue      Decimal                  @default(0)
+  maxInsuranceValue      Decimal                  @default(0)
+  estimatedDays          Int                      @default(3)
+  isActive               Boolean                  @default(true)
+  priority               Int                      @default(0)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime
+  Shipment               Shipment[]
+  carrier_pricing_tables carrier_pricing_tables[]
+  carrier_services       carrier_services[]
+  carrier_zones          carrier_zones[]
+}
+
+model consolidation_groups {
+  id                        String              @id
+  consolidationType         ConsolidationType
+  status                    ConsolidationStatus @default(OPEN)
+  extraProtection           ProtectionType[]
+  removeInvoice             Boolean             @default(false)
+  customInstructions        String?
+  finalWeightGrams          Int?
+  beforePhotos              String[]
+  afterPhotos               String[]
+  consolidationFee          Decimal             @db.Decimal(10, 2)
+  storageDaysAllowed        Int                 @default(30)
+  storageDaysUsed           Int                 @default(0)
+  storageFee                Decimal             @db.Decimal(10, 2)
+  consolidationDeadline     DateTime?
+  shippingDeadline          DateTime?
+  userId                    String
+  finalDimensionsId         String?
+  createdAt                 DateTime            @default(now())
+  updatedAt                 DateTime
+  closedAt                  DateTime?
+  currentWeightGrams        Int                 @default(0)
+  estimatedFinalWeightGrams Int?
+  maxItemsAllowed           Int                 @default(20)
+  openedAt                  DateTime            @default(now())
+  boxSize                   String?
+  name                      String?
+  notes                     String?
+  trackingCode              String?
+  Package                   Package[]
+  package_dimensions        package_dimensions? @relation(fields: [finalDimensionsId], references: [id])
+  User                      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model email_templates {
+  id        String   @id
+  name      String
+  subject   String
+  content   String
+  type      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model invoices {
+  id          String     @id
+  userId      String
+  createdAt   DateTime   @default(now())
+  number      String     @unique
+  currency    String     @default("USD")
+  amountCents Int
+  pdfUrl      String?
+  status      String
+  User        User       @relation(fields: [userId], references: [id])
+  payments    payments[]
+}
+
+model lead_capture_forms {
+  id               String   @id
+  name             String
+  type             String
+  title            String
+  description      String
+  fields           Json
+  submitButtonText String
+  successMessage   String
+  redirectUrl      String?
+  triggerSettings  Json
+  styling          Json
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+}
+
+model notifications {
+  id           String             @id
+  userId       String
+  type         NotificationType
+  title        String
+  message      String
+  status       NotificationStatus @default(PENDING)
+  sentAt       DateTime?
+  readAt       DateTime?
+  errorMessage String?
+  isUrgent     Boolean            @default(false)
+  expiresAt    DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime
+  actionUrl    String?
+  entityId     String?
+  entityType   String?
+  metadata     String?
+  User         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model package_dimensions {
+  id                   String                 @id
+  length               Decimal                @db.Decimal(8, 2)
+  width                Decimal                @db.Decimal(8, 2)
+  height               Decimal                @db.Decimal(8, 2)
+  weight               Decimal                @db.Decimal(8, 2)
+  volume               Decimal                @db.Decimal(10, 2)
+  sizeCategory         PackageSizeCategory
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  Package              Package[]
+  consolidation_groups consolidation_groups[]
+}
+
+model partners {
+  id          String   @id
+  name        String
+  description String
+  logo        String
+  url         String
+  category    String
+  discount    String
+  rating      Float    @default(5.0)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model password_reset_tokens {
+  id        String    @id
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  ipAddress String?
+  userAgent String?
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model payment_methods {
+  id       String  @id
+  userId   String
+  provider String
+  ref      String
+  brand    String?
+  last4    String?
+  expMonth Int?
+  expYear  Int?
+  default  Boolean @default(false)
+  User     User    @relation(fields: [userId], references: [id])
+}
+
+model payment_providers {
+  id                  String     @id
+  name                String
+  code                String     @unique
+  description         String?
+  isActive            Boolean    @default(true)
+  hasApi              Boolean    @default(false)
+  apiKey              String?
+  apiSecret           String?
+  apiUrl              String?
+  webhookSecret       String?
+  supportedCurrencies String[]   @default(["USD"])
+  supportedCountries  String[]   @default(["BR"])
+  fixedFee            Decimal    @default(0) @db.Decimal(10, 2)
+  percentageFee       Decimal    @default(0) @db.Decimal(5, 4)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime
+  payments            payments[]
+}
+
+model payments {
+  id                String             @id
+  userId            String
+  invoiceId         String?
+  providerId        String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime
+  providerCode      String
+  intentId          String
+  currency          String             @default("USD")
+  amountCents       Int
+  status            String
+  receiptUrl        String?
+  invoices          invoices?          @relation(fields: [invoiceId], references: [id])
+  payment_providers payment_providers? @relation(fields: [providerId], references: [id])
+  User              User               @relation(fields: [userId], references: [id])
+}
+
+model protection_services {
+  id                String             @id
+  name              String
+  code              String             @unique
+  description       String?
+  protectionType    ProtectionType
+  category          ProtectionCategory
+  basePrice         Decimal            @db.Decimal(10, 2)
+  pricePerKg        Decimal            @db.Decimal(10, 2)
+  pricePerDimension Decimal            @db.Decimal(10, 2)
+  isActive          Boolean            @default(true)
+  priority          Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime
+}
+
+model refresh_tokens {
+  id        String    @id
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  ipAddress String?
+  userAgent String?
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model reports {
+  id           String    @id
+  userId       String
+  name         String
+  type         String
+  parameters   String
+  status       String    @default("PENDING")
+  resultUrl    String?
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+  User         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model robots_config {
+  id          String   @id
+  userAgent   String   @default("*")
+  allow       String[] @default([])
+  disallow    String[] @default([])
+  crawlDelay  Int?
+  sitemap     String
+  customRules String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model seo_config {
+  id                     String   @id
+  siteName               String
+  siteDescription        String
+  siteUrl                String
+  defaultTitle           String
+  defaultDescription     String
+  defaultKeywords        String[]
+  ogImage                String
+  twitterHandle          String?
+  facebookAppId          String?
+  googleSiteVerification String?
+  bingSiteVerification   String?
+  yandexSiteVerification String?
+  structuredData         Json
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime
+}
+
+model sitemap_config {
+  id              String   @id
+  includeBlog     Boolean  @default(true)
+  includePages    Boolean  @default(true)
+  includeProducts Boolean  @default(false)
+  customUrls      Json
+  excludeUrls     String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+}
+
+model storage_policies {
+  id                    String   @id
+  freeDays              Int
+  dailyRateSmall        Decimal  @db.Decimal(10, 2)
+  dailyRateMedium       Decimal  @db.Decimal(10, 2)
+  dailyRateLarge        Decimal  @db.Decimal(10, 2)
+  dailyRatePerItem      Decimal  @db.Decimal(10, 2)
+  weekendCharges        Boolean  @default(false)
+  holidayCharges        Boolean  @default(false)
+  warningDays           Int      @default(7)
+  isActive              Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime
+  flatDailyRateUsdCents Int?
+  maxDaysAllowed        Int      @default(90)
+}
+
+model support_messages {
+  id              String          @id
+  content         String
+  isFromUser      Boolean
+  ticketId        String
+  userId          String?
+  createdAt       DateTime        @default(now())
+  support_tickets support_tickets @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  User            User?           @relation(fields: [userId], references: [id])
+}
+
+model support_tickets {
+  id                                    String             @id
+  title                                 String
+  description                           String
+  status                                SupportStatus      @default(OPEN)
+  priority                              SupportPriority    @default(MEDIUM)
+  category                              SupportCategory
+  userId                                String
+  assignedTo                            String?
+  createdAt                             DateTime           @default(now())
+  updatedAt                             DateTime
+  closedAt                              DateTime?
+  support_messages                      support_messages[]
+  User_support_tickets_assignedToToUser User?              @relation("support_tickets_assignedToToUser", fields: [assignedTo], references: [id])
+  User_support_tickets_userIdToUser     User               @relation("support_tickets_userIdToUser", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model system_customization {
+  id          String   @id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  key         String   @unique
+  value       Json
+  description String?
+  isActive    Boolean  @default(true)
+  version     Int      @default(1)
+}
+
+model testimonials {
+  id        String   @id
+  name      String
+  role      String
+  company   String?
+  content   String
+  rating    Int      @default(5)
+  avatar    String?
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model tutorials {
+  id          String   @id
+  title       String
+  description String
+  type        String
+  duration    Int
+  difficulty  String
+  videoUrl    String?
+  content     String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+model user_evaluations {
+  id                     String   @id
+  userId                 String
+  communicationScore     Int
+  punctualityScore       Int
+  packageCareScore       Int
+  cooperationScore       Int
+  problemResolutionScore Int
+  loyaltyScore           Int
+  overallScore           Decimal  @db.Decimal(3, 2)
+  strengths              String?
+  weaknesses             String?
+  recommendations        String?
+  evaluatedBy            String
+  evaluationDate         DateTime @default(now())
+  lastUpdated            DateTime
+  User                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user_notification_settings {
+  id                   String   @id
+  userId               String   @unique
+  emailEnabled         Boolean  @default(true)
+  smsEnabled           Boolean  @default(false)
+  pushEnabled          Boolean  @default(true)
+  inAppEnabled         Boolean  @default(true)
+  consolidationUpdates Boolean  @default(true)
+  storageWarnings      Boolean  @default(true)
+  deliveryUpdates      Boolean  @default(true)
+  systemAnnouncements  Boolean  @default(true)
+  digestFrequency      String   @default("DAILY")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+  User                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user_observations {
+  id        String   @id
+  userId    String
+  title     String
+  content   String
+  category  String
+  priority  String
+  createdBy String
+  isPrivate Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model warehouse_addresses {
+  id           String   @id
+  name         String
+  line1        String
+  line2        String?
+  city         String
+  state        String
+  postalCode   String
+  country      String   @default("US")
+  isDefault    Boolean  @default(false)
+  instructions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+}
+
+enum ConsolidationStatus {
+  OPEN
+  PENDING
+  IN_PROGRESS
+  READY_TO_SHIP
+  SHIPPED
+  CANCELLED
+}
+
+enum ConsolidationType {
+  SIMPLE
+  REPACK
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum PackageSizeCategory {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum PackageStatus {
+  RECEIVED
+  READY_TO_SHIP
+  SHIPPED
+  PENDING
+}
+
+enum ProtectionCategory {
+  BASIC_PROTECTION
+  PREMIUM_PROTECTION
+  FRAGILE_ITEMS
+  ELECTRONICS
+  CLOTHING
+  CUSTOM
+}
+
+enum ProtectionType {
+  BUBBLE_WRAP
+  DOUBLE_BOX
+  SECURITY_TAPE
+  PAPER_FILLING
+  CUSTOM_PACKAGING
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum ShipmentStatus {
+  DRAFT
+  LABEL_CREATED
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+  CANCELLED
+}
+
+enum SupportCategory {
+  TECHNICAL
+  BILLING
+  SHIPPING
+  ACCOUNT
+  GENERAL
+  FEATURE_REQUEST
+}
+
+enum SupportPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  OPERATOR
+  MANAGER
+  CLIENT
+  SUPPORT
+}

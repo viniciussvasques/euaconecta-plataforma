@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🧪 Executando todos os testes antes do push..."
+npm test
+
+# Se os testes falharem, o push será impedido
+if [ $? -ne 0 ]; then
+  echo "❌ Falha nos testes! Push cancelado."
+  exit 1
+fi
+
+echo "✅ Todos os testes passaram! Realizando push..."

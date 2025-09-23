@@ -1,0 +1,63 @@
+{
+  "translation": {
+    "common": {
+      "welcome": "Welcome to EuaConecta Platform",
+      "error": "Error",
+      "success": "Success"
+    },
+    "validation": {
+      "required": "{{field}} is required",
+      "email": "{{field}} must be a valid email",
+      "minLength": "{{field}} must be at least {{min}} characters",
+      "maxLength": "{{field}} must be at most {{max}} characters",
+      "passwordMatch": "Passwords do not match"
+    },
+    "auth": {
+      "login": "Login",
+      "register": "Register",
+      "forgotPassword": "Forgot password?",
+      "resetPassword": "Reset password",
+      "loginSuccess": "Login successful",
+      "loginError": "Incorrect email or password",
+      "logoutSuccess": "Logout successful",
+      "unauthorized": "Unauthorized",
+      "sessionExpired": "Session expired, please login again",
+      "signupSuccess": "Account created successfully. Please check your email for activation.",
+      "invalidRefreshToken": "Invalid refresh token",
+      "refreshSuccess": "Tokens refreshed successfully",
+      "forgotPasswordSuccess": "If an account with that email exists, a password reset link has been sent.",
+      "resetPasswordSuccess": "Password reset successfully",
+      "resendVerificationSuccess": "Verification email sent successfully"
+    },
+    "user": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Error updating profile"
+    },
+    "shipping": {
+      "packages": "Packages",
+      "address": "Address",
+      "tracking": "Tracking",
+      "status": {
+        "processing": "Processing",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "returned": "Returned",
+        "canceled": "Canceled"
+      }
+    },
+    "errors": {
+      "general": "An error occurred",
+      "notFound": "Not found",
+      "serverError": "Internal server error",
+      "badRequest": "Bad request"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "translation": {
+    "common": {
+      "welcome": "Bienvenido a la Plataforma EuaConecta",
+      "error": "Error",
+      "success": "Éxito"
+    },
+    "validation": {
+      "required": "{{field}} es obligatorio",
+      "email": "{{field}} debe ser un correo electrónico válido",
+      "minLength": "{{field}} debe tener al menos {{min}} caracteres",
+      "maxLength": "{{field}} debe tener como máximo {{max}} caracteres",
+      "passwordMatch": "Las contraseñas no coinciden"
+    },
+    "auth": {
+      "login": "Iniciar sesión",
+      "register": "Registrarse",
+      "forgotPassword": "¿Olvidó su contraseña?",
+      "resetPassword": "Restablecer contraseña",
+      "loginSuccess": "Inicio de sesión exitoso",
+      "loginError": "Correo electrónico o contraseña incorrectos",
+      "logoutSuccess": "Cierre de sesión exitoso",
+      "unauthorized": "No autorizado",
+      "sessionExpired": "Sesión expirada, por favor inicie sesión nuevamente",
+      "signupSuccess": "Cuenta creada exitosamente. Por favor, revise su correo electrónico para activación.",
+      "invalidRefreshToken": "Token de refresh inválido",
+      "refreshSuccess": "Tokens actualizados exitosamente",
+      "forgotPasswordSuccess": "Si existe una cuenta con ese correo electrónico, se ha enviado un enlace de restablecimiento de contraseña.",
+      "resetPasswordSuccess": "Contraseña restablecida exitosamente",
+      "resendVerificationSuccess": "Correo electrónico de verificación enviado exitosamente"
+    },
+    "user": {
+      "profile": "Perfil",
+      "settings": "Configuraciones",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "updateSuccess": "Perfil actualizado con éxito",
+      "updateError": "Error al actualizar el perfil"
+    },
+    "shipping": {
+      "packages": "Paquetes",
+      "address": "Dirección",
+      "tracking": "Seguimiento",
+      "status": {
+        "processing": "En procesamiento",
+        "shipped": "Enviado",
+        "delivered": "Entregado",
+        "returned": "Devuelto",
+        "canceled": "Cancelado"
+      }
+    },
+    "errors": {
+      "general": "Se produjo un error",
+      "notFound": "No encontrado",
+      "serverError": "Error interno del servidor",
+      "badRequest": "Solicitud incorrecta"
+    }
+  }
+}

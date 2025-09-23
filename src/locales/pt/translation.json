@@ -1,0 +1,63 @@
+{
+  "translation": {
+    "common": {
+      "welcome": "Bem-vindo à Plataforma EuaConecta",
+      "error": "Erro",
+      "success": "Sucesso"
+    },
+    "validation": {
+      "required": "{{field}} é obrigatório",
+      "email": "{{field}} deve ser um e-mail válido",
+      "minLength": "{{field}} deve ter pelo menos {{min}} caracteres",
+      "maxLength": "{{field}} deve ter no máximo {{max}} caracteres",
+      "passwordMatch": "As senhas não coincidem"
+    },
+    "auth": {
+      "login": "Entrar",
+      "register": "Registrar",
+      "forgotPassword": "Esqueceu a senha?",
+      "resetPassword": "Redefinir senha",
+      "loginSuccess": "Login realizado com sucesso",
+      "loginError": "Email ou senha incorretos",
+      "logoutSuccess": "Logout realizado com sucesso",
+      "unauthorized": "Não autorizado",
+      "sessionExpired": "Sessão expirada, por favor faça login novamente",
+      "signupSuccess": "Conta criada com sucesso. Por favor, verifique seu e-mail para ativação.",
+      "invalidRefreshToken": "Token de refresh inválido",
+      "refreshSuccess": "Tokens atualizados com sucesso",
+      "forgotPasswordSuccess": "Se uma conta com esse e-mail existir, um link de redefinição de senha foi enviado.",
+      "resetPasswordSuccess": "Senha redefinida com sucesso",
+      "resendVerificationSuccess": "E-mail de verificação enviado com sucesso"
+    },
+    "user": {
+      "profile": "Perfil",
+      "settings": "Configurações",
+      "name": "Nome",
+      "email": "Email",
+      "password": "Senha",
+      "confirmPassword": "Confirmar senha",
+      "currentPassword": "Senha atual",
+      "newPassword": "Nova senha",
+      "updateSuccess": "Perfil atualizado com sucesso",
+      "updateError": "Erro ao atualizar perfil"
+    },
+    "shipping": {
+      "packages": "Pacotes",
+      "address": "Endereço",
+      "tracking": "Rastreamento",
+      "status": {
+        "processing": "Em processamento",
+        "shipped": "Enviado",
+        "delivered": "Entregue",
+        "returned": "Devolvido",
+        "canceled": "Cancelado"
+      }
+    },
+    "errors": {
+      "general": "Ocorreu um erro",
+      "notFound": "Não encontrado",
+      "serverError": "Erro interno do servidor",
+      "badRequest": "Requisição inválida"
+    }
+  }
+}

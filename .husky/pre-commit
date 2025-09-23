@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Verificando o código antes do commit..."
+
+# Executa o linter
+echo "👁️ Verificando formato e estilo do código..."
+npm run lint-staged
+
+# Executa os testes unitários
+echo "🧪 Executando testes unitários..."
+npm test -- --findRelatedTests $(git diff --cached --name-only | grep -E '\.(ts|js)$')
+
+# Verifica se há vulnerabilidades críticas
+echo "🔒 Verificando vulnerabilidades críticas..."
+npm audit --audit-level=critical
+
+# Tudo ok!
+echo "✅ Código verificado com sucesso!"

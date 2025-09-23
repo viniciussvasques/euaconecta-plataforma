@@ -1,0 +1,111 @@
+name: CD - Deploy
+
+on:
+  push:
+    branches:
+      - main      # Deploy para produção
+      - develop   # Deploy para staging
+    tags:
+      - 'v*'      # Deploy para produção a partir de tags (releases)
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    # Define environment baseado no branch
+    env:
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/main' || (startsWith(github.ref, 'refs/tags/v') && 'production') || 'staging' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: viniciussvasques/euaconecta
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,format=short
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=viniciussvasques/euaconecta:buildcache
+          cache-to: type=registry,ref=viniciussvasques/euaconecta:buildcache,mode=max
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build-and-push
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Deploy to staging server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USERNAME }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /opt/euaconecta-plataforma
+            docker-compose pull
+            docker-compose up -d --force-recreate app
+            docker image prune -f
+
+      - name: Notify deployment
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'deploy-notifications'
+          slack-message: "🚀 Deployment to *STAGING* successful! App version: ${{ github.sha }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  deploy-production:
+    name: Deploy to Production
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USERNAME }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            cd /opt/euaconecta-plataforma
+            docker-compose pull
+            docker-compose up -d --force-recreate app
+            docker image prune -f
+
+      - name: Notify deployment
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'deploy-notifications'
+          slack-message: "🚀 Deployment to *PRODUCTION* successful! App version: ${{ github.sha }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

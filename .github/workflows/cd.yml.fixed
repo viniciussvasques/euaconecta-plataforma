@@ -1,0 +1,18 @@
+name: CD - Deploy
+
+on:
+  push:
+    branches:
+      - main      # Deploy para produção
+      - develop   # Deploy para staging
+    tags:
+      - 'v*'      # Deploy para produção a partir de tags (releases)
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    # Define environment baseado no branch
+    env:
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/main' || (startsWith(github.ref, 'refs/tags/v') && 'production') || 'staging' }}
